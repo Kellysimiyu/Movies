@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Movie Zone — Watch Free Movies &amp; Videos Online</title>
+  <meta name="description" content="Watch free movies, trailers, and videos online at My Channel. Stream full-length movies, short films, and more. No sign-up required — search and play instantly.">
+  <meta name="keywords" content="free movies, watch movies online, free movies online, streaming movies, full movies, movie trailers, watch free movies, online movies, free films, movie streaming, watch movies free, full length movies, HD movies, free video streaming, movies no signup, free movie site, watch films online">
+  <meta name="author" content="My Channel">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow">
+  <meta name="bingbot" content="index, follow">
+  <meta name="theme-color" content="#0a0a0a">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="My Channel — Watch Free Movies &amp; Videos Online">
+  <meta property="og:description" content="Stream free movies, trailers, and videos online. Search, discover, and play instantly — no sign-up required.">
+  <meta property="og:site_name" content="My Channel">
+  <meta property="og:locale" content="en_US">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="My Channel — Watch Free Movies &amp; Videos Online">
+  <meta name="twitter:description" content="Stream free movies, trailers, and videos online. Search, discover, and play instantly — no sign-up required.">
+
+  <link rel="canonical" href="https://mychannel.example.com/">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+
+  <link rel="preconnect" href="https://img.youtube.com" crossorigin>
+  <link rel="preconnect" href="https://www.youtube.com" crossorigin>
+  <link rel="dns-prefetch" href="https://img.youtube.com">
+  <link rel="dns-prefetch" href="https://www.youtube.com">
+  <link rel="dns-prefetch" href="https://www.google.com">
+
+  <link rel="preload" href="urls.txt" as="fetch" crossorigin>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "My Channel",
+    "alternateName": "Free Movies Online",
+    "description": "Watch free movies, trailers, and videos online. Stream full-length movies, short films, and more. No sign-up required.",
+    "url": "https://mychannel.example.com/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://mychannel.example.com/?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "My Channel",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://mychannel.example.com/logo.png"
+      }
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Free Movies & Videos on My Channel",
+    "description": "A curated collection of free movies, trailers, and videos available to stream instantly.",
+    "numberOfItems": 0,
+    "itemListElement": []
+  }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 32px 20px;
+      background: #0a0a0a;
+      color: #f1f1f1;
+      font-family: Arial, sans-serif;
+    }
+
+    header { max-width: 1400px; margin: 0 auto 28px; }
+    header h1 { font-size: 1.5rem; margin: 0 0 8px; }
+    header p { color: #888; font-size: 0.85rem; }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+
+    .search-container { max-width: 1400px; margin: 0 auto 20px; }
+
+    .search-input {
+      width: 100%; max-width: 420px;
+      padding: 12px 16px; border-radius: 40px;
+      border: 1px solid #333; background: #161616;
+      color: #f1f1f1; font-size: 0.95rem; outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .search-input::placeholder { color: #666; }
+    .search-input:focus { border-color: #555; background: #1c1c1c; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 22px 16px;
+      max-width: 1400px; margin: 0 auto;
+    }
+
+    .card {
+      border-radius: 10px; overflow: hidden;
+      background: #161616;
+      contain: layout style paint;
+    }
+
+    .thumb {
+      position: relative; width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #222; overflow: hidden;
+      cursor: pointer;
+      transform: translateZ(0);
+    }
+
+    .thumb img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.3s;
+    }
+    .thumb:hover img { transform: scale(1.04); }
+
+    .play-btn {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(to top, rgba(0,0,0,0.5), transparent 60%);
+      pointer-events: none;
+    }
+
+    .play-circle {
+      width: 54px; height: 54px; border-radius: 50%;
+      background: white; color: black;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; padding-left: 4px;
+      transition: transform 0.2s;
+    }
+    .thumb:hover .play-circle { transform: scale(1.08); }
+
+    .info { padding: 12px; cursor: default; min-height: 46px; }
+
+    .title {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 0.92rem; font-weight: 500;
+      line-height: 1.4; color: #f1f1f1; margin: 0;
+      cursor: default; user-select: text;
+      pointer-events: none; text-decoration: none;
+    }
+
+    #player {
+      display: none;
+      position: fixed; inset: 0; z-index: 99999;
+      width: 100%; height: 100%; background: #000;
+    }
+    #player.active { display: block; }
+
+    #stage {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; background: #000;
+    }
+
+    #videoFrame {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      border: 0; background: #000;
+    }
+    #videoFrame iframe {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+
+    #stage .click-shield {
+      position: absolute; inset: 0;
+      z-index: 99999;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    /* ---------- ⚡ Blend-friendly cover over "More videos" ---------- */
+    .video-bottom-right-cover {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 300px;
+      height: 100px;
+      z-index: 99999;
+      pointer-events: none;
+      /* Heavy blur samples the video underneath, so it blends with
+         whatever is playing. Light tint keeps it readable. */
+      backdrop-filter: blur(18px) saturate(120%);
+      -webkit-backdrop-filter: blur(18px) saturate(120%);
+      background: linear-gradient(
+        to top left,
+        rgba(0, 0, 0, 0.55) 0%,
+        rgba(0, 0, 0, 0.30) 55%,
+        rgba(0, 0, 0, 0) 100%
+      );
+    }
+
+    /* ---------- Top bar (back button) ---------- */
+    .top-bar {
+      position: absolute;
+      top: 0; left: 0;
+      z-index: 100000;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+      pointer-events: none;
+    }
+
+    /* ⚡ Always appear when hovering the player */
+    #player:hover .top-bar {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* ⚡ Square back button */
+    .back-btn {
+      border: none;
+      width: 46px; height: 46px;
+      border-radius: 8px;      /* square with soft corners */
+      background: rgba(35, 35, 35, 0.85);
+      color: white;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .back-btn:hover {
+      background: rgba(80, 80, 80, 0.95);
+      transform: translateY(-1px);
+    }
+    .back-btn:active {
+      transform: translateY(0);
+    }
+
+    /* ---------- Center controls ---------- */
+    .center-controls {
+      position: absolute;
+      bottom: 40px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 100000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.2s, visibility 0.2s;
+      pointer-events: none;
+    }
+
+    #player:hover .center-controls:not(.hiding) {
+      opacity: 1; visibility: visible; pointer-events: auto;
+    }
+
+    #player .center-controls.hiding {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      transition: none !important;
+    }
+
+    .skip-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .skip-btn {
+      border: none;
+      width: 64px; height: 64px;
+      border-radius: 8px;
+      background: rgba(20, 20, 20, 0.82); color: #fff;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      position: relative; user-select: none;
+      backdrop-filter: blur(4px);
+    }
+    .skip-btn:hover { background: rgba(60, 60, 60, 0.95); transform: translateY(-2px); }
+    .skip-btn:active { transform: translateY(0); }
+
+    .skip-btn svg { width: 26px; height: 26px; fill: #fff; }
+
+    .skip-btn .skip-label {
+      position: absolute; bottom: 8px;
+      font-size: 10px; font-weight: bold;
+      color: #fff; letter-spacing: 0.5px;
+    }
+
+    .pause-btn {
+      border: none;
+      width: 64px; height: 64px;
+      border-radius: 8px;
+      background: rgba(20, 20, 20, 0.82); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      user-select: none;
+      backdrop-filter: blur(4px);
+    }
+    .pause-btn:hover { background: rgba(60, 60, 60, 0.95); transform: translateY(-2px); }
+    .pause-btn:active { transform: translateY(0); }
+    .pause-btn svg { width: 30px; height: 30px; fill: #fff; }
+
+    /* ---------- Progress bar ---------- */
+    .progress-wrap {
+      width: min(560px, 70vw);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 4px;
+    }
+
+    .progress-track {
+      position: relative;
+      flex: 1;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 3px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: height 0.15s;
+    }
+    .progress-track:hover { height: 7px; }
+
+    .progress-fill {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 0%;
+      background: #ff2d2d;
+      border-radius: 3px;
+      will-change: width;
+    }
+
+    .progress-fill::after {
+      content: "";
+      position: absolute;
+      right: -5px; top: 50%;
+      transform: translateY(-50%);
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #ff2d2d;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .progress-track:hover .progress-fill::after { opacity: 1; }
+
+    .progress-time {
+      color: #ddd;
+      font-size: 0.75rem;
+      font-variant-numeric: tabular-nums;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .error { color: #ff6666; padding: 20px; }
+
+    .title.loading {
+      background: linear-gradient(90deg, #222 25%, #2b2b2b 37%, #222 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.2s ease-in-out infinite;
+      color: transparent;
+      border-radius: 4px;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .title.loading { animation: none; }
+      .thumb img, .skip-btn, .pause-btn, .back-btn, .play-circle { transition: none; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 20px 12px; }
+      .grid { grid-template-columns: 1fr; }
+
+      .top-bar,
+      #player .center-controls:not(.hiding) {
+        opacity: 1; visibility: visible; pointer-events: auto;
+      }
+
+      .search-input { max-width: 100%; }
+
+      .skip-btn, .pause-btn { width: 56px; height: 56px; }
+      .back-btn { width: 42px; height: 42px; font-size: 22px; }
+      .center-controls { bottom: 24px; gap: 10px; }
+      .skip-row { gap: 12px; }
+      .progress-wrap { width: 85vw; }
+
+      .video-bottom-right-cover { width: 220px; height: 80px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>My Channel — Free Movies &amp; Videos</h1>
+    <p id="count">Loading videos...</p>
+  </header>
+
+  <section class="sr-only" aria-hidden="true">
+    <h2>Watch Free Movies Online</h2>
+    <p>My Channel is a free movie streaming site where you can watch full-length movies, trailers, short films, and more. Search our collection of free movies and videos and play them instantly in your browser. No sign-up, no subscription, no download required.</p>
+    <p>Popular searches: free movies online, watch movies free, full movies, movie trailers, streaming movies, free films, HD movies, online movies no signup, free video streaming.</p>
+  </section>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" class="search-input"
+      placeholder="Search free movies &amp; videos..."
+      aria-label="Search movies and videos" autocomplete="off" />
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div id="player">
+    <div id="stage">
+
+      <div id="videoFrame"></div>
+
+      <!-- ⚡ Blends with the video via backdrop-filter blur -->
+      <div class="video-bottom-right-cover" aria-hidden="true"></div>
+
+      <div class="top-bar">
+        <button class="back-btn" id="backBtn" aria-label="Back to videos" title="Back to videos" type="button">&#8592;</button>
+      </div>
+
+      <div class="center-controls" id="centerControls">
+
+        <div class="skip-row">
+          <button class="skip-btn" id="skipBackBtn"
+            aria-label="Rewind 10 seconds" title="Rewind 10 seconds" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+            </svg>
+            <span class="skip-label">10</span>
+          </button>
+
+          <button class="pause-btn" id="pauseBtn"
+            aria-label="Pause" title="Pause" type="button">
+            <svg id="pauseIcon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+            </svg>
+            <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true" style="display:none">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </button>
+
+          <button class="skip-btn" id="skipForwardBtn"
+            aria-label="Forward 10 seconds" title="Forward 10 seconds" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
+            </svg>
+            <span class="skip-label">10</span>
+          </button>
+        </div>
+
+        <div class="progress-wrap">
+          <span class="progress-time" id="timeCurrent">0:00</span>
+          <div class="progress-track" id="progressTrack" role="progressbar"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+               title="Seek">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <span class="progress-time" id="timeTotal">0:00</span>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      "use strict";
+
+      const grid        = document.getElementById("grid");
+      const countEl     = document.getElementById("count");
+      const playerEl    = document.getElementById("player");
+      const stage       = document.getElementById("stage");
+      const searchInput = document.getElementById("searchInput");
+      const skipBackBtn = document.getElementById("skipBackBtn");
+      const skipFwdBtn  = document.getElementById("skipForwardBtn");
+      const pauseBtn    = document.getElementById("pauseBtn");
+      const pauseIcon   = document.getElementById("pauseIcon");
+      const playIcon    = document.getElementById("playIcon");
+      const centerControls = document.getElementById("centerControls");
+      const progressTrack  = document.getElementById("progressTrack");
+      const progressFill   = document.getElementById("progressFill");
+      const timeCurrent    = document.getElementById("timeCurrent");
+      const timeTotal      = document.getElementById("timeTotal");
+
+      const SKIP_SECONDS = 10;
+      const TITLE_CACHE_KEY = "mc_title_cache_v1";
+      const OEMBED_CONCURRENCY = 4;
+      const EAGER_THUMBS = 6;
+      const HIGH_PRIORITY_THUMBS = 3;
+      const EDGE_MARGIN = 40;
+
+      let searchQuery = "";
+
+      let ytPlayer = null;
+      let ytApiReady = false;
+      let pendingVideoId = null;
+
+      let currentVideoId = null;
+      let currentVideoTitle = "";
+      let isPaused = false;
+
+      let progressRAF = null;
+
+      let controlsHidden = false;
+      let hideCooldownTimer = null;
+      let inEdgeZone = false;
+
+      let titleCache = {};
+      try {
+        titleCache = JSON.parse(sessionStorage.getItem(TITLE_CACHE_KEY) || "{}");
+      } catch (e) { titleCache = {}; }
+
+      function saveTitleCache() {
+        try {
+          sessionStorage.setItem(TITLE_CACHE_KEY, JSON.stringify(titleCache));
+        } catch (e) {}
+      }
+
+      function cacheTitle(id, title) {
+        titleCache[id] = title;
+        saveTitleCache();
+      }
+
+      const oembedQueue = [];
+      let oembedActive = 0;
+
+      function enqueueOembed(task) {
+        oembedQueue.push(task);
+        drainOembedQueue();
+      }
+
+      function drainOembedQueue() {
+        while (oembedActive < OEMBED_CONCURRENCY && oembedQueue.length) {
+          const task = oembedQueue.shift();
+          oembedActive++;
+          Promise.resolve()
+            .then(task)
+            .finally(() => {
+              oembedActive--;
+              drainOembedQueue();
+            });
+        }
+      }
+
+      let sdTimer = null;
+      function scheduleStructuredDataUpdate() {
+        if (sdTimer) clearTimeout(sdTimer);
+        sdTimer = setTimeout(updateStructuredData, 800);
+      }
+
+      stage.addEventListener("contextmenu", e => e.preventDefault());
+
+      function formatTime(seconds) {
+        if (!isFinite(seconds) || seconds < 0) seconds = 0;
+        const total = Math.floor(seconds);
+        const h = Math.floor(total / 3600);
+        const m = Math.floor((total % 3600) / 60);
+        const s = total % 60;
+        if (h > 0) {
+          return h + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+        }
+        return m + ":" + String(s).padStart(2, "0");
+      }
+
+      const ytTag = document.createElement("script");
+      ytTag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(ytTag);
+
+      window.onYouTubeIframeAPIReady = function() {
+        ytApiReady = true;
+        if (pendingVideoId) {
+          const id = pendingVideoId;
+          pendingVideoId = null;
+          mountPlayer(id);
+        }
+      };
+
+      function mountPlayer(id) {
+        destroyPlayer();
+        const container = document.getElementById("videoFrame");
+        container.innerHTML = "";
+
+        ytPlayer = new YT.Player("videoFrame", {
+          videoId: id,
+          host: "https://www.youtube-nocookie.com",
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            disablekb: 1,
+            fs: 1,
+            rel: 0,
+            playsinline: 0,
+            modestbranding: 1,
+            iv_load_policy: 3
+          },
+          events: {
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange
+          }
+        });
+      }
+
+      function destroyPlayer() {
+        if (ytPlayer && typeof ytPlayer.destroy === "function") {
+          try { ytPlayer.destroy(); } catch (e) {}
+        }
+        ytPlayer = null;
+      }
+
+      function onPlayerReady() {
+        try { ytPlayer.playVideo(); } catch (e) {}
+        updateTimeTotal();
+        startProgressLoop();
+      }
+
+      function onPlayerStateChange(event) {
+        const state = event.data;
+        if (state === YT.PlayerState.PLAYING) {
+          isPaused = false;
+          updatePauseIcon();
+          updateTimeTotal();
+          startProgressLoop();
+        } else if (state === YT.PlayerState.PAUSED) {
+          isPaused = true;
+          updatePauseIcon();
+          stopProgressLoop();
+          updateProgressOnce();
+        } else if (state === YT.PlayerState.ENDED) {
+          isPaused = true;
+          updatePauseIcon();
+          stopProgressLoop();
+          updateProgressOnce();
+        }
+      }
+
+      function updateTimeTotal() {
+        if (!ytPlayer || typeof ytPlayer.getDuration !== "function") return;
+        try {
+          const dur = ytPlayer.getDuration() || 0;
+          timeTotal.textContent = formatTime(dur);
+        } catch (e) {}
+      }
+
+      function updateProgressOnce() {
+        if (!ytPlayer) return;
+        try {
+          const cur = ytPlayer.getCurrentTime() || 0;
+          const dur = ytPlayer.getDuration() || 0;
+          timeCurrent.textContent = formatTime(cur);
+          timeTotal.textContent   = formatTime(dur);
+          const pct = dur > 0 ? Math.min(100, (cur / dur) * 100) : 0;
+          progressFill.style.width = pct + "%";
+          progressTrack.setAttribute("aria-valuenow", String(Math.round(pct)));
+        } catch (e) {}
+      }
+
+      function updateProgress() {
+        updateProgressOnce();
+        progressRAF = requestAnimationFrame(updateProgress);
+      }
+
+      function startProgressLoop() {
+        stopProgressLoop();
+        progressRAF = requestAnimationFrame(updateProgress);
+      }
+
+      function stopProgressLoop() {
+        if (progressRAF) {
+          cancelAnimationFrame(progressRAF);
+          progressRAF = null;
+        }
+      }
+
+      function ensureClickShield() {
+        let shield = stage.querySelector(".click-shield");
+        if (shield) return;
+        shield = document.createElement("div");
+        shield.className = "click-shield";
+        shield.addEventListener("click", () => togglePause());
+        stage.appendChild(shield);
+      }
+
+      function getYouTubeId(url) {
+        try {
+          const parsed = new URL(url);
+          const host = parsed.hostname.toLowerCase();
+          if (host === "youtu.be") {
+            return parsed.pathname.split("/").filter(Boolean)[0] || null;
+          }
+          if (
+            host === "youtube.com" ||
+            host.endsWith(".youtube.com") ||
+            host === "youtube-nocookie.com"
+          ) {
+            if (parsed.searchParams.has("v")) return parsed.searchParams.get("v");
+            const m = parsed.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]+)/);
+            return m ? m[1] : null;
+          }
+        } catch (e) { return null; }
+        return null;
+      }
+
+      const thumbObserver =
+        "IntersectionObserver" in window
+          ? new IntersectionObserver((entries, obs) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  const card = entry.target;
+                  obs.unobserve(card);
+                  const id = card.dataset.videoId;
+                  if (id) requestTitle(card, id);
+                }
+              });
+            }, { rootMargin: "200px 0px" })
+          : null;
+
+      function makeCard(id, url, index) {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.dataset.videoId = id;
+
+        const thumb = document.createElement("div");
+        thumb.className = "thumb";
+        thumb.tabIndex = 0;
+        thumb.setAttribute("role", "button");
+        thumb.setAttribute("aria-label", "Play video");
+
+        const img = document.createElement("img");
+        img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+        img.alt = "Movie thumbnail " + (index + 1);
+        img.width = 480; img.height = 270;
+        img.decoding = "async";
+        img.loading = index < EAGER_THUMBS ? "eager" : "lazy";
+        if (index < HIGH_PRIORITY_THUMBS) img.setAttribute("fetchpriority", "high");
+
+        const playBtn = document.createElement("div");
+        playBtn.className = "play-btn";
+        playBtn.innerHTML = '<div class="play-circle">&#9654;</div>';
+
+        thumb.appendChild(img);
+        thumb.appendChild(playBtn);
+
+        const info = document.createElement("div");
+        info.className = "info";
+
+        const title = document.createElement("p");
+        title.className = "title loading";
+        title.textContent = "Video " + (index + 1);
+
+        info.appendChild(title);
+        card.appendChild(thumb);
+        card.appendChild(info);
+
+        card.dataset.searchTitle = title.textContent.toLowerCase();
+
+        thumb.addEventListener("click", () => openPlayer(id, title.textContent));
+        thumb.addEventListener("keydown", ev => {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            openPlayer(id, title.textContent);
+          }
+        });
+
+        const cached = titleCache[id];
+        if (cached) {
+          applyTitle(card, cached);
+        } else if (thumbObserver) {
+          thumbObserver.observe(card);
+        } else {
+          requestTitle(card, id);
+        }
+
+        return card;
+      }
+
+      function applyTitle(card, text) {
+        const titleEl = card.querySelector(".title");
+        if (!titleEl) return;
+        titleEl.classList.remove("loading");
+        titleEl.textContent = text;
+        card.dataset.searchTitle = text.toLowerCase();
+        const img = card.querySelector("img");
+        if (img) img.alt = text + " — free movie thumbnail";
+        scheduleStructuredDataUpdate();
+      }
+
+      function requestTitle(card, id) {
+        const cached = titleCache[id];
+        if (cached) { applyTitle(card, cached); return; }
+
+        enqueueOembed(() => {
+          if (titleCache[id]) { applyTitle(card, titleCache[id]); return; }
+
+          const url = `https://www.youtube.com/oembed?url=${encodeURIComponent(
+            "https://www.youtube.com/watch?v=" + id
+          )}&format=json`;
+
+          return fetch(url)
+            .then(r => (r.ok ? r.json() : Promise.reject(new Error("bad"))))
+            .then(data => {
+              const text = data.title || "Video";
+              cacheTitle(id, text);
+              document
+                .querySelectorAll(`.card[data-video-id="${CSS.escape(id)}"]`)
+                .forEach(c => applyTitle(c, text));
+            })
+            .catch(() => {
+              const el = card.querySelector(".title");
+              if (el) el.classList.remove("loading");
+            });
+        });
+      }
+
+      function applySearchFilter() {
+        const query = searchQuery.trim().toLowerCase();
+        const cards = grid.querySelectorAll(".card");
+        let visible = 0;
+        cards.forEach(card => {
+          const title = card.dataset.searchTitle || "";
+          const show = !query || title.includes(query);
+          card.style.display = show ? "" : "none";
+          if (show) visible++;
+        });
+        if (cards.length > 0) {
+          countEl.textContent = visible + (visible === 1 ? " video" : " videos");
+        }
+      }
+
+      searchInput.addEventListener("input", e => {
+        searchQuery = e.target.value;
+        applySearchFilter();
+      });
+
+      function updateStructuredData() {
+        const cards = grid.querySelectorAll(".card");
+        const items = [];
+        cards.forEach((card, i) => {
+          const titleEl = card.querySelector(".title");
+          const imgEl = card.querySelector("img");
+          if (titleEl && imgEl) {
+            items.push({
+              "@type": "ListItem",
+              "position": i + 1,
+              "item": {
+                "@type": "VideoObject",
+                "name": titleEl.textContent,
+                "thumbnailUrl": imgEl.src,
+                "description": titleEl.textContent + " — watch free on My Channel",
+                "uploadDate": new Date().toISOString().split("T")[0]
+              }
+            });
+          }
+        });
+        const script = document.querySelector('script[type="application/ld+json"]:nth-of-type(2)');
+        if (!script) return;
+        try {
+          const data = JSON.parse(script.textContent);
+          data.numberOfItems = items.length;
+          data.itemListElement = items;
+          script.textContent = JSON.stringify(data);
+        } catch (e) {}
+      }
+
+      function updatePauseIcon() {
+        if (isPaused) {
+          pauseIcon.style.display = "none";
+          playIcon.style.display = "";
+          pauseBtn.setAttribute("aria-label", "Play");
+          pauseBtn.title = "Play";
+        } else {
+          pauseIcon.style.display = "";
+          playIcon.style.display = "none";
+          pauseBtn.setAttribute("aria-label", "Pause");
+          pauseBtn.title = "Pause";
+        }
+      }
+
+      function togglePause() {
+        if (!ytPlayer) return;
+        try {
+          if (isPaused) {
+            ytPlayer.playVideo();
+          } else {
+            ytPlayer.pauseVideo();
+          }
+        } catch (e) {}
+        hideControlsImmediately();
+      }
+
+      pauseBtn.addEventListener("click", e => {
+        e.stopPropagation();
+        togglePause();
+      });
+
+      function hideControlsImmediately() {
+        controlsHidden = true;
+        centerControls.classList.add("hiding");
+
+        if (hideCooldownTimer) {
+          clearTimeout(hideCooldownTimer);
+          hideCooldownTimer = null;
+        }
+
+        hideCooldownTimer = setTimeout(() => {
+          hideCooldownTimer = null;
+          controlsHidden = false;
+          centerControls.classList.remove("hiding");
+        }, 350);
+      }
+
+      playerEl.addEventListener("pointerleave", () => {
+        if (hideCooldownTimer) {
+          clearTimeout(hideCooldownTimer);
+          hideCooldownTimer = null;
+        }
+        controlsHidden = false;
+        centerControls.classList.remove("hiding");
+        inEdgeZone = false;
+      });
+
+      function isPointerAtEdge(x, y) {
+        if (x <= EDGE_MARGIN) return true;
+        if (y <= EDGE_MARGIN) return true;
+        if (x >= window.innerWidth  - EDGE_MARGIN) return true;
+        if (y >= window.innerHeight - EDGE_MARGIN) return true;
+        return false;
+      }
+
+      playerEl.addEventListener("pointermove", e => {
+        const atEdge = isPointerAtEdge(e.clientX, e.clientY);
+        if (atEdge === inEdgeZone) return;
+        inEdgeZone = atEdge;
+
+        if (atEdge) {
+          centerControls.classList.add("hiding");
+        } else {
+          if (!controlsHidden) centerControls.classList.remove("hiding");
+        }
+      }, { passive: true });
+
+      function skipBy(seconds) {
+        if (!ytPlayer) return;
+        try {
+          const cur = ytPlayer.getCurrentTime() || 0;
+          const dur = ytPlayer.getDuration() || 0;
+          let target = cur + seconds;
+          if (target < 0) target = 0;
+          if (dur > 0 && target > dur) target = dur;
+          ytPlayer.seekTo(target, true);
+          updateProgressOnce();
+        } catch (e) {}
+        hideControlsImmediately();
+      }
+
+      skipBackBtn.addEventListener("click", e => { e.stopPropagation(); skipBy(-SKIP_SECONDS); });
+      skipFwdBtn .addEventListener("click", e => { e.stopPropagation(); skipBy( SKIP_SECONDS); });
+
+      progressTrack.addEventListener("click", e => {
+        e.stopPropagation();
+        if (!ytPlayer) return;
+        try {
+          const dur = ytPlayer.getDuration() || 0;
+          if (dur <= 0) return;
+          const rect = progressTrack.getBoundingClientRect();
+          const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+          ytPlayer.seekTo(ratio * dur, true);
+          updateProgressOnce();
+        } catch (err) {}
+        hideControlsImmediately();
+      });
+
+      async function openPlayer(id, title) {
+        currentVideoId = id;
+        currentVideoTitle = title;
+
+        controlsHidden = false;
+        inEdgeZone = false;
+        if (hideCooldownTimer) { clearTimeout(hideCooldownTimer); hideCooldownTimer = null; }
+        centerControls.classList.remove("hiding");
+        updatePauseIcon();
+
+        timeCurrent.textContent = "0:00";
+        timeTotal.textContent   = "0:00";
+        progressFill.style.width = "0%";
+
+        playerEl.classList.add("active");
+        document.body.style.overflow = "hidden";
+
+        if (ytApiReady) {
+          mountPlayer(id);
+        } else {
+          pendingVideoId = id;
+        }
+
+        try {
+          if (playerEl.requestFullscreen) await playerEl.requestFullscreen();
+        } catch (e) {}
+
+        setTimeout(ensureClickShield, 0);
+      }
+
+      async function closePlayer() {
+        playerEl.classList.remove("active");
+        stopProgressLoop();
+        controlsHidden = false;
+        inEdgeZone = false;
+        if (hideCooldownTimer) { clearTimeout(hideCooldownTimer); hideCooldownTimer = null; }
+        centerControls.classList.remove("hiding");
+
+        destroyPlayer();
+        pendingVideoId = null;
+
+        const shield = stage.querySelector(".click-shield");
+        if (shield) shield.remove();
+
+        currentVideoId = null;
+        currentVideoTitle = "";
+        isPaused = false;
+
+        document.body.style.overflow = "";
+
+        timeCurrent.textContent = "0:00";
+        timeTotal.textContent   = "0:00";
+        progressFill.style.width = "0%";
+        updatePauseIcon();
+
+        try {
+          if (document.fullscreenElement) await document.exitFullscreen();
+        } catch (e) {}
+      }
+
+      document.getElementById("backBtn").addEventListener("click", closePlayer);
+
+      document.addEventListener("keydown", e => {
+        if (!playerEl.classList.contains("active")) return;
+        if (e.key === "Escape") closePlayer();
+        else if (e.key === "ArrowLeft")  { e.preventDefault(); skipBy(-SKIP_SECONDS); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); skipBy( SKIP_SECONDS); }
+        else if (e.key === " " || e.key === "k") { e.preventDefault(); togglePause(); }
+      });
+
+      fetch("urls.txt", { cache: "force-cache" })
+        .then(r => {
+          if (!r.ok) throw new Error("Could not load urls.txt");
+          return r.text();
+        })
+        .then(text => {
+          const lines = text
+            .split(/\r?\n/)
+            .map(l => l.trim())
+            .filter(l => l && !l.startsWith("#"));
+
+          const seen = new Set();
+          const videos = [];
+          for (const url of lines) {
+            const id = getYouTubeId(url);
+            if (id && !seen.has(id)) {
+              seen.add(id);
+              videos.push({ url, id });
+            }
+          }
+
+          if (!videos.length) {
+            countEl.textContent = "No videos found";
+            grid.innerHTML = '<p class="error">Add valid YouTube video URLs to urls.txt.</p>';
+            return;
+          }
+
+          countEl.textContent = videos.length + (videos.length === 1 ? " video" : " videos");
+
+          const frag = document.createDocumentFragment();
+          videos.forEach((v, i) => frag.appendChild(makeCard(v.id, v.url, i)));
+          grid.innerHTML = "";
+          grid.appendChild(frag);
+
+          scheduleStructuredDataUpdate();
+        })
+        .catch(() => {
+          countEl.textContent = "Unable to load videos";
+          grid.innerHTML =
+            '<p class="error">Could not load urls.txt. Keep it in the same folder as index.html and run a local web server.</p>';
+        });
+    })();
+  </script>
+</body>
+</html>
