@@ -1,0 +1,4 @@
+cd ~/Desktop/Streams
+git add urls.txt
+git commit -m "Add new videos $(date +%F)"
+git push
