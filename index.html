@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -351,6 +350,58 @@
       100% { background-position: 0% 50%; }
     }
 
+    /* Complete video title catalogue */
+
+    .title-index {
+      margin-top: 45px;
+      padding: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .title-index summary {
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      user-select: none;
+    }
+
+    .title-index summary:hover {
+      color: var(--accent);
+    }
+
+    .title-index-info {
+      color: var(--text-muted);
+      font-size: .82rem;
+      margin: 12px 0;
+    }
+
+    #allVideoTitles {
+      padding-left: 25px;
+      margin: 18px 0 0;
+    }
+
+    #allVideoTitles li {
+      padding: 9px 4px;
+      color: var(--text-dim);
+      font-size: .9rem;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    #allVideoTitles li:last-child {
+      border-bottom: none;
+    }
+
+    .title-index-empty {
+      color: var(--text-muted);
+      font-size: .9rem;
+      padding: 12px 0;
+    }
+
     .scroll-sentinel { height: 1px; width: 100%; }
 
     .loader {
@@ -617,6 +668,11 @@
       .info { padding: 10px 10px 12px; min-height: 48px; }
       .title { font-size: .84rem; }
       .play-circle { width: 42px; height: 42px; font-size: 16px; }
+
+      .title-index {
+        padding: 15px;
+        margin-top: 32px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -710,6 +766,23 @@
 
   <div class="grid" id="grid"></div>
 
+  <!-- Browse all retrieved video titles -->
+
+  <details class="title-index">
+    <summary>
+      Browse All Video Titles
+      (<span id="titleCount">0</span>)
+    </summary>
+
+    <p class="title-index-info" id="titleIndexInfo">
+      Video titles will appear here as they are retrieved.
+    </p>
+
+    <ol id="allVideoTitles">
+      <li class="title-index-empty">Loading video titles…</li>
+    </ol>
+  </details>
+
   <div class="scroll-sentinel" id="sentinel"></div>
 
   <div class="loader" id="loader" style="display:none">
@@ -800,6 +873,10 @@
   const stage = document.getElementById("stage");
   const searchInput = document.getElementById("searchInput");
 
+  const allVideoTitles = document.getElementById("allVideoTitles");
+  const titleCount = document.getElementById("titleCount");
+  const titleIndexInfo = document.getElementById("titleIndexInfo");
+
   const skipBackBtn = document.getElementById("skipBackBtn");
   const skipFwdBtn = document.getElementById("skipForwardBtn");
   const pauseBtn = document.getElementById("pauseBtn");
@@ -846,6 +923,12 @@
   let metadataCache = {};
   let oldTitleCache = {};
 
+  /*
+   * Store references to title elements.
+   * This prevents duplicate titles from being appended.
+   */
+  const titleElements = new Map();
+
   try {
     metadataCache = JSON.parse(
       localStorage.getItem(METADATA_CACHE_KEY) || "{}"
@@ -883,6 +966,66 @@
     if (/^loading title/i.test(cleaned)) return false;
 
     return true;
+  }
+
+  /*
+   * Add or update one title in the complete HTML title catalogue.
+   */
+  function appendVideoTitle(video) {
+    if (!video || !isRealTitle(video.title)) return;
+
+    let item = titleElements.get(video.id);
+
+    if (!item) {
+      item = document.createElement("li");
+      item.dataset.videoId = video.id;
+
+      titleElements.set(video.id, item);
+      allVideoTitles.appendChild(item);
+    }
+
+    item.textContent = video.title;
+
+    titleCount.textContent = titleElements.size;
+
+    titleIndexInfo.textContent =
+      titleElements.size + " actual YouTube video titles retrieved.";
+  }
+
+  /*
+   * Build the title catalogue from all currently available titles.
+   */
+  function buildAllVideoTitles() {
+    allVideoTitles.innerHTML = "";
+    titleElements.clear();
+
+    allVideos.forEach(video => {
+      appendVideoTitle(video);
+    });
+
+    updateTitleIndexStatus();
+  }
+
+  function updateTitleIndexStatus() {
+    titleCount.textContent = titleElements.size;
+
+    if (metadataFinished) {
+      titleIndexInfo.textContent =
+        titleElements.size + " actual video titles retrieved from " +
+        allVideos.length + " videos.";
+    } else {
+      titleIndexInfo.textContent =
+        titleElements.size + " titles retrieved so far. More titles will appear automatically.";
+    }
+
+    if (titleElements.size === 0) {
+      allVideoTitles.innerHTML =
+        '<li class="title-index-empty">Waiting for video titles…</li>';
+    } else {
+      const emptyMessage = allVideoTitles.querySelector(".title-index-empty");
+
+      if (emptyMessage) emptyMessage.remove();
+    }
   }
 
   function saveMetadata(id, title, category) {
@@ -1332,6 +1475,9 @@
       card.dataset.category = video.category;
       applyTitle(card, video.title);
     });
+
+    // Also update the complete title catalogue.
+    appendVideoTitle(video);
   }
 
   function applyTitle(card, text) {
@@ -1360,6 +1506,7 @@
 
   function fetchVideoTitle(video) {
     if (isRealTitle(video.title)) {
+      appendVideoTitle(video);
       return Promise.resolve(video.title);
     }
 
@@ -1381,6 +1528,9 @@
         video.category = detectCategoryFromTitle(video.title);
         saveMetadata(video.id, video.title, video.category);
       }
+
+      // Add cached titles too.
+      appendVideoTitle(video);
 
       return Promise.resolve(video.title);
     }
@@ -1410,6 +1560,9 @@
       video.category = detectCategoryFromTitle(title);
 
       saveMetadata(video.id, title, video.category);
+
+      // Append the actual title immediately.
+      appendVideoTitle(video);
 
       return title;
     })
@@ -1457,6 +1610,7 @@
 
         if (isRealTitle(video.title)) {
           updateExistingCard(video);
+          appendVideoTitle(video);
         }
       }));
 
@@ -1475,11 +1629,8 @@
         musicCount + " music videos · retrieving titles " +
         Math.min(completed, total) + "/" + total;
 
-      /*
-       * Update Google structured data after each batch.
-       * This ensures that the actual titles are added as they arrive.
-       */
       scheduleSchemaUpdate();
+      updateTitleIndexStatus();
 
       if (currentCategory !== "all") {
         const scrollPosition = window.scrollY;
@@ -1497,6 +1648,7 @@
     metadataFinished = true;
 
     updateVideoStructuredData();
+    updateTitleIndexStatus();
 
     const movieCount = allVideos.filter(
       video => video.category !== "music"
@@ -2075,6 +2227,9 @@
         grid.innerHTML =
           '<p class="error">Add valid YouTube video URLs to urls.txt.</p>';
 
+        titleIndexInfo.textContent = "No videos were found.";
+        allVideoTitles.innerHTML = "";
+
         return;
       }
 
@@ -2097,7 +2252,13 @@
         musicCount + " music videos";
 
       /*
-       * Immediately publish structured data for titles already cached.
+       * Build the visible title catalogue immediately.
+       * Cached titles are available before new YouTube requests begin.
+       */
+      buildAllVideoTitles();
+
+      /*
+       * Publish structured data for titles already cached.
        * More entries will be added as YouTube titles are retrieved.
        */
       updateVideoStructuredData();
@@ -2114,6 +2275,7 @@
           musicCount + " music videos · cached";
 
         updateVideoStructuredData();
+        updateTitleIndexStatus();
       } else {
         sectionSub.textContent =
           allVideos.length + " videos · retrieving actual YouTube titles";
@@ -2129,6 +2291,9 @@
 
       grid.innerHTML =
         '<p class="error">Could not load urls.txt. Keep it in the same folder as index.html.</p>';
+
+      titleIndexInfo.textContent = "Could not load video titles.";
+      allVideoTitles.innerHTML = "";
     });
 
 })();
@@ -2136,4 +2301,3 @@
 
 </body>
 </html>
-```
