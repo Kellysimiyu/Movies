@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,7 +38,7 @@
 
   <link rel="preload" href="urls.txt" as="fetch" crossorigin>
 
-  <script type="application/ld+json">
+  <script type="application/ld+json" id="websiteSchema">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -813,6 +814,7 @@
   const sectionTitle = document.getElementById("sectionTitle");
   const navLinks = document.querySelectorAll(".nav-link");
 
+  const SITE_URL = "https://kellysimiyu.github.io/Movies/";
   const SKIP_SECONDS = 10;
   const METADATA_CACHE_KEY = "movie_zone_metadata_v1";
   const OLD_TITLE_CACHE_KEY = "mc_title_cache_v2";
@@ -869,7 +871,23 @@
     } catch (e) {}
   }
 
+  function isRealTitle(title) {
+    if (!title || typeof title !== "string") return false;
+
+    const cleaned = title.trim();
+
+    if (!cleaned) return false;
+    if (/^untitled video$/i.test(cleaned)) return false;
+    if (/^video\s*\d+$/i.test(cleaned)) return false;
+    if (/^movie zone video$/i.test(cleaned)) return false;
+    if (/^loading title/i.test(cleaned)) return false;
+
+    return true;
+  }
+
   function saveMetadata(id, title, category) {
+    if (!isRealTitle(title)) return;
+
     metadataCache[id] = {
       title,
       category,
@@ -882,11 +900,15 @@
   function getCachedMetadata(id) {
     const item = metadataCache[id];
 
-    if (item && typeof item === "object") {
+    if (
+      item &&
+      typeof item === "object" &&
+      isRealTitle(item.title)
+    ) {
       return item;
     }
 
-    if (oldTitleCache[id]) {
+    if (isRealTitle(oldTitleCache[id])) {
       return {
         title: oldTitleCache[id],
         category: "",
@@ -1162,6 +1184,79 @@
     return "movie";
   }
 
+  /* Google VideoObject structured data */
+
+  let videoSchemaScript = document.getElementById("videoSchema");
+
+  if (!videoSchemaScript) {
+    videoSchemaScript = document.createElement("script");
+    videoSchemaScript.type = "application/ld+json";
+    videoSchemaScript.id = "videoSchema";
+    document.head.appendChild(videoSchemaScript);
+  }
+
+  function buildVideoSchema(video) {
+    if (!isRealTitle(video.title)) return null;
+
+    const videoUrl = "https://www.youtube.com/watch?v=" + video.id;
+    const embedUrl = "https://www.youtube.com/embed/" + video.id;
+    const thumbnailUrl = "https://img.youtube.com/vi/" +
+      video.id + "/hqdefault.jpg";
+
+    return {
+      "@type": "VideoObject",
+      "@id": SITE_URL + "#video-" + video.id,
+      "name": video.title,
+      "description": video.title + " — watch on Movie Zone.",
+      "thumbnailUrl": [thumbnailUrl],
+      "embedUrl": embedUrl,
+      "url": videoUrl,
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": SITE_URL
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Movie Zone",
+        "url": SITE_URL
+      }
+    };
+  }
+
+  let schemaUpdateTimer = null;
+
+  function updateVideoStructuredData() {
+    if (!allVideos.length) return;
+
+    const graph = allVideos
+      .map(buildVideoSchema)
+      .filter(Boolean);
+
+    const schema = {
+      "@context": "https://schema.org",
+      "@graph": graph
+    };
+
+    videoSchemaScript.textContent = JSON.stringify(schema);
+
+    console.info(
+      "Movie Zone structured data updated:",
+      graph.length,
+      "videos with actual titles."
+    );
+  }
+
+  function scheduleSchemaUpdate() {
+    if (schemaUpdateTimer) {
+      clearTimeout(schemaUpdateTimer);
+    }
+
+    schemaUpdateTimer = setTimeout(() => {
+      updateVideoStructuredData();
+      schemaUpdateTimer = null;
+    }, 500);
+  }
+
   /* Cards */
 
   function makeCard(video, index) {
@@ -1264,7 +1359,7 @@
   /* YouTube title retrieval */
 
   function fetchVideoTitle(video) {
-    if (video.title && video.title !== "Untitled video") {
+    if (isRealTitle(video.title)) {
       return Promise.resolve(video.title);
     }
 
@@ -1274,7 +1369,7 @@
 
     const cached = getCachedMetadata(video.id);
 
-    if (cached && cached.title) {
+    if (cached && isRealTitle(cached.title)) {
       video.title = cached.title;
 
       if (
@@ -1305,7 +1400,11 @@
       }
 
       const data = await response.json();
-      const title = (data.title || "Untitled video").trim();
+      const title = (data.title || "").trim();
+
+      if (!isRealTitle(title)) {
+        throw new Error("YouTube did not return a valid title");
+      }
 
       video.title = title;
       video.category = detectCategoryFromTitle(title);
@@ -1314,9 +1413,16 @@
 
       return title;
     })
-    .catch(() => {
+    .catch(error => {
+      console.warn(
+        "Could not retrieve title for video:",
+        video.id,
+        error
+      );
+
       video.title = "Untitled video";
       video.category = "movie";
+
       return video.title;
     })
     .finally(() => {
@@ -1331,7 +1437,9 @@
   /* Background classification */
 
   async function classifyVideosInBackground() {
-    const pending = allVideos.filter(video => !video.title);
+    const pending = allVideos.filter(
+      video => !isRealTitle(video.title)
+    );
 
     let completed = 0;
     const total = pending.length;
@@ -1347,7 +1455,9 @@
           video.category = detectCategoryFromTitle(video.title);
         }
 
-        updateExistingCard(video);
+        if (isRealTitle(video.title)) {
+          updateExistingCard(video);
+        }
       }));
 
       completed += batch.length;
@@ -1362,8 +1472,14 @@
 
       sectionSub.textContent =
         movieCount + " movie videos · " +
-        musicCount + " music videos · sorting " +
+        musicCount + " music videos · retrieving titles " +
         Math.min(completed, total) + "/" + total;
+
+      /*
+       * Update Google structured data after each batch.
+       * This ensures that the actual titles are added as they arrive.
+       */
+      scheduleSchemaUpdate();
 
       if (currentCategory !== "all") {
         const scrollPosition = window.scrollY;
@@ -1380,6 +1496,8 @@
 
     metadataFinished = true;
 
+    updateVideoStructuredData();
+
     const movieCount = allVideos.filter(
       video => video.category !== "music"
     ).length;
@@ -1388,9 +1506,14 @@
       video => video.category === "music"
     ).length;
 
+    const titledCount = allVideos.filter(
+      video => isRealTitle(video.title)
+    ).length;
+
     sectionSub.textContent =
       movieCount + " movie videos · " +
-      musicCount + " music videos · automatically sorted";
+      musicCount + " music videos · " +
+      titledCount + "/" + allVideos.length + " titles retrieved";
   }
 
   /* Search */
@@ -1421,11 +1544,6 @@
     searchQuery = e.target.value;
     applySearchFilter();
   });
-
-  /* Structured data:
-     Only the WebSite schema is used in the HTML head.
-     We deliberately do not generate incomplete VideoObject entries.
-     Video rich results require additional verified video information. */
 
   /* Pause and play */
 
@@ -1928,7 +2046,7 @@
 
         const cached = getCachedMetadata(id);
 
-        if (cached && cached.title) {
+        if (cached && isRealTitle(cached.title)) {
           video.title = cached.title;
 
           if (
@@ -1961,7 +2079,7 @@
       }
 
       const cachedCount = allVideos.filter(
-        video => video.title
+        video => isRealTitle(video.title)
       ).length;
 
       const uncachedCount = allVideos.length - cachedCount;
@@ -1978,6 +2096,12 @@
         movieCount + " movie videos · " +
         musicCount + " music videos";
 
+      /*
+       * Immediately publish structured data for titles already cached.
+       * More entries will be added as YouTube titles are retrieved.
+       */
+      updateVideoStructuredData();
+
       // Render immediately without waiting for YouTube metadata.
       resetCatalogue();
       setupInfiniteScroll();
@@ -1988,14 +2112,18 @@
         sectionSub.textContent =
           movieCount + " movie videos · " +
           musicCount + " music videos · cached";
+
+        updateVideoStructuredData();
       } else {
         sectionSub.textContent =
-          allVideos.length + " videos · loading titles in background";
+          allVideos.length + " videos · retrieving actual YouTube titles";
 
         classifyVideosInBackground();
       }
     })
-    .catch(() => {
+    .catch(error => {
+      console.error("Catalogue loading error:", error);
+
       countEl.textContent = "Unable to load videos";
       sectionSub.textContent = "Failed to load catalogue";
 
@@ -2008,3 +2136,4 @@
 
 </body>
 </html>
+```
