@@ -1,33 +1,35 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ✅ Fixes YouTube Error 153: the IFrame API creates the iframe
+       dynamically, so we can't set referrerpolicy on the tag itself.
+       This meta tag controls the referrer for ALL requests the page makes,
+       including the YouTube iframe. -->
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <title>Movie Zone — Watch Free Movies &amp; Videos Online</title>
-
-  <meta name="description" content="Discover movies, trailers, animations, music and videos on Movie Zone. Search and watch instantly without signing up.">
-  <meta name="keywords" content="free movies, watch movies online, free movies online, streaming movies, movie trailers, free films, online movies, video streaming">
+  <meta name="description" content="Watch free movies, trailers, and videos online at Movie Zone. Stream full-length movies, short films, and more. No sign-up required — search and play instantly.">
+  <meta name="keywords" content="free movies, watch movies online, free movies online, streaming movies, full movies, movie trailers, watch free movies, online movies, free films, movie streaming, watch movies free, full length movies, HD movies, free video streaming, movies no signup, free movie site, watch films online">
   <meta name="author" content="Movie Zone">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="googlebot" content="index, follow">
+  <meta name="bingbot" content="index, follow">
   <meta name="theme-color" content="#0b0b0d">
-
-  <link rel="canonical" href="https://kellysimiyu.github.io/Movies/">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Movie Zone — Watch Free Movies &amp; Videos Online">
-  <meta property="og:description" content="Discover movies, trailers, animations, music and videos on Movie Zone.">
+  <meta property="og:description" content="Stream free movies, trailers, and videos online. Search, discover, and play instantly — no sign-up required.">
   <meta property="og:site_name" content="Movie Zone">
-  <meta property="og:url" content="https://kellysimiyu.github.io/Movies/">
   <meta property="og:locale" content="en_US">
 
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Movie Zone — Watch Free Movies &amp; Videos Online">
-  <meta name="twitter:description" content="Discover and watch movies, trailers and videos on Movie Zone.">
+  <meta name="twitter:description" content="Stream free movies, trailers, and videos online. Search, discover, and play instantly — no sign-up required.">
 
+  <link rel="canonical" href="https://kellysimiyu.github.io/Movies/">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
 
   <link rel="preconnect" href="https://img.youtube.com" crossorigin>
@@ -35,17 +37,42 @@
   <link rel="preconnect" href="https://www.youtube-nocookie.com" crossorigin>
   <link rel="dns-prefetch" href="https://img.youtube.com">
   <link rel="dns-prefetch" href="https://www.youtube.com">
+  <link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
+  <link rel="dns-prefetch" href="https://www.google.com">
 
   <link rel="preload" href="urls.txt" as="fetch" crossorigin>
 
-  <script type="application/ld+json" id="websiteSchema">
+  <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Movie Zone",
     "alternateName": "Free Movies Online",
-    "description": "Discover movies, trailers, animations, music and videos on Movie Zone.",
-    "url": "https://kellysimiyu.github.io/Movies/"
+    "description": "Watch free movies, trailers, and videos online. Stream full-length movies, short films, and more. No sign-up required.",
+    "url": "https://kellysimiyu.github.io/Movies/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://kellysimiyu.github.io/Movies/?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Movie Zone"
+    }
+  }
+  </script>
+
+  <script id="videoStructuredData" type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Free Movies & Videos on Movie Zone",
+    "description": "Videos available to watch on Movie Zone.",
+    "numberOfItems": 0,
+    "itemListElement": []
   }
   </script>
 
@@ -77,9 +104,11 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
         "Helvetica Neue", Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       line-height: 1.5;
     }
 
+    /* ---------- Top bar ---------- */
     .site-header {
       position: sticky;
       top: 0;
@@ -113,7 +142,7 @@
       width: 38px;
       height: 38px;
       border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -174,7 +203,6 @@
       background: rgba(255,45,45,.12);
       border-color: rgba(255,45,45,.25);
     }
-
     .search-wrap {
       flex: 1;
       min-width: 240px;
@@ -189,18 +217,16 @@
       border: 1px solid var(--border-strong);
       background: var(--bg-elev);
       color: var(--text);
-      font-size: .9rem;
+      font-size: 0.9rem;
       outline: none;
-      transition: border-color .2s, background .2s, box-shadow .2s;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
       font-family: inherit;
     }
-
     .search-input::placeholder { color: var(--text-muted); }
-
     .search-input:focus {
       border-color: var(--accent);
       background: #18181d;
-      box-shadow: 0 0 0 3px rgba(255,45,45,.12);
+      box-shadow: 0 0 0 3px rgba(255, 45, 45, 0.12);
     }
 
     .search-icon {
@@ -215,12 +241,14 @@
     }
 
     .header-meta {
-      font-size: .82rem;
+      font-size: 0.82rem;
       color: var(--text-dim);
+      font-variant-numeric: tabular-nums;
       margin-left: auto;
       white-space: nowrap;
     }
 
+    /* ---------- Page shell ---------- */
     .page {
       max-width: 1520px;
       margin: 0 auto;
@@ -238,16 +266,17 @@
     .section-title {
       font-size: 1.25rem;
       font-weight: 700;
-      letter-spacing: -.02em;
+      letter-spacing: -0.02em;
       margin: 0;
     }
 
     .section-sub {
-      font-size: .82rem;
+      font-size: 0.82rem;
       color: var(--text-muted);
       margin: 0;
     }
 
+    /* ---------- Grid ---------- */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -259,8 +288,8 @@
       overflow: hidden;
       background: var(--bg-card);
       border: 1px solid var(--border);
-      transition: transform .2s ease, background .2s ease,
-        border-color .2s ease, box-shadow .2s ease;
+      transition: transform 0.2s ease, background 0.2s ease,
+                  border-color 0.2s ease, box-shadow 0.2s ease;
       contain: layout style paint;
     }
 
@@ -268,7 +297,7 @@
       transform: translateY(-3px);
       background: var(--bg-card-hover);
       border-color: var(--border-strong);
-      box-shadow: 0 12px 28px rgba(0,0,0,.45);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
     }
 
     .thumb {
@@ -286,9 +315,8 @@
       height: 100%;
       object-fit: cover;
       display: block;
-      transition: transform .4s ease;
+      transition: transform 0.4s ease;
     }
-
     .thumb:hover img { transform: scale(1.05); }
 
     .play-btn {
@@ -297,27 +325,34 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(to top, rgba(0,0,0,.6), transparent 70%);
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.6) 0%,
+        rgba(0, 0, 0, 0.05) 45%,
+        transparent 70%
+      );
       pointer-events: none;
-      opacity: .95;
+      opacity: 0.95;
     }
 
     .play-circle {
       width: 52px;
       height: 52px;
       border-radius: 50%;
-      background: rgba(255,255,255,.94);
+      background: rgba(255, 255, 255, 0.94);
       color: #0b0b0d;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 20px;
       padding-left: 3px;
-      transition: transform .2s ease;
-      box-shadow: 0 4px 16px rgba(0,0,0,.4);
+      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
     }
-
-    .thumb:hover .play-circle { transform: scale(1.1); }
+    .thumb:hover .play-circle {
+      transform: scale(1.1);
+      background: #fff;
+    }
 
     .info {
       padding: 14px 14px 16px;
@@ -329,17 +364,25 @@
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      font-size: .9rem;
+      font-size: 0.9rem;
       font-weight: 500;
       line-height: 1.45;
       color: var(--text);
       margin: 0;
       user-select: text;
       pointer-events: none;
+      text-decoration: none;
+      letter-spacing: -0.005em;
     }
 
+    /* ---------- Skeleton shimmer ---------- */
     .title.loading {
-      background: linear-gradient(90deg, #222 25%, #2b2b2b 37%, #222 63%);
+      background: linear-gradient(
+        90deg,
+        #222 25%,
+        #2b2b2b 37%,
+        #222 63%
+      );
       background-size: 400% 100%;
       animation: shimmer 1.2s ease-in-out infinite;
       color: transparent;
@@ -347,11 +390,15 @@
     }
 
     @keyframes shimmer {
-      0% { background-position: 100% 50%; }
+      0%   { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    .scroll-sentinel { height: 1px; width: 100%; }
+    /* ---------- Sentinel + loader ---------- */
+    .scroll-sentinel {
+      height: 1px;
+      width: 100%;
+    }
 
     .loader {
       display: flex;
@@ -359,7 +406,7 @@
       justify-content: center;
       padding: 40px 0;
       color: var(--text-muted);
-      font-size: .85rem;
+      font-size: 0.85rem;
       gap: 12px;
     }
 
@@ -369,18 +416,21 @@
       border: 2px solid var(--border-strong);
       border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin .8s linear infinite;
+      animation: spin 0.8s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
 
     .end-message {
       text-align: center;
       color: var(--text-muted);
-      font-size: .85rem;
+      font-size: 0.85rem;
       padding: 32px 0 16px;
     }
 
+    /* ---------- Player ---------- */
     #player {
       display: none;
       position: fixed;
@@ -390,7 +440,6 @@
       height: 100%;
       background: #000;
     }
-
     #player.active { display: block; }
 
     #stage {
@@ -409,7 +458,6 @@
       border: 0;
       background: #000;
     }
-
     #videoFrame iframe {
       position: absolute;
       inset: 0;
@@ -436,8 +484,12 @@
       pointer-events: none;
       backdrop-filter: blur(18px) saturate(120%);
       -webkit-backdrop-filter: blur(18px) saturate(120%);
-      background: linear-gradient(to top left,
-        rgba(0,0,0,.55), rgba(0,0,0,.30) 55%, transparent);
+      background: linear-gradient(
+        to top left,
+        rgba(0, 0, 0, 0.55) 0%,
+        rgba(0, 0, 0, 0.30) 55%,
+        rgba(0, 0, 0, 0) 100%
+      );
     }
 
     .top-bar {
@@ -448,10 +500,9 @@
       padding: 20px;
       opacity: 0;
       visibility: hidden;
-      transition: opacity .2s, visibility .2s;
+      transition: opacity 0.2s, visibility 0.2s;
       pointer-events: none;
     }
-
     #player:hover .top-bar {
       opacity: 1;
       visibility: visible;
@@ -463,14 +514,20 @@
       width: 46px;
       height: 46px;
       border-radius: 8px;
-      background: rgba(35,35,35,.85);
+      background: rgba(35, 35, 35, 0.85);
       color: white;
       font-size: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
     }
+    .back-btn:hover {
+      background: rgba(80, 80, 80, 0.95);
+      transform: translateY(-1px);
+    }
+    .back-btn:active { transform: translateY(0); }
 
     .center-controls {
       position: absolute;
@@ -484,16 +541,14 @@
       gap: 14px;
       opacity: 0;
       visibility: hidden;
-      transition: opacity .2s, visibility .2s;
+      transition: opacity 0.2s, visibility 0.2s;
       pointer-events: none;
     }
-
     #player:hover .center-controls:not(.hiding) {
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
     }
-
     #player .center-controls.hiding {
       opacity: 0 !important;
       visibility: hidden !important;
@@ -508,26 +563,29 @@
       justify-content: center;
     }
 
-    .skip-btn,
-    .pause-btn {
+    .skip-btn {
       border: none;
       width: 64px;
       height: 64px;
       border-radius: 8px;
-      background: rgba(20,20,20,.82);
+      background: rgba(20, 20, 20, 0.82);
       color: #fff;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
       position: relative;
+      user-select: none;
       backdrop-filter: blur(4px);
     }
-
-    .skip-btn { flex-direction: column; }
-
+    .skip-btn:hover {
+      background: rgba(60, 60, 60, 0.95);
+      transform: translateY(-2px);
+    }
+    .skip-btn:active { transform: translateY(0); }
     .skip-btn svg { width: 26px; height: 26px; fill: #fff; }
-    .pause-btn svg { width: 30px; height: 30px; fill: #fff; }
 
     .skip-btn .skip-label {
       position: absolute;
@@ -535,7 +593,30 @@
       font-size: 10px;
       font-weight: bold;
       color: #fff;
+      letter-spacing: 0.5px;
     }
+
+    .pause-btn {
+      border: none;
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      background: rgba(20, 20, 20, 0.82);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      user-select: none;
+      backdrop-filter: blur(4px);
+    }
+    .pause-btn:hover {
+      background: rgba(60, 60, 60, 0.95);
+      transform: translateY(-2px);
+    }
+    .pause-btn:active { transform: translateY(0); }
+    .pause-btn svg { width: 30px; height: 30px; fill: #fff; }
 
     .progress-wrap {
       width: min(560px, 70vw);
@@ -549,11 +630,13 @@
       position: relative;
       flex: 1;
       height: 5px;
-      background: rgba(255,255,255,.22);
+      background: rgba(255, 255, 255, 0.22);
       border-radius: 3px;
       cursor: pointer;
       overflow: hidden;
+      transition: height 0.15s;
     }
+    .progress-track:hover { height: 7px; }
 
     .progress-fill {
       position: absolute;
@@ -563,11 +646,27 @@
       width: 0%;
       background: var(--accent);
       border-radius: 3px;
+      will-change: width;
     }
+
+    .progress-fill::after {
+      content: "";
+      position: absolute;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .progress-track:hover .progress-fill::after { opacity: 1; }
 
     .progress-time {
       color: #ddd;
-      font-size: .75rem;
+      font-size: 0.75rem;
       font-variant-numeric: tabular-nums;
       min-width: 40px;
       text-align: center;
@@ -582,7 +681,7 @@
       padding: 0;
       margin: -1px;
       overflow: hidden;
-      clip: rect(0,0,0,0);
+      clip: rect(0, 0, 0, 0);
       white-space: nowrap;
       border: 0;
     }
@@ -590,7 +689,14 @@
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .title.loading { animation: none; }
-      .thumb img, .card { transition: none; }
+      .thumb img,
+      .card,
+      .skip-btn,
+      .pause-btn,
+      .back-btn,
+      .play-circle {
+        transition: none;
+      }
     }
 
     @media (max-width: 720px) {
@@ -598,24 +704,15 @@
         padding: 14px 16px;
         gap: 14px;
       }
-
       .header-meta { display: none; }
-
-      .main-nav {
-        order: 3;
-        width: 100%;
-        flex: 1 1 100%;
-      }
-
+      .main-nav { order: 3; width: 100%; flex: 1 1 100%; }
       .page { padding: 22px 16px 60px; }
-
       .grid {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 14px;
       }
-
       .info { padding: 10px 10px 12px; min-height: 48px; }
-      .title { font-size: .84rem; }
+      .title { font-size: 0.84rem; }
       .play-circle { width: 42px; height: 42px; font-size: 16px; }
     }
 
@@ -635,6 +732,7 @@
       .center-controls { bottom: 24px; gap: 10px; }
       .skip-row { gap: 12px; }
       .progress-wrap { width: 85vw; }
+
       .video-bottom-right-cover { width: 220px; height: 80px; }
     }
   </style>
@@ -642,1498 +740,943 @@
 
 <body>
 
-<header class="site-header">
-  <div class="header-inner">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#">
+        <span class="brand-mark" aria-hidden="true">🎬</span>
+        <span class="brand-text">
+          <span class="brand-name">Movie Zone</span>
+          <span class="brand-tag">Watch Free</span>
+        </span>
+      </a>
 
-    <a class="brand" href="https://kellysimiyu.github.io/Movies/">
-      <span class="brand-mark" aria-hidden="true">🎬</span>
-      <span class="brand-text">
-        <span class="brand-name">Movie Zone</span>
-        <span class="brand-tag">Watch Free</span>
-      </span>
-    </a>
-
-    <nav class="main-nav" aria-label="Video categories">
-      <button class="nav-link active" type="button" data-category="all">All</button>
-      <button class="nav-link" type="button" data-category="movie">Movies</button>
-      <button class="nav-link" type="button" data-category="animation">Animation</button>
-      <button class="nav-link" type="button" data-category="action">Action</button>
-      <button class="nav-link" type="button" data-category="adventure">Adventure</button>
-      <button class="nav-link" type="button" data-category="comedy">Comedy</button>
-      <button class="nav-link" type="button" data-category="crime">Crime</button>
-      <button class="nav-link" type="button" data-category="documentary">Documentary</button>
-      <button class="nav-link" type="button" data-category="drama">Drama</button>
-      <button class="nav-link" type="button" data-category="family">Family</button>
-      <button class="nav-link" type="button" data-category="fantasy">Fantasy</button>
-      <button class="nav-link" type="button" data-category="horror">Horror</button>
-      <button class="nav-link" type="button" data-category="mystery">Mystery</button>
-      <button class="nav-link" type="button" data-category="romance">Romance</button>
-      <button class="nav-link" type="button" data-category="sci-fi">Sci-Fi</button>
-      <button class="nav-link" type="button" data-category="thriller">Thriller</button>
-      <button class="nav-link" type="button" data-category="music">Music</button>
-    </nav>
-
-    <div class="search-wrap">
-      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
-      </svg>
-
-      <input
-        type="text"
-        id="searchInput"
-        class="search-input"
-        placeholder="Search movies &amp; videos…"
-        aria-label="Search movies and videos"
-        autocomplete="off"
-      >
-    </div>
-
-    <p class="header-meta" id="count">Loading videos…</p>
-
-  </div>
-</header>
-
-<main class="page">
-
-  <section class="sr-only">
-    <h1>Watch Free Movies and Videos Online</h1>
-    <p>
-      Discover movies, trailers, animations, music and videos on Movie Zone.
-      Search the catalogue and watch videos instantly in your browser.
-    </p>
-  </section>
-
-  <div class="section-head">
-    <h2 class="section-title" id="sectionTitle">All Videos</h2>
-    <p class="section-sub" id="sectionSub">Loading catalogue…</p>
-  </div>
-
-  <div class="grid" id="grid"></div>
-
-  <div class="scroll-sentinel" id="sentinel"></div>
-
-  <div class="loader" id="loader" style="display:none">
-    <span class="spinner" aria-hidden="true"></span>
-    <span>Loading more videos…</span>
-  </div>
-
-  <p class="end-message" id="endMessage" style="display:none">
-    You've reached the end of the catalogue.
-  </p>
-
-</main>
-
-<div id="player">
-  <div id="stage">
-
-    <div id="videoFrame"></div>
-
-    <div class="video-bottom-right-cover" aria-hidden="true"></div>
-
-    <div class="top-bar">
-      <button class="back-btn" id="backBtn"
-        aria-label="Back to videos" title="Back to videos" type="button">
-        &#8592;
-      </button>
-    </div>
-
-    <div class="center-controls" id="centerControls">
-
-      <div class="skip-row">
-
-        <button class="skip-btn" id="skipBackBtn"
-          aria-label="Rewind 10 seconds" title="Rewind 10 seconds" type="button">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-          </svg>
-          <span class="skip-label">10</span>
-        </button>
-
-        <button class="pause-btn" id="pauseBtn"
-          aria-label="Pause" title="Pause" type="button">
-          <svg id="pauseIcon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
-          </svg>
-          <svg id="playIcon" viewBox="0 0 24 24"
-            aria-hidden="true" style="display:none">
-            <path d="M8 5v14l11-7z"/>
-          </svg>
-        </button>
-
-        <button class="skip-btn" id="skipForwardBtn"
-          aria-label="Forward 10 seconds" title="Forward 10 seconds" type="button">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
-          </svg>
-          <span class="skip-label">10</span>
-        </button>
-
+      <nav class="main-nav" aria-label="Video categories">
+        <button class="nav-link active" type="button" data-category="movie">Movies</button>
+        <button class="nav-link" type="button" data-category="animation">Animation</button>
+        <button class="nav-link" type="button" data-category="action">Action</button>
+        <button class="nav-link" type="button" data-category="adventure">Adventure</button>
+        <button class="nav-link" type="button" data-category="comedy">Comedy</button>
+        <button class="nav-link" type="button" data-category="crime">Crime</button>
+        <button class="nav-link" type="button" data-category="documentary">Documentary</button>
+        <button class="nav-link" type="button" data-category="drama">Drama</button>
+        <button class="nav-link" type="button" data-category="family">Family</button>
+        <button class="nav-link" type="button" data-category="fantasy">Fantasy</button>
+        <button class="nav-link" type="button" data-category="horror">Horror</button>
+        <button class="nav-link" type="button" data-category="mystery">Mystery</button>
+        <button class="nav-link" type="button" data-category="romance">Romance</button>
+        <button class="nav-link" type="button" data-category="sci-fi">Sci-Fi</button>
+        <button class="nav-link" type="button" data-category="thriller">Thriller</button>
+        <button class="nav-link" type="button" data-category="music">Music</button>
+      </nav>
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
+        </svg>
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Search movies &amp; videos…"
+          aria-label="Search movies and videos"
+          autocomplete="off"
+        />
       </div>
 
-      <div class="progress-wrap">
-        <span class="progress-time" id="timeCurrent">0:00</span>
+      <p class="header-meta" id="count">Loading videos…</p>
+    </div>
+  </header>
 
-        <div class="progress-track" id="progressTrack"
-          role="progressbar" aria-valuemin="0" aria-valuemax="100"
-          aria-valuenow="0" title="Seek">
-          <div class="progress-fill" id="progressFill"></div>
+  <main class="page">
+    <section class="sr-only" aria-hidden="true">
+      <h2>Watch Free Movies Online</h2>
+      <p>Movie Zone is a free movie streaming site where you can watch full-length movies, trailers, short films, and more. Search our collection of free movies and videos and play them instantly in your browser. No sign-up, no subscription, no download required.</p>
+      <p>Popular searches: free movies online, watch movies free, full movies, movie trailers, streaming movies, free films, HD movies, online movies no signup, free video streaming.</p>
+    </section>
+
+    <div class="section-head">
+      <h1 class="section-title" id="sectionTitle">Movies</h1>
+      <p class="section-sub" id="sectionSub">Loading catalogue…</p>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="scroll-sentinel" id="sentinel"></div>
+    <div class="loader" id="loader" style="display:none">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Loading more videos…</span>
+    </div>
+    <p class="end-message" id="endMessage" style="display:none">
+      You've reached the end of the catalogue.
+    </p>
+  </main>
+
+  <div id="player">
+    <div id="stage">
+      <div id="videoFrame"></div>
+      <div class="video-bottom-right-cover" aria-hidden="true"></div>
+
+      <div class="top-bar">
+        <button class="back-btn" id="backBtn" aria-label="Back to videos" title="Back to videos" type="button">&#8592;</button>
+      </div>
+
+      <div class="center-controls" id="centerControls">
+        <div class="skip-row">
+          <button class="skip-btn" id="skipBackBtn"
+            aria-label="Rewind 10 seconds" title="Rewind 10 seconds" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+            </svg>
+            <span class="skip-label">10</span>
+          </button>
+
+          <button class="pause-btn" id="pauseBtn"
+            aria-label="Pause" title="Pause" type="button">
+            <svg id="pauseIcon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+            </svg>
+            <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true" style="display:none">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </button>
+
+          <button class="skip-btn" id="skipForwardBtn"
+            aria-label="Forward 10 seconds" title="Forward 10 seconds" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
+            </svg>
+            <span class="skip-label">10</span>
+          </button>
         </div>
 
-        <span class="progress-time" id="timeTotal">0:00</span>
+        <div class="progress-wrap">
+          <span class="progress-time" id="timeCurrent">0:00</span>
+          <div class="progress-track" id="progressTrack" role="progressbar"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" title="Seek">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <span class="progress-time" id="timeTotal">0:00</span>
+        </div>
       </div>
-
     </div>
   </div>
-</div>
 
-<script>
-(function() {
-  "use strict";
+  <script>
+    (function() {
+      "use strict";
 
-  const grid = document.getElementById("grid");
-  const countEl = document.getElementById("count");
-  const sectionSub = document.getElementById("sectionSub");
-  const loader = document.getElementById("loader");
-  const endMessage = document.getElementById("endMessage");
-  const sentinel = document.getElementById("sentinel");
-  const playerEl = document.getElementById("player");
-  const stage = document.getElementById("stage");
-  const searchInput = document.getElementById("searchInput");
+      const grid        = document.getElementById("grid");
+      const countEl     = document.getElementById("count");
+      const sectionSub  = document.getElementById("sectionSub");
+      const loader      = document.getElementById("loader");
+      const endMessage  = document.getElementById("endMessage");
+      const sentinel    = document.getElementById("sentinel");
+      const playerEl    = document.getElementById("player");
+      const stage       = document.getElementById("stage");
+      const searchInput = document.getElementById("searchInput");
+      const skipBackBtn = document.getElementById("skipBackBtn");
+      const skipFwdBtn  = document.getElementById("skipForwardBtn");
+      const pauseBtn    = document.getElementById("pauseBtn");
+      const pauseIcon   = document.getElementById("pauseIcon");
+      const playIcon    = document.getElementById("playIcon");
+      const centerControls = document.getElementById("centerControls");
+      const progressTrack  = document.getElementById("progressTrack");
+      const progressFill   = document.getElementById("progressFill");
+      const timeCurrent    = document.getElementById("timeCurrent");
+      const timeTotal      = document.getElementById("timeTotal");
 
-  const skipBackBtn = document.getElementById("skipBackBtn");
-  const skipFwdBtn = document.getElementById("skipForwardBtn");
-  const pauseBtn = document.getElementById("pauseBtn");
-  const pauseIcon = document.getElementById("pauseIcon");
-  const playIcon = document.getElementById("playIcon");
-  const centerControls = document.getElementById("centerControls");
-  const progressTrack = document.getElementById("progressTrack");
-  const progressFill = document.getElementById("progressFill");
-  const timeCurrent = document.getElementById("timeCurrent");
-  const timeTotal = document.getElementById("timeTotal");
+      const SKIP_SECONDS = 10;
+      const TITLE_CACHE_KEY = "mc_title_cache_v2";
+      const OEMBED_CONCURRENCY = 4;
+      const EAGER_THUMBS = 6;
+      const HIGH_PRIORITY_THUMBS = 3;
+      const EDGE_MARGIN = 40;
 
-  const sectionTitle = document.getElementById("sectionTitle");
-  const navLinks = document.querySelectorAll(".nav-link");
+      const PAGE_SIZE = 30;          // ⚡ videos per batch
+      const SCROLL_TRIGGER_PX = 800; // ⚡ how far from bottom to load next batch
 
-  const SITE_URL = "https://kellysimiyu.github.io/Movies/";
-  const SKIP_SECONDS = 10;
-  const METADATA_CACHE_KEY = "movie_zone_metadata_v1";
-  const OLD_TITLE_CACHE_KEY = "mc_title_cache_v2";
-  const CATEGORY_RULES_VERSION = 1;
+      let searchQuery = "";
+      let currentCategory = "movie";
+      const sectionTitle = document.getElementById("sectionTitle");
+      const navLinks = document.querySelectorAll(".nav-link");
 
-  const OEMBED_CONCURRENCY = 4;
-  const PAGE_SIZE = 30;
-  const SCROLL_TRIGGER_PX = 800;
-  const EAGER_THUMBS = 6;
-  const HIGH_PRIORITY_THUMBS = 3;
+      let allVideos = [];    // full list
+      let renderedCount = 0; // how many cards appended so far
+      let loadingBatch = false;
 
-  let searchQuery = "";
-  let currentCategory = "all";
-  let allVideos = [];
-  let renderedCount = 0;
-  let loadingBatch = false;
-  let metadataFinished = false;
+      let ytPlayer = null;
+      let ytApiReady = false;
+      let pendingVideoId = null;
 
-  let ytPlayer = null;
-  let ytApiReady = false;
-  let pendingVideoId = null;
+      let currentVideoId = null;
+      let currentVideoTitle = "";
+      let isPaused = false;
 
-  let isPaused = false;
-  let progressRAF = null;
-  let controlsHidden = false;
-  let hideCooldownTimer = null;
-  let inEdgeZone = false;
+      let progressRAF = null;
 
-  let metadataCache = {};
-  let oldTitleCache = {};
+      let controlsHidden = false;
+      let hideCooldownTimer = null;
+      let inEdgeZone = false;
 
-  try {
-    metadataCache = JSON.parse(
-      localStorage.getItem(METADATA_CACHE_KEY) || "{}"
-    );
-  } catch (e) {
-    metadataCache = {};
-  }
-
-  try {
-    oldTitleCache = JSON.parse(
-      localStorage.getItem(OLD_TITLE_CACHE_KEY) || "{}"
-    );
-  } catch (e) {
-    oldTitleCache = {};
-  }
-
-  function saveMetadataCache() {
-    try {
-      localStorage.setItem(
-        METADATA_CACHE_KEY,
-        JSON.stringify(metadataCache)
-      );
-    } catch (e) {}
-  }
-
-  function isRealTitle(title) {
-    if (!title || typeof title !== "string") return false;
-
-    const cleaned = title.trim();
-
-    if (!cleaned) return false;
-    if (/^untitled video$/i.test(cleaned)) return false;
-    if (/^video\s*\d+$/i.test(cleaned)) return false;
-    if (/^movie zone video$/i.test(cleaned)) return false;
-    if (/^loading title/i.test(cleaned)) return false;
-
-    return true;
-  }
-
-  function saveMetadata(id, title, category) {
-    if (!isRealTitle(title)) return;
-
-    metadataCache[id] = {
-      title,
-      category,
-      version: CATEGORY_RULES_VERSION
-    };
-
-    saveMetadataCache();
-  }
-
-  function getCachedMetadata(id) {
-    const item = metadataCache[id];
-
-    if (
-      item &&
-      typeof item === "object" &&
-      isRealTitle(item.title)
-    ) {
-      return item;
-    }
-
-    if (isRealTitle(oldTitleCache[id])) {
-      return {
-        title: oldTitleCache[id],
-        category: "",
-        version: 0
-      };
-    }
-
-    return null;
-  }
-
-  const oembedQueue = [];
-  const inFlightTitles = new Map();
-  let oembedActive = 0;
-
-  function enqueueOembed(task) {
-    return new Promise((resolve, reject) => {
-      oembedQueue.push({ task, resolve, reject });
-      drainOembedQueue();
-    });
-  }
-
-  function drainOembedQueue() {
-    while (oembedActive < OEMBED_CONCURRENCY && oembedQueue.length) {
-      const item = oembedQueue.shift();
-      oembedActive++;
-
-      Promise.resolve()
-        .then(item.task)
-        .then(item.resolve)
-        .catch(item.reject)
-        .finally(() => {
-          oembedActive--;
-          drainOembedQueue();
-        });
-    }
-  }
-
-  function formatTime(seconds) {
-    if (!isFinite(seconds) || seconds < 0) seconds = 0;
-
-    const total = Math.floor(seconds);
-    const h = Math.floor(total / 3600);
-    const m = Math.floor((total % 3600) / 60);
-    const s = total % 60;
-
-    if (h > 0) {
-      return h + ":" + String(m).padStart(2, "0") + ":" +
-        String(s).padStart(2, "0");
-    }
-
-    return m + ":" + String(s).padStart(2, "0");
-  }
-
-  /* YouTube iframe API */
-
-  const ytTag = document.createElement("script");
-  ytTag.src = "https://www.youtube.com/iframe_api";
-  document.head.appendChild(ytTag);
-
-  window.onYouTubeIframeAPIReady = function() {
-    ytApiReady = true;
-
-    if (pendingVideoId) {
-      const id = pendingVideoId;
-      pendingVideoId = null;
-      mountPlayer(id);
-    }
-  };
-
-  function mountPlayer(id) {
-    destroyPlayer();
-
-    const container = document.getElementById("videoFrame");
-    container.innerHTML = "";
-
-    ytPlayer = new YT.Player("videoFrame", {
-      videoId: id,
-      host: "https://www.youtube-nocookie.com",
-
-      playerVars: {
-        autoplay: 1,
-        controls: 0,
-        disablekb: 1,
-        fs: 1,
-        rel: 0,
-        playsinline: 0,
-        modestbranding: 1,
-        iv_load_policy: 3,
-        origin: window.location.origin
-      },
-
-      events: {
-        onReady: onPlayerReady,
-        onStateChange: onPlayerStateChange
-      }
-    });
-  }
-
-  function destroyPlayer() {
-    if (ytPlayer && typeof ytPlayer.destroy === "function") {
+      let titleCache = {};
       try {
-        ytPlayer.destroy();
-      } catch (e) {}
-    }
+        titleCache = JSON.parse(sessionStorage.getItem(TITLE_CACHE_KEY) || "{}");
+      } catch (e) { titleCache = {}; }
 
-    ytPlayer = null;
-  }
-
-  function onPlayerReady() {
-    try {
-      ytPlayer.playVideo();
-    } catch (e) {}
-
-    updateTimeTotal();
-    startProgressLoop();
-  }
-
-  function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.PLAYING) {
-      isPaused = false;
-      updatePauseIcon();
-      updateTimeTotal();
-      startProgressLoop();
-    } else if (
-      event.data === YT.PlayerState.PAUSED ||
-      event.data === YT.PlayerState.ENDED
-    ) {
-      isPaused = true;
-      updatePauseIcon();
-      stopProgressLoop();
-      updateProgressOnce();
-    }
-  }
-
-  function updateTimeTotal() {
-    if (!ytPlayer || typeof ytPlayer.getDuration !== "function") return;
-
-    try {
-      timeTotal.textContent = formatTime(ytPlayer.getDuration() || 0);
-    } catch (e) {}
-  }
-
-  function updateProgressOnce() {
-    if (!ytPlayer) return;
-
-    try {
-      const cur = ytPlayer.getCurrentTime() || 0;
-      const dur = ytPlayer.getDuration() || 0;
-
-      timeCurrent.textContent = formatTime(cur);
-      timeTotal.textContent = formatTime(dur);
-
-      const pct = dur > 0 ? Math.min(100, (cur / dur) * 100) : 0;
-
-      progressFill.style.width = pct + "%";
-      progressTrack.setAttribute("aria-valuenow", String(Math.round(pct)));
-    } catch (e) {}
-  }
-
-  function updateProgress() {
-    updateProgressOnce();
-    progressRAF = requestAnimationFrame(updateProgress);
-  }
-
-  function startProgressLoop() {
-    stopProgressLoop();
-    progressRAF = requestAnimationFrame(updateProgress);
-  }
-
-  function stopProgressLoop() {
-    if (progressRAF) {
-      cancelAnimationFrame(progressRAF);
-      progressRAF = null;
-    }
-  }
-
-  function ensureClickShield() {
-    let shield = stage.querySelector(".click-shield");
-
-    if (shield) return;
-
-    shield = document.createElement("div");
-    shield.className = "click-shield";
-    shield.addEventListener("click", togglePause);
-
-    stage.appendChild(shield);
-  }
-
-  /* YouTube URL parsing */
-
-  function getYouTubeId(url) {
-    try {
-      const parsed = new URL(url);
-      const host = parsed.hostname.toLowerCase();
-
-      if (host === "youtu.be") {
-        return parsed.pathname.split("/").filter(Boolean)[0] || null;
+      function saveTitleCache() {
+        try {
+          sessionStorage.setItem(TITLE_CACHE_KEY, JSON.stringify(titleCache));
+        } catch (e) {}
       }
 
-      if (
-        host === "youtube.com" ||
-        host.endsWith(".youtube.com") ||
-        host === "youtube-nocookie.com"
-      ) {
-        if (parsed.searchParams.has("v")) {
-          return parsed.searchParams.get("v");
+      function cacheTitle(id, title) {
+        titleCache[id] = title;
+        saveTitleCache();
+      }
+
+      const oembedQueue = [];
+      let oembedActive = 0;
+
+      function enqueueOembed(task) {
+        oembedQueue.push(task);
+        drainOembedQueue();
+      }
+
+      function drainOembedQueue() {
+        while (oembedActive < OEMBED_CONCURRENCY && oembedQueue.length) {
+          const task = oembedQueue.shift();
+          oembedActive++;
+          Promise.resolve()
+            .then(task)
+            .finally(() => {
+              oembedActive--;
+              drainOembedQueue();
+            });
         }
-
-        const match = parsed.pathname.match(
-          /^\/(?:shorts|embed|live)\/([\w-]+)/
-        );
-
-        return match ? match[1] : null;
-      }
-    } catch (e) {
-      return null;
-    }
-
-    return null;
-  }
-
-  /* Category detection */
-
-  const categoryNames = {
-    all: "All Videos",
-    movie: "Movies",
-    animation: "Animation",
-    action: "Action",
-    adventure: "Adventure",
-    comedy: "Comedy",
-    crime: "Crime",
-    documentary: "Documentary",
-    drama: "Drama",
-    family: "Family",
-    fantasy: "Fantasy",
-    horror: "Horror",
-    mystery: "Mystery",
-    romance: "Romance",
-    "sci-fi": "Sci-Fi",
-    thriller: "Thriller",
-    music: "Music"
-  };
-
-  function detectCategoryFromTitle(title) {
-    const t = (title || "")
-      .toLowerCase()
-      .replace(/[^a-z0-9+\s-]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
-    const rules = [
-      ["music", /\b(music video|official music video|official video|lyric video|lyrics|audio|feat\.?|ft\.?|song|album|live performance|concert|remix)\b/],
-      ["animation", /\b(animation|animated|anime|cartoon|pixar|disney animation|dreamworks)\b/],
-      ["horror", /\b(horror|haunted|ghost|demon|zombie|vampire|possessed|exorcism|scary)\b/],
-      ["sci-fi", /\b(sci[ -]?fi|science fiction|alien|spaceship|space war|robot|cyborg|time travel|dystopian)\b/],
-      ["comedy", /\b(comedy|funny|hilarious|stand up|standup|parody|satire|romcom|rom-com)\b/],
-      ["action", /\b(action|fight|fighting|martial arts|assassin|warrior|battle|explosion|superhero)\b/],
-      ["adventure", /\b(adventure|quest|journey|expedition|treasure hunt)\b/],
-      ["crime", /\b(crime|criminal|gangster|mafia|robbery|heist|detective|murder case)\b/],
-      ["documentary", /\b(documentary|documentaries|true story|real story|biography|history of|explained)\b/],
-      ["family", /\b(family movie|for the whole family|kids movie|children.s movie)\b/],
-      ["fantasy", /\b(fantasy|magic|magical|wizard|witch|dragon|kingdom|fairy tale)\b/],
-      ["mystery", /\b(mystery|mysterious|whodunit|disappearance|unsolved)\b/],
-      ["romance", /\b(romance|romantic|love story|love triangle|romcom|rom-com)\b/],
-      ["thriller", /\b(thriller|suspense|psychological|hostage|serial killer)\b/],
-      ["drama", /\b(drama|emotional|family drama)\b/]
-    ];
-
-    for (const [category, pattern] of rules) {
-      if (pattern.test(t)) return category;
-    }
-
-    return "movie";
-  }
-
-  /* Google VideoObject structured data */
-
-  let videoSchemaScript = document.getElementById("videoSchema");
-
-  if (!videoSchemaScript) {
-    videoSchemaScript = document.createElement("script");
-    videoSchemaScript.type = "application/ld+json";
-    videoSchemaScript.id = "videoSchema";
-    document.head.appendChild(videoSchemaScript);
-  }
-
-  function buildVideoSchema(video) {
-    if (!isRealTitle(video.title)) return null;
-
-    const videoUrl = "https://www.youtube.com/watch?v=" + video.id;
-    const embedUrl = "https://www.youtube.com/embed/" + video.id;
-    const thumbnailUrl = "https://img.youtube.com/vi/" +
-      video.id + "/hqdefault.jpg";
-
-    return {
-      "@type": "VideoObject",
-      "@id": SITE_URL + "#video-" + video.id,
-      "name": video.title,
-      "description": video.title + " — watch on Movie Zone.",
-      "thumbnailUrl": [thumbnailUrl],
-      "embedUrl": embedUrl,
-      "url": videoUrl,
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": SITE_URL
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "Movie Zone",
-        "url": SITE_URL
-      }
-    };
-  }
-
-  let schemaUpdateTimer = null;
-
-  function updateVideoStructuredData() {
-    if (!allVideos.length) return;
-
-    const graph = allVideos
-      .map(buildVideoSchema)
-      .filter(Boolean);
-
-    const schema = {
-      "@context": "https://schema.org",
-      "@graph": graph
-    };
-
-    videoSchemaScript.textContent = JSON.stringify(schema);
-
-    console.info(
-      "Movie Zone structured data updated:",
-      graph.length,
-      "videos with actual titles."
-    );
-  }
-
-  function scheduleSchemaUpdate() {
-    if (schemaUpdateTimer) {
-      clearTimeout(schemaUpdateTimer);
-    }
-
-    schemaUpdateTimer = setTimeout(() => {
-      updateVideoStructuredData();
-      schemaUpdateTimer = null;
-    }, 500);
-  }
-
-  /* Cards */
-
-  function makeCard(video, index) {
-    const id = video.id;
-    const titleText = video.title || "Loading title…";
-
-    const card = document.createElement("article");
-    card.className = "card";
-    card.dataset.videoId = id;
-    card.dataset.category = video.category || "movie";
-
-    const thumb = document.createElement("div");
-    thumb.className = "thumb";
-    thumb.tabIndex = 0;
-    thumb.setAttribute("role", "button");
-    thumb.setAttribute("aria-label", "Play " + titleText);
-
-    const img = document.createElement("img");
-    img.src = "https://img.youtube.com/vi/" + id + "/hqdefault.jpg";
-    img.alt = video.title ? video.title + " thumbnail" : "Video thumbnail";
-    img.width = 480;
-    img.height = 270;
-    img.decoding = "async";
-    img.loading = index < EAGER_THUMBS ? "eager" : "lazy";
-
-    if (index < HIGH_PRIORITY_THUMBS) {
-      img.setAttribute("fetchpriority", "high");
-    }
-
-    const play = document.createElement("div");
-    play.className = "play-btn";
-    play.innerHTML = '<div class="play-circle">&#9654;</div>';
-
-    thumb.append(img, play);
-
-    const info = document.createElement("div");
-    info.className = "info";
-
-    const title = document.createElement("p");
-    title.className = "title";
-
-    if (!video.title) {
-      title.classList.add("loading");
-    }
-
-    title.textContent = titleText;
-
-    info.appendChild(title);
-    card.append(thumb, info);
-
-    card.dataset.searchTitle = (video.title || "").toLowerCase();
-
-    thumb.addEventListener("click", () => {
-      openPlayer(id, video.title || "Movie Zone video");
-    });
-
-    thumb.addEventListener("keydown", e => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        openPlayer(id, video.title || "Movie Zone video");
-      }
-    });
-
-    return card;
-  }
-
-  function updateExistingCard(video) {
-    const cards = document.querySelectorAll(
-      `.card[data-video-id="${CSS.escape(video.id)}"]`
-    );
-
-    cards.forEach(card => {
-      card.dataset.category = video.category;
-      applyTitle(card, video.title);
-    });
-  }
-
-  function applyTitle(card, text) {
-    const titleEl = card.querySelector(".title");
-
-    if (!titleEl) return;
-
-    titleEl.classList.remove("loading");
-    titleEl.textContent = text;
-    card.dataset.searchTitle = text.toLowerCase();
-
-    const img = card.querySelector("img");
-
-    if (img) {
-      img.alt = text + " thumbnail";
-    }
-
-    const thumb = card.querySelector(".thumb");
-
-    if (thumb) {
-      thumb.setAttribute("aria-label", "Play " + text);
-    }
-  }
-
-  /* YouTube title retrieval */
-
-  function fetchVideoTitle(video) {
-    if (isRealTitle(video.title)) {
-      return Promise.resolve(video.title);
-    }
-
-    if (inFlightTitles.has(video.id)) {
-      return inFlightTitles.get(video.id);
-    }
-
-    const cached = getCachedMetadata(video.id);
-
-    if (cached && isRealTitle(cached.title)) {
-      video.title = cached.title;
-
-      if (
-        cached.version === CATEGORY_RULES_VERSION &&
-        cached.category
-      ) {
-        video.category = cached.category;
-      } else {
-        video.category = detectCategoryFromTitle(video.title);
-        saveMetadata(video.id, video.title, video.category);
       }
 
-      return Promise.resolve(video.title);
-    }
-
-    const request = enqueueOembed(async () => {
-      const endpoint =
-        "https://www.youtube.com/oembed?url=" +
-        encodeURIComponent(
-          "https://www.youtube.com/watch?v=" + video.id
-        ) +
-        "&format=json";
-
-      const response = await fetch(endpoint);
-
-      if (!response.ok) {
-        throw new Error("Could not retrieve video title");
+      let sdTimer = null;
+      function scheduleStructuredDataUpdate() {
+        if (sdTimer) clearTimeout(sdTimer);
+        sdTimer = setTimeout(updateStructuredData, 800);
       }
 
-      const data = await response.json();
-      const title = (data.title || "").trim();
+      stage.addEventListener("contextmenu", e => e.preventDefault());
 
-      if (!isRealTitle(title)) {
-        throw new Error("YouTube did not return a valid title");
-      }
-
-      video.title = title;
-      video.category = detectCategoryFromTitle(title);
-
-      saveMetadata(video.id, title, video.category);
-
-      return title;
-    })
-    .catch(error => {
-      console.warn(
-        "Could not retrieve title for video:",
-        video.id,
-        error
-      );
-
-      video.title = "Untitled video";
-      video.category = "movie";
-
-      return video.title;
-    })
-    .finally(() => {
-      inFlightTitles.delete(video.id);
-    });
-
-    inFlightTitles.set(video.id, request);
-
-    return request;
-  }
-
-  /* Background classification */
-
-  async function classifyVideosInBackground() {
-    const pending = allVideos.filter(
-      video => !isRealTitle(video.title)
-    );
-
-    let completed = 0;
-    const total = pending.length;
-    const batchSize = 20;
-
-    for (let i = 0; i < pending.length; i += batchSize) {
-      const batch = pending.slice(i, i + batchSize);
-
-      await Promise.all(batch.map(async video => {
-        await fetchVideoTitle(video);
-
-        if (!video.category) {
-          video.category = detectCategoryFromTitle(video.title);
+      function formatTime(seconds) {
+        if (!isFinite(seconds) || seconds < 0) seconds = 0;
+        const total = Math.floor(seconds);
+        const h = Math.floor(total / 3600);
+        const m = Math.floor((total % 3600) / 60);
+        const s = total % 60;
+        if (h > 0) {
+          return h + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
         }
+        return m + ":" + String(s).padStart(2, "0");
+      }
 
-        if (isRealTitle(video.title)) {
-          updateExistingCard(video);
+      const ytTag = document.createElement("script");
+      ytTag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(ytTag);
+
+      window.onYouTubeIframeAPIReady = function() {
+        ytApiReady = true;
+        if (pendingVideoId) {
+          const id = pendingVideoId;
+          pendingVideoId = null;
+          mountPlayer(id);
         }
-      }));
+      };
 
-      completed += batch.length;
+      function mountPlayer(id) {
+        destroyPlayer();
+        const container = document.getElementById("videoFrame");
+        container.innerHTML = "";
 
-      const movieCount = allVideos.filter(
-        video => video.category !== "music"
-      ).length;
-
-      const musicCount = allVideos.filter(
-        video => video.category === "music"
-      ).length;
-
-      sectionSub.textContent =
-        movieCount + " movie videos · " +
-        musicCount + " music videos · retrieving titles " +
-        Math.min(completed, total) + "/" + total;
-
-      /*
-       * Update Google structured data after each batch.
-       * This ensures that the actual titles are added as they arrive.
-       */
-      scheduleSchemaUpdate();
-
-      if (currentCategory !== "all") {
-        const scrollPosition = window.scrollY;
-
-        resetCatalogue();
-
-        requestAnimationFrame(() => {
-          window.scrollTo(0, scrollPosition);
+        ytPlayer = new YT.Player("videoFrame", {
+          videoId: id,
+          // ✅ privacy-enhanced host avoids some ad serving and tracking
+          host: "https://www.youtube-nocookie.com",
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            disablekb: 1,
+            fs: 1,
+            rel: 0,
+            playsinline: 0,
+            modestbranding: 1,
+            iv_load_policy: 3,
+            // ✅ tells YouTube the referrer is a real origin (helps with Error 153)
+            origin: window.location.origin
+          },
+          events: {
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange
+          }
         });
       }
 
-      applySearchFilter();
-    }
-
-    metadataFinished = true;
-
-    updateVideoStructuredData();
-
-    const movieCount = allVideos.filter(
-      video => video.category !== "music"
-    ).length;
-
-    const musicCount = allVideos.filter(
-      video => video.category === "music"
-    ).length;
-
-    const titledCount = allVideos.filter(
-      video => isRealTitle(video.title)
-    ).length;
-
-    sectionSub.textContent =
-      movieCount + " movie videos · " +
-      musicCount + " music videos · " +
-      titledCount + "/" + allVideos.length + " titles retrieved";
-  }
-
-  /* Search */
-
-  function applySearchFilter() {
-    const query = searchQuery.trim().toLowerCase();
-    const cards = grid.querySelectorAll(".card");
-
-    let visible = 0;
-
-    cards.forEach(card => {
-      const title = card.dataset.searchTitle || "";
-      const show = !query || title.includes(query);
-
-      card.style.display = show ? "" : "none";
-
-      if (show) visible++;
-    });
-
-    const total = categoryVideos().length;
-
-    countEl.textContent =
-      visible + (visible === 1 ? " item" : " items") +
-      (renderedCount < total ? " · " + total + " total" : "");
-  }
-
-  searchInput.addEventListener("input", e => {
-    searchQuery = e.target.value;
-    applySearchFilter();
-  });
-
-  /* Pause and play */
-
-  function updatePauseIcon() {
-    if (isPaused) {
-      pauseIcon.style.display = "none";
-      playIcon.style.display = "";
-      pauseBtn.setAttribute("aria-label", "Play");
-      pauseBtn.title = "Play";
-    } else {
-      pauseIcon.style.display = "";
-      playIcon.style.display = "none";
-      pauseBtn.setAttribute("aria-label", "Pause");
-      pauseBtn.title = "Pause";
-    }
-  }
-
-  function togglePause() {
-    if (!ytPlayer) return;
-
-    try {
-      if (isPaused) {
-        ytPlayer.playVideo();
-      } else {
-        ytPlayer.pauseVideo();
+      function destroyPlayer() {
+        if (ytPlayer && typeof ytPlayer.destroy === "function") {
+          try { ytPlayer.destroy(); } catch (e) {}
+        }
+        ytPlayer = null;
       }
-    } catch (e) {}
 
-    hideControlsImmediately();
-  }
-
-  pauseBtn.addEventListener("click", e => {
-    e.stopPropagation();
-    togglePause();
-  });
-
-  function hideControlsImmediately() {
-    controlsHidden = true;
-    centerControls.classList.add("hiding");
-
-    if (hideCooldownTimer) {
-      clearTimeout(hideCooldownTimer);
-      hideCooldownTimer = null;
-    }
-
-    hideCooldownTimer = setTimeout(() => {
-      hideCooldownTimer = null;
-      controlsHidden = false;
-      centerControls.classList.remove("hiding");
-    }, 350);
-  }
-
-  playerEl.addEventListener("pointerleave", () => {
-    if (hideCooldownTimer) {
-      clearTimeout(hideCooldownTimer);
-      hideCooldownTimer = null;
-    }
-
-    controlsHidden = false;
-    centerControls.classList.remove("hiding");
-    inEdgeZone = false;
-  });
-
-  function isPointerAtEdge(x, y) {
-    const edge = 40;
-
-    return (
-      x <= edge ||
-      y <= edge ||
-      x >= window.innerWidth - edge ||
-      y >= window.innerHeight - edge
-    );
-  }
-
-  playerEl.addEventListener("pointermove", e => {
-    const atEdge = isPointerAtEdge(e.clientX, e.clientY);
-
-    if (atEdge === inEdgeZone) return;
-
-    inEdgeZone = atEdge;
-
-    if (atEdge) {
-      centerControls.classList.add("hiding");
-    } else if (!controlsHidden) {
-      centerControls.classList.remove("hiding");
-    }
-  }, { passive: true });
-
-  function skipBy(seconds) {
-    if (!ytPlayer) return;
-
-    try {
-      const cur = ytPlayer.getCurrentTime() || 0;
-      const dur = ytPlayer.getDuration() || 0;
-
-      let target = cur + seconds;
-
-      if (target < 0) target = 0;
-      if (dur > 0 && target > dur) target = dur;
-
-      ytPlayer.seekTo(target, true);
-      updateProgressOnce();
-    } catch (e) {}
-
-    hideControlsImmediately();
-  }
-
-  skipBackBtn.addEventListener("click", e => {
-    e.stopPropagation();
-    skipBy(-SKIP_SECONDS);
-  });
-
-  skipFwdBtn.addEventListener("click", e => {
-    e.stopPropagation();
-    skipBy(SKIP_SECONDS);
-  });
-
-  progressTrack.addEventListener("click", e => {
-    e.stopPropagation();
-
-    if (!ytPlayer) return;
-
-    try {
-      const dur = ytPlayer.getDuration() || 0;
-
-      if (dur <= 0) return;
-
-      const rect = progressTrack.getBoundingClientRect();
-
-      const ratio = Math.min(
-        1,
-        Math.max(0, (e.clientX - rect.left) / rect.width)
-      );
-
-      ytPlayer.seekTo(ratio * dur, true);
-      updateProgressOnce();
-    } catch (err) {}
-
-    hideControlsImmediately();
-  });
-
-  /* Player open and close */
-
-  async function openPlayer(id, title) {
-    controlsHidden = false;
-    inEdgeZone = false;
-
-    if (hideCooldownTimer) {
-      clearTimeout(hideCooldownTimer);
-      hideCooldownTimer = null;
-    }
-
-    centerControls.classList.remove("hiding");
-    updatePauseIcon();
-
-    timeCurrent.textContent = "0:00";
-    timeTotal.textContent = "0:00";
-    progressFill.style.width = "0%";
-
-    playerEl.classList.add("active");
-    document.body.style.overflow = "hidden";
-
-    if (ytApiReady) {
-      mountPlayer(id);
-    } else {
-      pendingVideoId = id;
-    }
-
-    try {
-      if (playerEl.requestFullscreen) {
-        await playerEl.requestFullscreen();
+      function onPlayerReady() {
+        try { ytPlayer.playVideo(); } catch (e) {}
+        updateTimeTotal();
+        startProgressLoop();
       }
-    } catch (e) {}
 
-    setTimeout(ensureClickShield, 0);
-  }
-
-  async function closePlayer() {
-    playerEl.classList.remove("active");
-
-    stopProgressLoop();
-
-    controlsHidden = false;
-    inEdgeZone = false;
-
-    if (hideCooldownTimer) {
-      clearTimeout(hideCooldownTimer);
-      hideCooldownTimer = null;
-    }
-
-    centerControls.classList.remove("hiding");
-
-    destroyPlayer();
-    pendingVideoId = null;
-
-    const shield = stage.querySelector(".click-shield");
-
-    if (shield) shield.remove();
-
-    isPaused = false;
-    document.body.style.overflow = "";
-
-    timeCurrent.textContent = "0:00";
-    timeTotal.textContent = "0:00";
-    progressFill.style.width = "0%";
-
-    updatePauseIcon();
-
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
+      function onPlayerStateChange(event) {
+        const state = event.data;
+        if (state === YT.PlayerState.PLAYING) {
+          isPaused = false;
+          updatePauseIcon();
+          updateTimeTotal();
+          startProgressLoop();
+        } else if (state === YT.PlayerState.PAUSED) {
+          isPaused = true;
+          updatePauseIcon();
+          stopProgressLoop();
+          updateProgressOnce();
+        } else if (state === YT.PlayerState.ENDED) {
+          isPaused = true;
+          updatePauseIcon();
+          stopProgressLoop();
+          updateProgressOnce();
+        }
       }
-    } catch (e) {}
-  }
 
-  document.getElementById("backBtn").addEventListener(
-    "click",
-    closePlayer
-  );
+      function updateTimeTotal() {
+        if (!ytPlayer || typeof ytPlayer.getDuration !== "function") return;
+        try {
+          const dur = ytPlayer.getDuration() || 0;
+          timeTotal.textContent = formatTime(dur);
+        } catch (e) {}
+      }
 
-  document.addEventListener("keydown", e => {
-    if (!playerEl.classList.contains("active")) return;
+      function updateProgressOnce() {
+        if (!ytPlayer) return;
+        try {
+          const cur = ytPlayer.getCurrentTime() || 0;
+          const dur = ytPlayer.getDuration() || 0;
+          timeCurrent.textContent = formatTime(cur);
+          timeTotal.textContent   = formatTime(dur);
+          const pct = dur > 0 ? Math.min(100, (cur / dur) * 100) : 0;
+          progressFill.style.width = pct + "%";
+          progressTrack.setAttribute("aria-valuenow", String(Math.round(pct)));
+        } catch (e) {}
+      }
 
-    if (e.key === "Escape") {
-      closePlayer();
-    } else if (e.key === "ArrowLeft") {
-      e.preventDefault();
-      skipBy(-SKIP_SECONDS);
-    } else if (e.key === "ArrowRight") {
-      e.preventDefault();
-      skipBy(SKIP_SECONDS);
-    } else if (e.key === " " || e.key === "k") {
-      e.preventDefault();
-      togglePause();
-    }
-  });
+      function updateProgress() {
+        updateProgressOnce();
+        progressRAF = requestAnimationFrame(updateProgress);
+      }
 
-  /* Category filtering */
+      function startProgressLoop() {
+        stopProgressLoop();
+        progressRAF = requestAnimationFrame(updateProgress);
+      }
 
-  function categoryVideos() {
-    if (currentCategory === "all") {
-      return allVideos;
-    }
+      function stopProgressLoop() {
+        if (progressRAF) {
+          cancelAnimationFrame(progressRAF);
+          progressRAF = null;
+        }
+      }
 
-    return allVideos.filter(
-      video => video.category === currentCategory
-    );
-  }
+      function ensureClickShield() {
+        let shield = stage.querySelector(".click-shield");
+        if (shield) return;
+        shield = document.createElement("div");
+        shield.className = "click-shield";
+        shield.addEventListener("click", () => togglePause());
+        stage.appendChild(shield);
+      }
 
-  function resetCatalogue() {
-    renderedCount = 0;
-    loadingBatch = false;
+      function getYouTubeId(url) {
+        try {
+          const parsed = new URL(url);
+          const host = parsed.hostname.toLowerCase();
+          if (host === "youtu.be") {
+            return parsed.pathname.split("/").filter(Boolean)[0] || null;
+          }
+          if (
+            host === "youtube.com" ||
+            host.endsWith(".youtube.com") ||
+            host === "youtube-nocookie.com"
+          ) {
+            if (parsed.searchParams.has("v")) return parsed.searchParams.get("v");
+            const m = parsed.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]+)/);
+            return m ? m[1] : null;
+          }
+        } catch (e) { return null; }
+        return null;
+      }
 
-    grid.innerHTML = "";
-    endMessage.style.display = "none";
-    loader.style.display = "none";
+      /* ---------- Title loading observer (per-card) ---------- */
+      const thumbObserver =
+        "IntersectionObserver" in window
+          ? new IntersectionObserver((entries, obs) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  const card = entry.target;
+                  obs.unobserve(card);
+                  const id = card.dataset.videoId;
+                  if (id) requestTitle(card, id);
+                }
+              });
+            }, { rootMargin: "200px 0px" })
+          : null;
 
-    const list = categoryVideos();
+      /* Cards are created only after their real YouTube titles have loaded. */
+      function makeCard(video,index){
+        const id=video.id,titleText=video.title||"Untitled video";
+        const card=document.createElement("article");card.className="card";card.dataset.videoId=id;card.dataset.category=video.category;
+        const thumb=document.createElement("div");thumb.className="thumb";thumb.tabIndex=0;thumb.setAttribute("role","button");thumb.setAttribute("aria-label","Play "+titleText);
+        const img=document.createElement("img");img.src="https://img.youtube.com/vi/"+id+"/hqdefault.jpg";img.alt=titleText+" thumbnail";img.width=480;img.height=270;img.decoding="async";img.loading=index<EAGER_THUMBS?"eager":"lazy";if(index<HIGH_PRIORITY_THUMBS)img.setAttribute("fetchpriority","high");
+        const play=document.createElement("div");play.className="play-btn";play.innerHTML='<div class="play-circle">&#9654;</div>';thumb.append(img,play);
+        const info=document.createElement("div");info.className="info";const title=document.createElement("p");title.className="title";title.textContent=titleText;info.appendChild(title);card.append(thumb,info);card.dataset.searchTitle=titleText.toLowerCase();
+        thumb.addEventListener("click",()=>openPlayer(id,titleText));thumb.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openPlayer(id,titleText);}});return card;
+      }
+      async function fetchVideoTitle(video){
+        if(titleCache[video.id]){video.title=titleCache[video.id];return video.title;}
+        try{const endpoint="https://www.youtube.com/oembed?url="+encodeURIComponent("https://www.youtube.com/watch?v="+video.id)+"&format=json";const response=await fetch(endpoint);if(!response.ok)throw Error("Unavailable");const data=await response.json();video.title=(data.title||"Untitled video").trim();cacheTitle(video.id,video.title);}
+        catch(e){video.title="Untitled video";}return video.title;
+      }
 
-    sectionTitle.textContent =
-      categoryNames[currentCategory] || "Movies";
+      function applyTitle(card, text) {
+        const titleEl = card.querySelector(".title");
+        if (!titleEl) return;
+        titleEl.classList.remove("loading");
+        titleEl.textContent = text;
+        card.dataset.searchTitle = text.toLowerCase();
+        const img = card.querySelector("img");
+        if (img) img.alt = text + " — free movie thumbnail";
+        scheduleStructuredDataUpdate();
+      }
 
-    countEl.textContent =
-      list.length + (list.length === 1 ? " item" : " items");
+      function requestTitle(card, id) {
+        const cached = titleCache[id];
+        if (cached) { applyTitle(card, cached); return; }
 
-    renderBatch();
-  }
+        enqueueOembed(() => {
+          if (titleCache[id]) { applyTitle(card, titleCache[id]); return; }
 
-  navLinks.forEach(link => {
-    link.addEventListener("click", () => {
-      currentCategory = link.dataset.category;
+          const url = `https://www.youtube.com/oembed?url=${encodeURIComponent(
+            "https://www.youtube.com/watch?v=" + id
+          )}&format=json`;
 
-      navLinks.forEach(item => {
-        item.classList.toggle("active", item === link);
+          return fetch(url)
+            .then(r => (r.ok ? r.json() : Promise.reject(new Error("bad"))))
+            .then(data => {
+              const text = data.title || "Video";
+              cacheTitle(id, text);
+              document
+                .querySelectorAll(`.card[data-video-id="${CSS.escape(id)}"]`)
+                .forEach(c => applyTitle(c, text));
+            })
+            .catch(() => {
+              const el = card.querySelector(".title");
+              if (el) el.classList.remove("loading");
+            });
+        });
+      }
+
+      /* ---------- Search ---------- */
+      function applySearchFilter() {
+        const query = searchQuery.trim().toLowerCase();
+        const cards = grid.querySelectorAll(".card");
+        let visible = 0;
+        cards.forEach(card => {
+          const title = card.dataset.searchTitle || "";
+          const show = !query || title.includes(query);
+          card.style.display = show ? "" : "none";
+          if (show) visible++;
+        });
+        countEl.textContent=visible+(visible===1?" item":" items");
+      }
+
+      searchInput.addEventListener("input", e => {
+        searchQuery = e.target.value;
+        applySearchFilter();
       });
 
-      resetCatalogue();
-    });
-  });
+      /* ---------- Structured data ---------- */
+      // Titles are fetched from YouTube oEmbed for the complete urls.txt list
+      // before the catalogue is displayed. Build the ItemList from allVideos,
+      // not just the cards currently visible after infinite scrolling.
+      // Do not invent uploadDate: YouTube oEmbed does not provide it.
+      function updateStructuredData() {
+        const script = document.getElementById("videoStructuredData");
+        if (!script || !Array.isArray(allVideos) || !allVideos.length) return;
 
-  /* Immediate rendering */
+        const items = allVideos
+          .filter(video => video.id && video.title && video.title !== "Untitled video")
+          .map((video, index) => {
+            const watchUrl = "https://www.youtube.com/watch?v=" + encodeURIComponent(video.id);
+            return {
+              "@type": "ListItem",
+              "position": index + 1,
+              "item": {
+                "@type": "VideoObject",
+                "name": video.title,
+                "description": video.title,
+                "thumbnailUrl": "https://img.youtube.com/vi/" + video.id + "/hqdefault.jpg",
+                "embedUrl": "https://www.youtube.com/embed/" + encodeURIComponent(video.id),
+                "url": watchUrl
+              }
+            };
+          });
 
-  function renderBatch() {
-    const list = categoryVideos();
-
-    if (loadingBatch) return;
-
-    if (renderedCount >= list.length) {
-      loader.style.display = "none";
-
-      if (list.length && renderedCount >= list.length) {
-        endMessage.style.display = "";
+        const data = {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Free Movies & Videos on Movie Zone",
+          "description": "Videos available to watch on Movie Zone.",
+          "numberOfItems": items.length,
+          "itemListElement": items
+        };
+        script.textContent = JSON.stringify(data);
       }
 
-      if (!list.length && metadataFinished) {
-        grid.innerHTML =
-          '<p class="error">No videos were automatically matched to this category.</p>';
+      /* ---------- Pause / play ---------- */
+      function updatePauseIcon() {
+        if (isPaused) {
+          pauseIcon.style.display = "none";
+          playIcon.style.display = "";
+          pauseBtn.setAttribute("aria-label", "Play");
+          pauseBtn.title = "Play";
+        } else {
+          pauseIcon.style.display = "";
+          playIcon.style.display = "none";
+          pauseBtn.setAttribute("aria-label", "Pause");
+          pauseBtn.title = "Pause";
+        }
       }
 
-      return;
-    }
+      function togglePause() {
+        if (!ytPlayer) return;
+        try {
+          if (isPaused) ytPlayer.playVideo();
+          else ytPlayer.pauseVideo();
+        } catch (e) {}
+        hideControlsImmediately();
+      }
 
-    loadingBatch = true;
-    loader.style.display = "";
-
-    const from = renderedCount;
-    const to = Math.min(from + PAGE_SIZE, list.length);
-    const batch = list.slice(from, to);
-
-    const frag = document.createDocumentFragment();
-
-    batch.forEach((video, i) => {
-      frag.appendChild(makeCard(video, from + i));
-    });
-
-    grid.appendChild(frag);
-
-    renderedCount = to;
-
-    applySearchFilter();
-
-    loader.style.display = "none";
-    loadingBatch = false;
-
-    if (renderedCount >= categoryVideos().length) {
-      endMessage.style.display = "";
-    }
-
-    requestAnimationFrame(maybeLoadMore);
-  }
-
-  /* Shuffle cards every five minutes */
-
-  function shuffleCardPositions() {
-    if (playerEl.classList.contains("active")) return;
-
-    const cards = Array.from(
-      grid.querySelectorAll(":scope > .card")
-    );
-
-    if (cards.length < 2) return;
-
-    const oldPositions = new Map(
-      cards.map(card => [card, card.getBoundingClientRect()])
-    );
-
-    const offset = 1 + Math.floor(Math.random() * (cards.length - 1));
-
-    const shuffled = cards.slice(offset).concat(cards.slice(0, offset));
-
-    const fragment = document.createDocumentFragment();
-
-    shuffled.forEach(card => fragment.appendChild(card));
-    grid.appendChild(fragment);
-
-    shuffled.forEach(card => {
-      const before = oldPositions.get(card);
-      const after = card.getBoundingClientRect();
-
-      const dx = before.left - after.left;
-      const dy = before.top - after.top;
-
-      if (!dx && !dy) return;
-
-      card.style.transition = "none";
-      card.style.transform = `translate(${dx}px, ${dy}px)`;
-    });
-
-    requestAnimationFrame(() => {
-      shuffled.forEach(card => {
-        if (!card.style.transform) return;
-
-        card.style.transition = "transform 450ms ease";
-        card.style.transform = "";
+      pauseBtn.addEventListener("click", e => {
+        e.stopPropagation();
+        togglePause();
       });
-    });
-  }
 
-  window.setInterval(shuffleCardPositions, 300000);
+      function hideControlsImmediately() {
+        controlsHidden = true;
+        centerControls.classList.add("hiding");
 
-  /* Infinite scrolling */
+        if (hideCooldownTimer) {
+          clearTimeout(hideCooldownTimer);
+          hideCooldownTimer = null;
+        }
 
-  let scrollCheckScheduled = false;
-
-  function maybeLoadMore() {
-    if (scrollCheckScheduled) return;
-
-    scrollCheckScheduled = true;
-
-    requestAnimationFrame(() => {
-      scrollCheckScheduled = false;
-
-      if (
-        loadingBatch ||
-        renderedCount >= categoryVideos().length
-      ) {
-        return;
+        hideCooldownTimer = setTimeout(() => {
+          hideCooldownTimer = null;
+          controlsHidden = false;
+          centerControls.classList.remove("hiding");
+        }, 350);
       }
 
-      const distance =
-        sentinel.getBoundingClientRect().top - window.innerHeight;
+      playerEl.addEventListener("pointerleave", () => {
+        if (hideCooldownTimer) {
+          clearTimeout(hideCooldownTimer);
+          hideCooldownTimer = null;
+        }
+        controlsHidden = false;
+        centerControls.classList.remove("hiding");
+        inEdgeZone = false;
+      });
 
-      if (distance <= SCROLL_TRIGGER_PX) {
+      function isPointerAtEdge(x, y) {
+        if (x <= EDGE_MARGIN) return true;
+        if (y <= EDGE_MARGIN) return true;
+        if (x >= window.innerWidth  - EDGE_MARGIN) return true;
+        if (y >= window.innerHeight - EDGE_MARGIN) return true;
+        return false;
+      }
+
+      playerEl.addEventListener("pointermove", e => {
+        const atEdge = isPointerAtEdge(e.clientX, e.clientY);
+        if (atEdge === inEdgeZone) return;
+        inEdgeZone = atEdge;
+
+        if (atEdge) {
+          centerControls.classList.add("hiding");
+        } else if (!controlsHidden) {
+          centerControls.classList.remove("hiding");
+        }
+      }, { passive: true });
+
+      function skipBy(seconds) {
+        if (!ytPlayer) return;
+        try {
+          const cur = ytPlayer.getCurrentTime() || 0;
+          const dur = ytPlayer.getDuration() || 0;
+          let target = cur + seconds;
+          if (target < 0) target = 0;
+          if (dur > 0 && target > dur) target = dur;
+          ytPlayer.seekTo(target, true);
+          updateProgressOnce();
+        } catch (e) {}
+        hideControlsImmediately();
+      }
+
+      skipBackBtn.addEventListener("click", e => { e.stopPropagation(); skipBy(-SKIP_SECONDS); });
+      skipFwdBtn .addEventListener("click", e => { e.stopPropagation(); skipBy( SKIP_SECONDS); });
+
+      progressTrack.addEventListener("click", e => {
+        e.stopPropagation();
+        if (!ytPlayer) return;
+        try {
+          const dur = ytPlayer.getDuration() || 0;
+          if (dur <= 0) return;
+          const rect = progressTrack.getBoundingClientRect();
+          const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+          ytPlayer.seekTo(ratio * dur, true);
+          updateProgressOnce();
+        } catch (err) {}
+        hideControlsImmediately();
+      });
+
+      /* ---------- Player open/close ---------- */
+      async function openPlayer(id, title) {
+        currentVideoId = id;
+        currentVideoTitle = title;
+
+        controlsHidden = false;
+        inEdgeZone = false;
+        if (hideCooldownTimer) { clearTimeout(hideCooldownTimer); hideCooldownTimer = null; }
+        centerControls.classList.remove("hiding");
+        updatePauseIcon();
+
+        timeCurrent.textContent = "0:00";
+        timeTotal.textContent = "0:00";
+        progressFill.style.width = "0%";
+
+        playerEl.classList.add("active");
+        document.body.style.overflow = "hidden";
+
+        if (ytApiReady) mountPlayer(id);
+        else pendingVideoId = id;
+
+        try {
+          if (playerEl.requestFullscreen) await playerEl.requestFullscreen();
+        } catch (e) {}
+
+        setTimeout(ensureClickShield, 0);
+      }
+
+      async function closePlayer() {
+        playerEl.classList.remove("active");
+        stopProgressLoop();
+        controlsHidden = false;
+        inEdgeZone = false;
+        if (hideCooldownTimer) { clearTimeout(hideCooldownTimer); hideCooldownTimer = null; }
+        centerControls.classList.remove("hiding");
+
+        destroyPlayer();
+        pendingVideoId = null;
+
+        const shield = stage.querySelector(".click-shield");
+        if (shield) shield.remove();
+
+        currentVideoId = null;
+        currentVideoTitle = "";
+        isPaused = false;
+
+        document.body.style.overflow = "";
+
+        timeCurrent.textContent = "0:00";
+        timeTotal.textContent = "0:00";
+        progressFill.style.width = "0%";
+        updatePauseIcon();
+
+        try {
+          if (document.fullscreenElement) await document.exitFullscreen();
+        } catch (e) {}
+      }
+
+      document.getElementById("backBtn").addEventListener("click", closePlayer);
+
+      document.addEventListener("keydown", e => {
+        if (!playerEl.classList.contains("active")) return;
+        if (e.key === "Escape") closePlayer();
+        else if (e.key === "ArrowLeft")  { e.preventDefault(); skipBy(-SKIP_SECONDS); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); skipBy( SKIP_SECONDS); }
+        else if (e.key === " " || e.key === "k") { e.preventDefault(); togglePause(); }
+      });
+
+      const categoryNames = {
+        movie: "Movies",
+        animation: "Animation",
+        action: "Action",
+        adventure: "Adventure",
+        comedy: "Comedy",
+        crime: "Crime",
+        documentary: "Documentary",
+        drama: "Drama",
+        family: "Family",
+        fantasy: "Fantasy",
+        horror: "Horror",
+        mystery: "Mystery",
+        romance: "Romance",
+        "sci-fi": "Sci-Fi",
+        thriller: "Thriller",
+        music: "Music"
+      };
+
+      // Guess a video's genre from its YouTube title. This is automatic, so
+      // urls.txt can contain ordinary YouTube URLs with no category labels.
+      function detectCategoryFromTitle(title) {
+        const t = (title || "").toLowerCase().replace(/[^a-z0-9+\s-]/g, " ").replace(/\s+/g, " ").trim();
+        const rules = [
+          ["music", /\b(music video|official music video|official video|lyric video|lyrics|audio|feat\.?|ft\.?|song|album|live performance|concert|remix)\b/],
+          ["animation", /\b(animation|animated|anime|cartoon|pixar|disney animation|dreamworks)\b/],
+          ["horror", /\b(horror|haunted|ghost|demon|zombie|vampire|possessed|exorcism|scary)\b/],
+          ["sci-fi", /\b(sci[ -]?fi|science fiction|alien|spaceship|space war|robot|cyborg|time travel|dystopian)\b/],
+          ["comedy", /\b(comedy|funny|hilarious|stand up|standup|parody|satire|romcom|rom-com)\b/],
+          ["action", /\b(action|fight|fighting|martial arts|assassin|warrior|battle|explosion|superhero)\b/],
+          ["adventure", /\b(adventure|quest|journey|expedition|treasure hunt)\b/],
+          ["crime", /\b(crime|criminal|gangster|mafia|robbery|heist|detective|murder case)\b/],
+          ["documentary", /\b(documentary|documentaries|true story|real story|biography|history of|explained)\b/],
+          ["family", /\b(family movie|for the whole family|kids movie|children.s movie)\b/],
+          ["fantasy", /\b(fantasy|magic|magical|wizard|witch|dragon|kingdom|fairy tale)\b/],
+          ["mystery", /\b(mystery|mysterious|whodunit|disappearance|unsolved)\b/],
+          ["romance", /\b(romance|romantic|love story|love triangle|romcom|rom-com)\b/],
+          ["thriller", /\b(thriller|suspense|psychological|hostage|serial killer)\b/],
+          ["drama", /\b(drama|emotional|family drama)\b/]
+        ];
+        for (const [category, pattern] of rules) {
+          if (pattern.test(t)) return category;
+        }
+        return "movie";
+      }
+
+      function categoryVideos() {
+        return allVideos.filter(video => video.category === currentCategory);
+      }
+
+      function resetCatalogue() {
+        renderedCount = 0;
+        loadingBatch = false;
+        grid.innerHTML = "";
+        endMessage.style.display = "none";
+        loader.style.display = "none";
+
+        const list = categoryVideos();
+        sectionTitle.textContent = categoryNames[currentCategory] || "Movies";
+        countEl.textContent = list.length + (list.length === 1 ? " item" : " items");
         renderBatch();
       }
-    });
-  }
 
-  function setupInfiniteScroll() {
-    if ("IntersectionObserver" in window) {
-      const io = new IntersectionObserver(entries => {
-        if (entries.some(entry => entry.isIntersecting)) {
-          maybeLoadMore();
-        }
-      }, {
-        root: null,
-        rootMargin: `0px 0px ${SCROLL_TRIGGER_PX}px 0px`,
-        threshold: 0
+      navLinks.forEach(link => {
+        link.addEventListener("click", () => {
+          currentCategory = link.dataset.category;
+          navLinks.forEach(item => item.classList.toggle("active", item === link));
+          resetCatalogue();
+        });
       });
-
-      io.observe(sentinel);
-    }
-
-    window.addEventListener("scroll", maybeLoadMore, { passive: true });
-    window.addEventListener("resize", maybeLoadMore, { passive: true });
-
-    maybeLoadMore();
-  }
-
-  /* Load catalogue */
-
-  fetch("urls.txt", { cache: "force-cache" })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Could not load urls.txt");
+      async function renderBatch(){
+        const list=categoryVideos();
+        if(loadingBatch)return;
+        if(renderedCount>=list.length){
+          loader.style.display="none";
+          endMessage.style.display=list.length?"":"none";
+          if(!list.length)grid.innerHTML='<p class="error">No videos were automatically matched to this category. Try a title containing a genre keyword.</p>';
+          return;
+        }
+        loadingBatch=true;
+        loader.style.display="";
+        const from=renderedCount,to=Math.min(from+PAGE_SIZE,list.length),batch=list.slice(from,to);
+        try {
+          await Promise.all(batch.map(fetchVideoTitle));
+          const frag=document.createDocumentFragment();
+          batch.forEach((video,i)=>frag.appendChild(makeCard(video,from+i)));
+          grid.appendChild(frag);
+          renderedCount=to;
+          applySearchFilter();
+          scheduleStructuredDataUpdate();
+        } finally {
+          loader.style.display="none";
+          loadingBatch=false;
+        }
+        if(renderedCount>=categoryVideos().length)endMessage.style.display="";
+        // If the page is still short, keep filling it; otherwise scrolling will trigger the next batch.
+        requestAnimationFrame(maybeLoadMore);
       }
 
-      return response.text();
-    })
-    .then(text => {
-      const lines = text
-        .split(/\r?\n/)
-        .map(line => line.trim())
-        .filter(line => line && !line.startsWith("#"));
+      /* ---------- Automatic card position shuffle ---------- */
+      // Every five minutes, shuffle the existing card elements in the grid.
+      // The cards keep their original video IDs, titles and click handlers.
+      function shuffleCardPositions() {
+        if (playerEl.classList.contains("active")) return;
+        const cards = Array.from(grid.querySelectorAll(":scope > .card"));
+        if (cards.length < 2) return;
 
-      const seen = new Set();
+        const oldPositions = new Map(
+          cards.map(card => [card, card.getBoundingClientRect()])
+        );
 
-      allVideos = [];
+        // Rotate by a random non-zero amount. This guarantees that the
+        // first card changes position every time the five-minute timer runs.
+        const offset = 1 + Math.floor(Math.random() * (cards.length - 1));
+        const shuffled = cards.slice(offset).concat(cards.slice(0, offset));
 
-      for (const line of lines) {
-        let url = line;
+        const fragment = document.createDocumentFragment();
+        shuffled.forEach(card => fragment.appendChild(card));
+        grid.appendChild(fragment);
 
-        const split = line.indexOf("|");
+        // FLIP animation: visually move each card from its old position.
+        shuffled.forEach(card => {
+          const before = oldPositions.get(card);
+          const after = card.getBoundingClientRect();
+          const dx = before.left - after.left;
+          const dy = before.top - after.top;
+          if (!dx && !dy) return;
+          card.style.transition = "none";
+          card.style.transform = `translate(${dx}px, ${dy}px)`;
+        });
 
-        if (split > 0) {
-          const rawLabel = line
-            .slice(0, split)
-            .trim()
-            .toLowerCase();
+        requestAnimationFrame(() => {
+          shuffled.forEach(card => {
+            if (!card.style.transform) return;
+            card.style.transition = "transform 450ms ease";
+            card.style.transform = "";
+          });
+        });
+      }
 
-          const aliases = {
-            movies: "movie",
-            animations: "animation",
-            animated: "animation",
-            "science fiction": "sci-fi",
-            scifi: "sci-fi",
-            "sci fi": "sci-fi",
-            docs: "documentary",
-            documentaries: "documentary",
-            romcom: "comedy",
-            "rom-com": "comedy"
-          };
+      // New cards added by infinite scrolling are automatically included
+      // in the next shuffle. Stop the movement while the video player is open.
+      const cardShuffleTimer = window.setInterval(shuffleCardPositions, 300000);
 
-          const supportedCategories = [
-            "movie", "animation", "action", "adventure",
-            "comedy", "crime", "documentary", "drama",
-            "family", "fantasy", "horror", "mystery",
-            "romance", "sci-fi", "thriller", "music"
-          ];
+      /* ---------- Reliable infinite scrolling ---------- */
+      let scrollCheckScheduled=false;
+      function maybeLoadMore(){
+        if(scrollCheckScheduled)return;
+        scrollCheckScheduled=true;
+        requestAnimationFrame(()=>{
+          scrollCheckScheduled=false;
+          if(loadingBatch||renderedCount>=categoryVideos().length)return;
+          const distance=sentinel.getBoundingClientRect().top-window.innerHeight;
+          if(distance<=SCROLL_TRIGGER_PX)renderBatch();
+        });
+      }
 
-          const label = aliases[rawLabel] || rawLabel;
-
-          if (supportedCategories.includes(label)) {
-            url = line.slice(split + 1).trim();
-          }
+      function setupInfiniteScroll() {
+        // Use both an observer and a normal scroll listener so loading continues
+        // even when the sentinel remains inside the observer's trigger area.
+        if ("IntersectionObserver" in window) {
+          const io = new IntersectionObserver(entries => {
+            if(entries.some(entry=>entry.isIntersecting))maybeLoadMore();
+          }, {root:null,rootMargin:`0px 0px ${SCROLL_TRIGGER_PX}px 0px`,threshold:0});
+          io.observe(sentinel);
         }
+        window.addEventListener("scroll",maybeLoadMore,{passive:true});
+        window.addEventListener("resize",maybeLoadMore,{passive:true});
+        maybeLoadMore();
+      }
 
-        const id = getYouTubeId(url);
+      /* ---------- Load catalogue ---------- */
+      fetch("urls.txt", { cache: "force-cache" })
+        .then(r => {
+          if (!r.ok) throw new Error("Could not load urls.txt");
+          return r.text();
+        })
+        .then(async text => {
+          const lines = text
+            .split(/\r?\n/)
+            .map(l => l.trim())
+            .filter(l => l && !l.startsWith("#"));
 
-        if (!id || seen.has(id)) continue;
+          const seen = new Set();
+          allVideos = [];
+          for (const line of lines) {
+            let category = "movie";
+            let url = line;
+            const split = line.indexOf("|");
 
-        seen.add(id);
+            if (split > 0) {
+              const rawLabel = line.slice(0, split).trim().toLowerCase();
+              const aliases = {
+                movies: "movie",
+                animations: "animation",
+                animated: "animation",
+                "science fiction": "sci-fi",
+                scifi: "sci-fi",
+                "sci fi": "sci-fi",
+                docs: "documentary",
+                documentaries: "documentary",
+                romcom: "comedy",
+                "rom-com": "comedy"
+              };
+              const label = aliases[rawLabel] || rawLabel;
+              const supportedCategories = [
+                "movie", "animation", "action", "adventure", "comedy",
+                "crime", "documentary", "drama", "family", "fantasy",
+                "horror", "mystery", "romance", "sci-fi", "thriller", "music"
+              ];
 
-        const video = {
-          url,
-          id,
-          title: "",
-          category: "movie"
-        };
+              if (supportedCategories.includes(label)) {
+                // Backward-compatible: accept old prefixed lines, but do not
+                // depend on the prefix. The title decides the category below.
+                url = line.slice(split + 1).trim();
+              }
+            }
 
-        const cached = getCachedMetadata(id);
+            const id = getYouTubeId(url);
+            if (id && !seen.has(id)) {
+              seen.add(id);
+              allVideos.push({ url, id, category, title: "" });
+            }
+          }
 
-        if (cached && isRealTitle(cached.title)) {
-          video.title = cached.title;
+          if (!allVideos.length) {
+            countEl.textContent = "No videos";
+            sectionSub.textContent = "Nothing to show";
+            grid.innerHTML = '<p class="error">Add valid YouTube video URLs to urls.txt.</p>';
+            return;
+          }
 
-          if (
-            cached.version === CATEGORY_RULES_VERSION &&
-            cached.category
-          ) {
-            video.category = cached.category;
-          } else {
+          // Fetch titles in small batches, then classify the whole catalogue.
+          // Cached titles are reused, so repeat visits are much faster.
+          sectionSub.textContent = "Reading video titles and sorting categories…";
+          const titleBatchSize = 20;
+          for (let i = 0; i < allVideos.length; i += titleBatchSize) {
+            const batch = allVideos.slice(i, i + titleBatchSize);
+            await Promise.all(batch.map(fetchVideoTitle));
+            sectionSub.textContent = "Sorting videos… " + Math.min(i + batch.length, allVideos.length) + "/" + allVideos.length;
+          }
+          allVideos.forEach(video => {
             video.category = detectCategoryFromTitle(video.title);
+          });
 
-            saveMetadata(
-              id,
-              video.title,
-              video.category
-            );
-          }
-        }
+          const movieCount = allVideos.filter(v => v.category !== "music").length;
+          const musicCount = allVideos.filter(v => v.category === "music").length;
+          const genreCount = Object.keys(categoryNames).length - 1;
+          sectionSub.textContent = movieCount + " movie videos · " + musicCount + " music videos · automatically sorted by title";
+          updateStructuredData();
+          resetCatalogue();
 
-        allVideos.push(video);
-      }
-
-      if (!allVideos.length) {
-        countEl.textContent = "No videos";
-        sectionSub.textContent = "Nothing to show";
-
-        grid.innerHTML =
-          '<p class="error">Add valid YouTube video URLs to urls.txt.</p>';
-
-        return;
-      }
-
-      const cachedCount = allVideos.filter(
-        video => isRealTitle(video.title)
-      ).length;
-
-      const uncachedCount = allVideos.length - cachedCount;
-
-      const movieCount = allVideos.filter(
-        video => video.category !== "music"
-      ).length;
-
-      const musicCount = allVideos.filter(
-        video => video.category === "music"
-      ).length;
-
-      sectionSub.textContent =
-        movieCount + " movie videos · " +
-        musicCount + " music videos";
-
-      /*
-       * Immediately publish structured data for titles already cached.
-       * More entries will be added as YouTube titles are retrieved.
-       */
-      updateVideoStructuredData();
-
-      // Render immediately without waiting for YouTube metadata.
-      resetCatalogue();
-      setupInfiniteScroll();
-
-      if (uncachedCount === 0) {
-        metadataFinished = true;
-
-        sectionSub.textContent =
-          movieCount + " movie videos · " +
-          musicCount + " music videos · cached";
-
-        updateVideoStructuredData();
-      } else {
-        sectionSub.textContent =
-          allVideos.length + " videos · retrieving actual YouTube titles";
-
-        classifyVideosInBackground();
-      }
-    })
-    .catch(error => {
-      console.error("Catalogue loading error:", error);
-
-      countEl.textContent = "Unable to load videos";
-      sectionSub.textContent = "Failed to load catalogue";
-
-      grid.innerHTML =
-        '<p class="error">Could not load urls.txt. Keep it in the same folder as index.html.</p>';
-    });
-
-})();
-</script>
-
+          // Then wire up scroll-triggered loading
+          setupInfiniteScroll();
+        })
+        .catch(() => {
+          countEl.textContent = "Unable to load videos";
+          sectionSub.textContent = "Failed to load catalogue";
+          grid.innerHTML =
+            '<p class="error">Could not load urls.txt. Keep it in the same folder as index.html and run a local web server.</p>';
+        });
+    })();
+  </script>
 </body>
 </html>
-```
