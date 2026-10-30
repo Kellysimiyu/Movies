@@ -481,7 +481,7 @@
       position: absolute;
       right: 0;
       bottom: 0;
-      width: 300px;
+      width: min(800px, 60%);
       height: 100px;
       z-index: 99999;
       pointer-events: none;
@@ -489,6 +489,13 @@
       -webkit-backdrop-filter: blur(18px) saturate(120%);
       background: linear-gradient(to top left,
         rgba(0,0,0,.55), rgba(0,0,0,.30) 55%, transparent);
+      /* Hidden by default — becomes visible on player open + control interaction */
+      opacity: 0;
+      transition: opacity .4s ease;
+    }
+
+    .video-bottom-right-cover.visible {
+      opacity: 1;
     }
 
     .top-bar {
@@ -691,7 +698,7 @@
       .center-controls { bottom: 24px; gap: 10px; }
       .skip-row { gap: 12px; }
       .progress-wrap { width: 85vw; }
-      .video-bottom-right-cover { width: 220px; height: 80px; }
+      .video-bottom-right-cover { width: 70%; height: 80px; }
     }
   </style>
 </head>
@@ -871,6 +878,7 @@
   const sentinel = document.getElementById("sentinel");
   const playerEl = document.getElementById("player");
   const stage = document.getElementById("stage");
+  const coverEl = document.querySelector(".video-bottom-right-cover");
   const searchInput = document.getElementById("searchInput");
 
   const allVideoTitles = document.getElementById("allVideoTitles");
@@ -919,6 +927,24 @@
   let controlsHidden = false;
   let hideCooldownTimer = null;
   let inEdgeZone = false;
+
+  let coverHideTimer = null;
+  const COVER_VISIBLE_MS = 5000;           // default for control interactions
+  const COVER_VISIBLE_MS_INITIAL = 15000;  // longer on player open
+
+  function showCover(durationMs) {
+    if (!coverEl) return;
+    coverEl.classList.add("visible");
+    if (coverHideTimer) {
+      clearTimeout(coverHideTimer);
+    }
+    const ms = durationMs || COVER_VISIBLE_MS;
+    coverHideTimer = setTimeout(() => {
+      coverEl.classList.remove("visible");
+      coverHideTimer = null;
+    }, ms);
+  }
+
 
   let metadataCache = {};
   let oldTitleCache = {};
@@ -1715,6 +1741,7 @@
 
   function togglePause() {
     if (!ytPlayer) return;
+    showCover();
 
     try {
       if (isPaused) {
@@ -1786,6 +1813,7 @@
 
   function skipBy(seconds) {
     if (!ytPlayer) return;
+    showCover();
 
     try {
       const cur = ytPlayer.getCurrentTime() || 0;
@@ -1815,6 +1843,7 @@
 
   progressTrack.addEventListener("click", e => {
     e.stopPropagation();
+    showCover();
 
     if (!ytPlayer) return;
 
@@ -1858,6 +1887,9 @@
     playerEl.classList.add("active");
     document.body.style.overflow = "hidden";
 
+    // Show the bottom-right cover for 5s when the player opens
+    showCover(COVER_VISIBLE_MS_INITIAL);
+
     if (ytApiReady) {
       mountPlayer(id);
     } else {
@@ -1875,6 +1907,14 @@
 
   async function closePlayer() {
     playerEl.classList.remove("active");
+
+    // Hide the cover and clear any pending timer
+    if (coverEl) coverEl.classList.remove("visible");
+    if (coverHideTimer) {
+      clearTimeout(coverHideTimer);
+      coverHideTimer = null;
+    }
+
 
     stopProgressLoop();
 
