@@ -2299,83 +2299,54 @@
 })();
 </script>
 
-<!-- ── App Download Banner (hidden inside the Android app) ── -->
-<div id="appDownloadBanner" class="app-download-banner">
-  <a href="https://kellysimiyu.github.io/Movies/MovieZone-v1.0.apk"
-     download="MovieZone-v1.0.apk"
-     class="app-download-btn"
-     id="appDownloadBtn">
-    <span class="app-download-icon">📱</span>
-    <span>Download Movie Zone App</span>
-  </a>
-  <button class="app-download-close" id="appDownloadClose" aria-label="Dismiss">×</button>
-</div>
+<!-- ── Small top-right App Download button (hidden inside the Android app) ── -->
+<a id="appDownloadBtn"
+   href="https://kellysimiyu.github.io/Movies/MovieZone-v1.0.apk"
+   download="MovieZone-v1.0.apk"
+   class="app-dl-btn"
+   title="Download the Movie Zone Android app">
+  <span class="app-dl-icon">📱</span><span class="app-dl-label">Get App</span>
+</a>
 <style>
-  .app-download-banner {
+  .app-dl-btn {
     position: fixed;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9999;
-    display: flex;
+    top: 12px;
+    right: 12px;
+    z-index: 100000;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 16px;
+    gap: 6px;
+    padding: 8px 12px;
     background: linear-gradient(135deg, #ff2d2d, #c91f1f);
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0,0,0,.5);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  }
-  .app-download-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
     color: #fff;
     text-decoration: none;
     font-weight: 700;
-    font-size: .95rem;
+    font-size: .82rem;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(255,45,45,.35), 0 2px 6px rgba(0,0,0,.4);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     white-space: nowrap;
+    transition: transform .15s ease, box-shadow .15s ease;
   }
-  .app-download-icon { font-size: 1.2rem; }
-  .app-download-close {
-    background: transparent;
-    border: none;
-    color: #fff;
-    font-size: 1.5rem;
-    line-height: 1;
-    cursor: pointer;
-    padding: 0 4px;
-    opacity: .8;
+  .app-dl-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(255,45,45,.45), 0 3px 8px rgba(0,0,0,.5);
   }
-  .app-download-close:hover { opacity: 1; }
+  .app-dl-btn:active { transform: translateY(0); }
+  .app-dl-icon { font-size: 1rem; line-height: 1; }
+  .app-dl-label { line-height: 1; }
   @media (max-width: 480px) {
-    .app-download-banner { bottom: 8px; padding: 10px 12px; }
-    .app-download-btn { font-size: .85rem; }
+    .app-dl-btn { top: 8px; right: 8px; padding: 6px 10px; font-size: .75rem; }
   }
 </style>
 <script>
 (function () {
   "use strict";
-  var banner = document.getElementById("appDownloadBanner");
-  var closeBtn = document.getElementById("appDownloadClose");
+  var btn = document.getElementById("appDownloadBtn");
+  if (!btn) return;
 
-  // Hide the banner if we are running inside the Movie Zone Android app.
   if (window.MovieZoneApp === true || navigator.userAgent.indexOf("MovieZoneApp") !== -1) {
-    if (banner) banner.style.display = "none";
-    return;
-  }
-
-  try {
-    if (localStorage.getItem("mz_app_banner_dismissed") === "1") {
-      if (banner) banner.style.display = "none";
-    }
-  } catch (e) {}
-
-  if (closeBtn) {
-    closeBtn.addEventListener("click", function () {
-      if (banner) banner.style.display = "none";
-      try { localStorage.setItem("mz_app_banner_dismissed", "1"); } catch (e) {}
-    });
+    btn.style.display = "none";
   }
 })();
 </script>
