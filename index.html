@@ -31,7 +31,7 @@
 
   <link rel="preconnect" href="https://img.youtube.com" crossorigin>
   <link rel="preconnect" href="https://www.youtube.com" crossorigin>
-  <link rel="preconnect" href="https://www.youtube-nocookie.com" crossorigin>
+  <link rel="preconnect" href="https://www.youtube.com" crossorigin>
   <link rel="dns-prefetch" href="https://img.youtube.com">
   <link rel="dns-prefetch" href="https://www.youtube.com">
 
@@ -1129,7 +1129,7 @@
 
     ytPlayer = new YT.Player("videoFrame", {
       videoId: id,
-      host: "https://www.youtube-nocookie.com",
+      host: "https://www.youtube.com",
 
       playerVars: {
         autoplay: 1,
@@ -1537,11 +1537,11 @@
 
     const request = enqueueOembed(async () => {
       const endpoint =
-        "https://www.youtube.com/oembed?url=" +
+        "https://noembed.com/embed?url=" +
         encodeURIComponent(
           "https://www.youtube.com/watch?v=" + video.id
         ) +
-        "&format=json";
+        "";
 
       const response = await fetch(endpoint);
 
