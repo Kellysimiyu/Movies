@@ -1824,15 +1824,12 @@
         completed++;
 
         // Update UI + schema every 50 videos (not every 20)
-        if (completed % 50 === 0) {
+                if (completed % 50 === 0) {
           updateProgressUI();
           scheduleSchemaUpdate();
           updateTitleIndexStatus();
-          if (currentCategory !== "all") {
-            const scrollPos = window.scrollY;
-            resetCatalogue();
-            requestAnimationFrame(() => window.scrollTo(0, scrollPos));
-          }
+          // Do NOT reset the catalogue here — that reorders cards mid-browse.
+          // Only refresh the counts at the top.
           applySearchFilter();
         }
       }
