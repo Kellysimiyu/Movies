@@ -770,6 +770,23 @@
     }
 
 
+
+    /* Browse-all titles: clickable */
+    #allVideoTitles li {
+      cursor: pointer;
+      padding: 9px 8px;
+      border-radius: 6px;
+      transition: background .15s ease, color .15s ease;
+    }
+    #allVideoTitles li:hover,
+    #allVideoTitles li:focus {
+      background: rgba(225, 29, 72, .12);
+      color: #fff;
+      outline: none;
+    }
+    #allVideoTitles li:active {
+      background: rgba(225, 29, 72, .22);
+    }
   </style>
 </head>
 
@@ -1095,6 +1112,19 @@
     if (!item) {
       item = document.createElement("li");
       item.dataset.videoId = video.id;
+      item.tabIndex = 0;
+      item.setAttribute("role", "button");
+      item.title = "Play: " + video.title;
+
+      item.addEventListener("click", function() {
+        openPlayer(video.id, video.title || "Movie Zone video");
+      });
+      item.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openPlayer(video.id, video.title || "Movie Zone video");
+        }
+      });
 
       titleElements.set(video.id, item);
       allVideoTitles.appendChild(item);
@@ -1105,7 +1135,7 @@
     titleCount.textContent = titleElements.size;
 
     titleIndexInfo.textContent =
-      titleElements.size + " actual YouTube video titles retrieved.";
+      titleElements.size + " actual YouTube video titles retrieved. Click any title to play it.";
   }
 
   /*
@@ -1131,7 +1161,7 @@
         allVideos.length + " videos.";
     } else {
       titleIndexInfo.textContent =
-        titleElements.size + " titles retrieved so far. More titles will appear automatically.";
+        titleElements.size + " titles retrieved so far. Click any title to play it.";
     }
 
     if (titleElements.size === 0) {
@@ -2189,56 +2219,7 @@
     requestAnimationFrame(maybeLoadMore);
   }
 
-  /* Shuffle cards every five minutes */
-
-  function shuffleCardPositions() {
-    if (playerEl.classList.contains("active")) return;
-
-    const cards = Array.from(
-      grid.querySelectorAll(":scope > .card")
-    );
-
-    if (cards.length < 2) return;
-
-    const oldPositions = new Map(
-      cards.map(card => [card, card.getBoundingClientRect()])
-    );
-
-    const offset = 1 + Math.floor(Math.random() * (cards.length - 1));
-
-    const shuffled = cards.slice(offset).concat(cards.slice(0, offset));
-
-    const fragment = document.createDocumentFragment();
-
-    shuffled.forEach(card => fragment.appendChild(card));
-    grid.appendChild(fragment);
-
-    shuffled.forEach(card => {
-      const before = oldPositions.get(card);
-      const after = card.getBoundingClientRect();
-
-      const dx = before.left - after.left;
-      const dy = before.top - after.top;
-
-      if (!dx && !dy) return;
-
-      card.style.transition = "none";
-      card.style.transform = `translate(${dx}px, ${dy}px)`;
-    });
-
-    requestAnimationFrame(() => {
-      shuffled.forEach(card => {
-        if (!card.style.transform) return;
-
-        card.style.transition = "transform 450ms ease";
-        card.style.transform = "";
-      });
-    });
-  }
-
-  window.setInterval(shuffleCardPositions, 300000);
-
-  /* Infinite scrolling */
+/* Infinite scrolling */
 
   let scrollCheckScheduled = false;
 
