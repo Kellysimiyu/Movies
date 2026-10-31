@@ -1012,7 +1012,7 @@
   const OLD_TITLE_CACHE_KEY = "mc_title_cache_v2";
   const CATEGORY_RULES_VERSION = 1;
 
-  const OEMBED_CONCURRENCY = 10;
+  const OEMBED_CONCURRENCY = 100;
   const PAGE_SIZE = 30;
   const SCROLL_TRIGGER_PX = 800;
   const EAGER_THUMBS = 6;
@@ -1028,6 +1028,7 @@
   let ytPlayer = null;
   let ytApiReady = false;
   let pendingVideoId = null;
+  let currentVideoId = null;
 
   let isPaused = false;
   let progressRAF = null;
@@ -1052,6 +1053,13 @@
     }, ms);
   }
 
+
+
+  // Load persisted dead-video list — skip these permanently
+  let deadVideoCache = {};
+  try {
+    deadVideoCache = JSON.parse(localStorage.getItem("mz_dead_videos") || "{}");
+  } catch (e) { deadVideoCache = {}; }
 
   let metadataCache = {};
   let oldTitleCache = {};
@@ -1106,6 +1114,7 @@
    */
   function appendVideoTitle(video) {
     if (!video || !isRealTitle(video.title)) return;
+    if (video.__dead) return;
 
     let item = titleElements.get(video.id);
 
@@ -1291,7 +1300,8 @@
 
       events: {
         onReady: onPlayerReady,
-        onStateChange: onPlayerStateChange
+        onStateChange: onPlayerStateChange,
+        onError: onPlayerError
       }
     });
   }
@@ -1562,6 +1572,14 @@
     const id = video.id;
     const titleText = video.title || "Loading title…";
 
+    // Skip dead videos — they'll be removed from the grid
+    if (video.__dead) {
+      const blank = document.createElement("span");
+      blank.style.display = "none";
+      blank.dataset.deadVideo = video.id;
+      return blank;
+    }
+
     const card = document.createElement("article");
     card.className = "card";
     card.dataset.videoId = id;
@@ -1729,7 +1747,9 @@
         error
       );
 
-      video.title = "Untitled video";
+      // Mark the video as dead (private, deleted, or unavailable)
+      video.__dead = true;
+      video.title = "Unavailable video";
       video.category = "movie";
 
       return video.title;
@@ -1750,73 +1770,90 @@
       video => !isRealTitle(video.title)
     );
 
-    let completed = 0;
+    if (pending.length === 0) {
+      metadataFinished = true;
+      updateVideoStructuredData();
+      updateTitleIndexStatus();
+      return;
+    }
+
     const total = pending.length;
-    const batchSize = 20;
+    let completed = 0;
+    let index = 0;
 
-    for (let i = 0; i < pending.length; i += batchSize) {
-      const batch = pending.slice(i, i + batchSize);
+    // Larger concurrency for speed
+    const CONCURRENCY = 100;
 
-      await Promise.all(batch.map(async video => {
-        await fetchVideoTitle(video);
-
-        if (!video.category) {
-          video.category = detectCategoryFromTitle(video.title);
-        }
-
-        if (isRealTitle(video.title)) {
-          updateExistingCard(video);
-          appendVideoTitle(video);
-        }
-      }));
-
-      completed += batch.length;
-
-      const movieCount = allVideos.filter(
-        video => video.category !== "music"
-      ).length;
-
-      const musicCount = allVideos.filter(
-        video => video.category === "music"
-      ).length;
-
+    function updateProgressUI() {
+      const movieCount = allVideos.filter(v => v.category !== "music").length;
+      const musicCount = allVideos.filter(v => v.category === "music").length;
       sectionSub.textContent =
         movieCount + " movie videos · " +
         musicCount + " music videos · retrieving titles " +
-        Math.min(completed, total) + "/" + total;
-
-      scheduleSchemaUpdate();
-      updateTitleIndexStatus();
-
-      if (currentCategory !== "all") {
-        const scrollPosition = window.scrollY;
-
-        resetCatalogue();
-
-        requestAnimationFrame(() => {
-          window.scrollTo(0, scrollPosition);
-        });
-      }
-
-      applySearchFilter();
+        completed + "/" + total;
     }
 
-    metadataFinished = true;
+    async function worker() {
+      while (true) {
+        const myIndex = index++;
+        if (myIndex >= pending.length) return;
 
+        const video = pending[myIndex];
+
+        try {
+          await fetchVideoTitle(video);
+
+          if (!video.category) {
+            video.category = detectCategoryFromTitle(video.title);
+          }
+
+          if (isRealTitle(video.title)) {
+            updateExistingCard(video);
+            appendVideoTitle(video);
+          }
+
+          // If the video is dead, remove its card from the grid immediately
+          if (video.__dead) {
+            const card = document.querySelector(
+              `.card[data-video-id="${CSS.escape(video.id)}"]`
+            );
+            if (card) card.remove();
+          }
+        } catch (e) {}
+
+        completed++;
+
+        // Update UI + schema every 50 videos (not every 20)
+        if (completed % 50 === 0) {
+          updateProgressUI();
+          scheduleSchemaUpdate();
+          updateTitleIndexStatus();
+          if (currentCategory !== "all") {
+            const scrollPos = window.scrollY;
+            resetCatalogue();
+            requestAnimationFrame(() => window.scrollTo(0, scrollPos));
+          }
+          applySearchFilter();
+        }
+      }
+    }
+
+    // Launch workers — each pulls from the shared index
+    const workers = [];
+    for (let w = 0; w < CONCURRENCY; w++) {
+      workers.push(worker());
+    }
+    await Promise.all(workers);
+
+    // Final update
+    metadataFinished = true;
     updateVideoStructuredData();
     updateTitleIndexStatus();
+    updateProgressUI();
 
-    const movieCount = allVideos.filter(
-      video => video.category !== "music"
-    ).length;
-
-    const musicCount = allVideos.filter(
-      video => video.category === "music"
-    ).length;
-
-    const titledCount = allVideos.filter(
-      video => isRealTitle(video.title)
-    ).length;
+    const movieCount = allVideos.filter(v => v.category !== "music").length;
+    const musicCount = allVideos.filter(v => v.category === "music").length;
+    const titledCount = allVideos.filter(v => isRealTitle(v.title)).length;
 
     sectionSub.textContent =
       movieCount + " movie videos · " +
@@ -1833,6 +1870,10 @@
     let visible = 0;
 
     cards.forEach(card => {
+      if (!card || card.dataset.deadVideo) {
+        if (card) card.style.display = "none";
+        return;
+      }
       const title = card.dataset.searchTitle || "";
       const show = !query || title.includes(query);
 
@@ -2018,6 +2059,49 @@
 
 
 
+
+  function onPlayerError(event) {
+    // YouTube iframe errors:
+    //   2   — invalid parameter (bad video ID)
+    //   5   — HTML5 player error
+    //   100 — video not found / private
+    //   101 / 150 — embedding disabled by owner
+    //   153 — referer header missing (rare)
+    console.warn("YouTube player error:", event.data, "for video", currentVideoId);
+
+    // Mark the currently-open video as dead so it doesn't appear again
+    if (currentVideoId) {
+      const dead = allVideos.find(v => v.id === currentVideoId);
+      if (dead) {
+        dead.__dead = true;
+        dead.__deadReason = "embed-" + event.data;
+        saveMetadata(dead.id, dead.title, dead.category);
+        // Persist the dead flag so future loads skip it
+        try {
+          const deadCache = JSON.parse(localStorage.getItem("mz_dead_videos") || "{}");
+          deadCache[dead.id] = event.data;
+          localStorage.setItem("mz_dead_videos", JSON.stringify(deadCache));
+        } catch (e) {}
+      }
+      // Remove the card from the grid
+      const card = document.querySelector(
+        `.card[data-video-id="${CSS.escape(currentVideoId)}"]`
+      );
+      if (card) card.remove();
+    }
+
+    // Close the player — the video doesn't work
+    setTimeout(() => {
+      if (typeof closePlayer === "function") {
+        closePlayer();
+        // Notify the user
+        setTimeout(() => {
+          alert("This video can't be played here. It has been removed from the catalogue.");
+        }, 500);
+      }
+    }, 1500);
+  }
+
   /* Player open and close */
 
   async function openPlayer(id, title) {
@@ -2041,6 +2125,8 @@
 
     // Show the bottom-right cover for 5s when the player opens
     showCover(COVER_VISIBLE_MS_INITIAL);
+
+    currentVideoId = id;
 
     if (ytApiReady) {
       mountPlayer(id);
@@ -2082,6 +2168,7 @@
 
     destroyPlayer();
     pendingVideoId = null;
+    currentVideoId = null;
 
     const shield = stage.querySelector(".click-shield");
 
@@ -2128,11 +2215,13 @@
   /* Category filtering */
 
   function categoryVideos() {
+    const alive = allVideos.filter(video => !video.__dead);
+
     if (currentCategory === "all") {
-      return allVideos;
+      return alive;
     }
 
-    return allVideos.filter(
+    return alive.filter(
       video => video.category === currentCategory
     );
   }
@@ -2358,6 +2447,11 @@
               video.category
             );
           }
+        }
+
+        // Skip videos marked dead from previous sessions
+        if (deadVideoCache[id]) {
+          continue;
         }
 
         allVideos.push(video);
