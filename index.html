@@ -472,26 +472,37 @@
     #stage .click-shield {
       position: absolute;
       inset: 0;
-      z-index: 99999;
+      z-index: 100;
       background: transparent;
       cursor: pointer;
     }
 
     .video-bottom-right-cover {
       position: absolute;
+      left: 0;
       right: 0;
       bottom: 0;
-      width: min(800px, 60%);
-      height: 100px;
-      z-index: 99999;
-      pointer-events: none;
+      width: 100%;
+      height: auto;
+      min-height: 68px;
+      z-index: 100001;   /* above click-shield (100) */
+      pointer-events: auto;  /* ALL clicks captured by the bar */
       backdrop-filter: blur(18px) saturate(120%);
       -webkit-backdrop-filter: blur(18px) saturate(120%);
-      background: linear-gradient(to top left,
-        rgba(0,0,0,.55), rgba(0,0,0,.30) 55%, transparent);
-      /* Hidden by default — becomes visible on player open + control interaction */
+      background: linear-gradient(to top,
+        rgba(0,0,0,.75), rgba(0,0,0,.45) 70%, rgba(0,0,0,.20));
       opacity: 0;
       transition: opacity .4s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 10px 16px 14px;
+      box-sizing: border-box;
+      gap: 8px;
+    }
+
+    .video-bottom-right-cover.visible {
+      opacity: 1;
     }
 
     .video-bottom-right-cover.visible {
@@ -530,34 +541,11 @@
       cursor: pointer;
     }
 
-    .center-controls {
-      position: absolute;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 100000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity .2s, visibility .2s;
-      pointer-events: none;
-    }
 
-    #player:hover .center-controls:not(.hiding) {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
 
-    #player .center-controls.hiding {
-      opacity: 0 !important;
-      visibility: hidden !important;
-      pointer-events: none !important;
-      transition: none !important;
-    }
+
+
+
 
     .skip-row {
       display: flex;
@@ -596,11 +584,24 @@
     }
 
     .progress-wrap {
-      width: min(560px, 70vw);
+      width: 100%;
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 0 4px;
+      padding: 0;
+      /* Collapsed by default — keeps the bar thin */
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height .25s ease, opacity .2s ease, margin-top .25s ease;
+      margin-top: 0;
+    }
+
+    /* When seeking, expand + fade in */
+    .video-bottom-right-cover.seeking .progress-wrap {
+      max-height: 30px;
+      opacity: 1;
+      margin-top: 6px;
     }
 
     .progress-track {
@@ -687,19 +688,88 @@
       .brand-tag { display: none; }
 
       .top-bar,
-      #player .center-controls:not(.hiding) {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-      }
+
 
       .skip-btn, .pause-btn { width: 56px; height: 56px; }
       .back-btn { width: 42px; height: 42px; font-size: 22px; }
-      .center-controls { bottom: 24px; gap: 10px; }
+
       .skip-row { gap: 12px; }
       .progress-wrap { width: 85vw; }
-      .video-bottom-right-cover { width: 70%; height: 80px; }
     }
+
+    /* Full-width bottom control bar */
+    .bar-buttons-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .bar-left, .bar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bar-right {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .extra-btn {
+      border: none;
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: inherit;
+      height: 46px;
+      white-space: nowrap;
+    }
+    .extra-btn:hover { background: rgba(255,255,255,.22); }
+    .extra-btn.active { background: rgba(225,29,72,.55); }
+
+    .res-menu {
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      margin-bottom: 8px;
+      background: rgba(20,20,20,.95);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
+      padding: 4px;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 100px;
+      z-index: 100001;
+    }
+    .res-menu.open { display: flex; }
+
+    .res-option {
+      border: none;
+      background: transparent;
+      color: #ddd;
+      font-size: 12px;
+      padding: 8px 12px;
+      text-align: left;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .res-option:hover, .res-option.active {
+      background: rgba(225,29,72,.4);
+      color: #fff;
+    }
+
+
   </style>
 </head>
 
@@ -808,61 +878,66 @@
 
     <div id="videoFrame"></div>
 
-    <div class="video-bottom-right-cover" aria-hidden="true"></div>
+    <div class="video-bottom-right-cover" aria-hidden="false">
+      <div class="bar-buttons-row">
+        <div class="bar-left">
+          <button class="skip-btn" id="skipBackBtn" aria-label="Rewind 10 seconds" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+            </svg>
+            <span class="skip-label">10</span>
+          </button>
 
-    <div class="top-bar">
-      <button class="back-btn" id="backBtn"
-        aria-label="Back to videos" title="Back to videos" type="button">
-        &#8592;
-      </button>
-    </div>
+          <button class="pause-btn" id="pauseBtn" aria-label="Pause" type="button">
+            <svg id="pauseIcon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+            </svg>
+            <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true" style="display:none">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </button>
 
-    <div class="center-controls" id="centerControls">
+          <button class="skip-btn" id="skipForwardBtn" aria-label="Forward 10 seconds" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
+            </svg>
+            <span class="skip-label">10</span>
+          </button>
+        </div>
 
-      <div class="skip-row">
-
-        <button class="skip-btn" id="skipBackBtn"
-          aria-label="Rewind 10 seconds" title="Rewind 10 seconds" type="button">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-          </svg>
-          <span class="skip-label">10</span>
-        </button>
-
-        <button class="pause-btn" id="pauseBtn"
-          aria-label="Pause" title="Pause" type="button">
-          <svg id="pauseIcon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
-          </svg>
-          <svg id="playIcon" viewBox="0 0 24 24"
-            aria-hidden="true" style="display:none">
-            <path d="M8 5v14l11-7z"/>
-          </svg>
-        </button>
-
-        <button class="skip-btn" id="skipForwardBtn"
-          aria-label="Forward 10 seconds" title="Forward 10 seconds" type="button">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
-          </svg>
-          <span class="skip-label">10</span>
-        </button>
-
+        <div class="bar-right">
+          <button class="extra-btn" id="resBtn" type="button" title="Change resolution">
+            🎚️ <span id="resLabel">Auto</span>
+          </button>
+          <button class="extra-btn" id="ccBtn" type="button" title="Toggle captions">
+            📝 CC
+          </button>
+          <div class="res-menu" id="resMenu">
+            <button class="res-option" data-quality="default" type="button">Auto</button>
+            <button class="res-option" data-quality="small" type="button">480p</button>
+            <button class="res-option" data-quality="medium" type="button">720p</button>
+            <button class="res-option" data-quality="large" type="button">1080p</button>
+          </div>
+        </div>
       </div>
 
       <div class="progress-wrap">
         <span class="progress-time" id="timeCurrent">0:00</span>
-
         <div class="progress-track" id="progressTrack"
-          role="progressbar" aria-valuemin="0" aria-valuemax="100"
-          aria-valuenow="0" title="Seek">
+             role="progressbar" aria-valuemin="0" aria-valuemax="100"
+             aria-valuenow="0" title="Seek">
           <div class="progress-fill" id="progressFill"></div>
         </div>
-
         <span class="progress-time" id="timeTotal">0:00</span>
       </div>
-
     </div>
+
+    <div class="top-bar">
+      <button class="back-btn" id="backBtn" aria-label="Back to videos" title="Back to videos" type="button">
+        &#8592;
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -878,7 +953,12 @@
   const sentinel = document.getElementById("sentinel");
   const playerEl = document.getElementById("player");
   const stage = document.getElementById("stage");
-  const coverEl = document.querySelector(".video-bottom-right-cover");
+    const coverEl = document.querySelector(".video-bottom-right-cover");
+  const resBtn = document.getElementById("resBtn");
+  const resLabel = document.getElementById("resLabel");
+  const resMenu = document.getElementById("resMenu");
+  const ccBtn = document.getElementById("ccBtn");
+
   const searchInput = document.getElementById("searchInput");
 
   const allVideoTitles = document.getElementById("allVideoTitles");
@@ -890,7 +970,17 @@
   const pauseBtn = document.getElementById("pauseBtn");
   const pauseIcon = document.getElementById("pauseIcon");
   const playIcon = document.getElementById("playIcon");
-  const centerControls = document.getElementById("centerControls");
+  const centerControls = (function() {
+    const el = document.getElementById("centerControls");
+    if (el) return el;
+    // Stub that silently accepts classList operations when element is gone
+    return {
+      classList: {
+        add: function(){}, remove: function(){},
+        toggle: function(){}, contains: function(){ return false; }
+      }
+    };
+  })();
   const progressTrack = document.getElementById("progressTrack");
   const progressFill = document.getElementById("progressFill");
   const timeCurrent = document.getElementById("timeCurrent");
@@ -1261,7 +1351,17 @@
 
     shield = document.createElement("div");
     shield.className = "click-shield";
-    shield.addEventListener("click", togglePause);
+    shield.addEventListener("click", function(e) {
+      // Ignore clicks that originate inside the control bar
+      var target = e.target;
+      while (target && target !== shield) {
+        if (target.classList && target.classList.contains("video-bottom-right-cover")) {
+          return; // Click inside the bar — don't pause
+        }
+        target = target.parentElement;
+      }
+      togglePause();
+    });
 
     stage.appendChild(shield);
   }
@@ -1756,6 +1856,7 @@
 
   pauseBtn.addEventListener("click", e => {
     e.stopPropagation();
+    e.preventDefault();
     togglePause();
   });
 
@@ -1811,9 +1912,25 @@
     }
   }, { passive: true });
 
+  let seekingHideTimer = null;
+  const SEEKING_VISIBLE_MS = 3000;
+
+  function showSeeking() {
+    if (!coverEl) return;
+    coverEl.classList.add("seeking");
+    if (seekingHideTimer) {
+      clearTimeout(seekingHideTimer);
+    }
+    seekingHideTimer = setTimeout(() => {
+      if (coverEl) coverEl.classList.remove("seeking");
+      seekingHideTimer = null;
+    }, SEEKING_VISIBLE_MS);
+  }
+
   function skipBy(seconds) {
     if (!ytPlayer) return;
     showCover();
+    showSeeking();
 
     try {
       const cur = ytPlayer.getCurrentTime() || 0;
@@ -1833,17 +1950,20 @@
 
   skipBackBtn.addEventListener("click", e => {
     e.stopPropagation();
+    e.preventDefault();
     skipBy(-SKIP_SECONDS);
   });
 
   skipFwdBtn.addEventListener("click", e => {
     e.stopPropagation();
+    e.preventDefault();
     skipBy(SKIP_SECONDS);
   });
 
   progressTrack.addEventListener("click", e => {
     e.stopPropagation();
     showCover();
+    showSeeking();
 
     if (!ytPlayer) return;
 
@@ -1865,6 +1985,8 @@
 
     hideControlsImmediately();
   });
+
+
 
   /* Player open and close */
 
@@ -2388,6 +2510,78 @@
   if (window.MovieZoneApp === true || navigator.userAgent.indexOf("MovieZoneApp") !== -1) {
     btn.style.display = "none";
   }
+
+  /* ── Resolution + captions controls ── */
+  (function initExtraControls() {
+    var rb = document.getElementById("resBtn");
+    var rm = document.getElementById("resMenu");
+    var rl = document.getElementById("resLabel");
+    var cb = document.getElementById("ccBtn");
+
+    if (rb) {
+      rb.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (rm) rm.classList.toggle("open");
+        if (typeof showCover === "function") showCover();
+      });
+    }
+
+    if (rm) {
+      var opts = rm.querySelectorAll(".res-option");
+      for (var i = 0; i < opts.length; i++) {
+        (function(opt) {
+          opt.addEventListener("click", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var q = opt.getAttribute("data-quality");
+            var label = opt.textContent.trim();
+            if (window.ytPlayer && typeof ytPlayer.setPlaybackQuality === "function") {
+              try { ytPlayer.setPlaybackQuality(q); } catch (err) {}
+            }
+            if (rl) rl.textContent = label;
+            var all = rm.querySelectorAll(".res-option");
+            for (var j = 0; j < all.length; j++) all[j].classList.remove("active");
+            opt.classList.add("active");
+            rm.classList.remove("open");
+            if (typeof showCover === "function") showCover();
+          });
+        })(opts[i]);
+      }
+    }
+
+    if (cb) {
+      cb.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!window.ytPlayer) return;
+        try {
+          if (!window.__captionsLoaded) {
+            ytPlayer.loadModule("captions");
+            window.__captionsLoaded = true;
+          }
+          window.__captionsOn = !window.__captionsOn;
+          if (window.__captionsOn) {
+            ytPlayer.setOption("captions", "track", {});
+            cb.classList.add("active");
+          } else {
+            ytPlayer.setOption("captions", "track", { languageCode: "" });
+            cb.classList.remove("active");
+          }
+        } catch (err) {}
+        if (typeof showCover === "function") showCover();
+      });
+    }
+
+    // Close the menu when clicking elsewhere
+    document.addEventListener("click", function(e) {
+      if (rm && rm.classList.contains("open") &&
+          !rm.contains(e.target) && e.target !== rb) {
+        rm.classList.remove("open");
+      }
+    });
+  })();
+
 })();
 </script>
 </body>
