@@ -589,7 +589,6 @@
       align-items: center;
       gap: 10px;
       padding: 0;
-      /* Collapsed by default — keeps the bar thin */
       max-height: 0;
       opacity: 0;
       overflow: hidden;
@@ -597,7 +596,8 @@
       margin-top: 0;
     }
 
-    /* When seeking, expand + fade in */
+    /* Show whenever the whole bar is visible, or when seeking */
+    .video-bottom-right-cover.visible .progress-wrap,
     .video-bottom-right-cover.seeking .progress-wrap {
       max-height: 30px;
       opacity: 1;
@@ -612,6 +612,10 @@
       border-radius: 3px;
       cursor: pointer;
       overflow: hidden;
+      padding: 8px 0;
+      margin: -8px 0;
+      background-clip: content-box;
+      box-sizing: content-box;
     }
 
     .progress-fill {
@@ -787,6 +791,30 @@
     #allVideoTitles li:active {
       background: rgba(225, 29, 72, .22);
     }
+
+    /* Permanent cover for YouTube's watermark — always visible */
+    .permanent-yt-cover {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 220px;
+      height: 70px;
+      z-index: 99998;
+      pointer-events: none;
+      background: linear-gradient(to top left,
+        rgba(0,0,0,.55) 0%,
+        rgba(0,0,0,.25) 50%,
+        transparent 100%);
+      border-radius: 12px 0 0 0;
+    }
+
+    /* On mobile, smaller */
+    @media (max-width: 480px) {
+      .permanent-yt-cover {
+        width: 160px;
+        height: 55px;
+      }
+    }
   </style>
 </head>
 
@@ -895,6 +923,8 @@
 
     <div id="videoFrame"></div>
 
+    <div class="permanent-yt-cover" aria-hidden="true"></div>
+
     <div class="video-bottom-right-cover" aria-hidden="false">
       <div class="bar-buttons-row">
         <div class="bar-left">
@@ -902,7 +932,7 @@
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
             </svg>
-            <span class="skip-label">10</span>
+            <span class="skip-label">30</span>
           </button>
 
           <button class="pause-btn" id="pauseBtn" aria-label="Pause" type="button">
@@ -918,7 +948,7 @@
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
             </svg>
-            <span class="skip-label">10</span>
+            <span class="skip-label">30</span>
           </button>
         </div>
 
@@ -1007,7 +1037,9 @@
   const navLinks = document.querySelectorAll(".nav-link");
 
   const SITE_URL = "https://kellysimiyu.github.io/Movies/";
-  const SKIP_SECONDS = 10;
+  const SKIP_SECONDS = 30;
+  const CUT_BEFORE_END_SECONDS = 25;   // Cut this many seconds before the end
+  let endCloseScheduled = false;
   const METADATA_CACHE_KEY = "movie_zone_metadata_v1";
   const OLD_TITLE_CACHE_KEY = "mc_title_cache_v2";
   const CATEGORY_RULES_VERSION = 1;
@@ -1039,6 +1071,7 @@
   let coverHideTimer = null;
   const COVER_VISIBLE_MS = 5000;           // default for control interactions
   const COVER_VISIBLE_MS_INITIAL = 15000;  // longer on player open
+  const COVER_VISIBLE_MS_HOVER = 30000;    // 30s after mouse hover/move
 
   function showCover(durationMs) {
     if (!coverEl) return;
@@ -1052,6 +1085,36 @@
       coverHideTimer = null;
     }, ms);
   }
+
+  function refreshCoverTimer(durationMs) {
+    if (!coverEl || !coverEl.classList.contains("visible")) return;
+    if (coverHideTimer) {
+      clearTimeout(coverHideTimer);
+    }
+    const ms = durationMs || COVER_VISIBLE_MS_HOVER;
+    coverHideTimer = setTimeout(() => {
+      coverEl.classList.remove("visible");
+      coverHideTimer = null;
+    }, ms);
+  }
+
+  // Hover over the player keeps the control bar alive (extends the timer)
+  if (playerEl) {
+    playerEl.addEventListener("mouseenter", function() {
+      if (coverEl && coverEl.classList.contains("visible")) {
+        refreshCoverTimer(COVER_VISIBLE_MS_HOVER);
+      } else if (coverEl) {
+        showCover(COVER_VISIBLE_MS_HOVER);
+      }
+    }, { passive: true });
+
+    playerEl.addEventListener("mousemove", function() {
+      if (coverEl && coverEl.classList.contains("visible")) {
+        refreshCoverTimer(COVER_VISIBLE_MS_HOVER);
+      }
+    }, { passive: true });
+  }
+
 
 
 
@@ -1339,6 +1402,15 @@
       updatePauseIcon();
       stopProgressLoop();
       updateProgressOnce();
+
+      // If the video ended, close the player to hide YouTube's end screen
+      if (event.data === YT.PlayerState.ENDED) {
+        setTimeout(function() {
+          if (typeof closePlayer === "function") {
+            closePlayer();
+          }
+        }, 500);
+      }
     }
   }
 
@@ -1364,6 +1436,17 @@
 
       progressFill.style.width = pct + "%";
       progressTrack.setAttribute("aria-valuenow", String(Math.round(pct)));
+
+      // Close the player before YouTube's end screen appears
+      if (dur > 0 && !endCloseScheduled && (dur - cur) <= CUT_BEFORE_END_SECONDS && cur > 5) {
+        endCloseScheduled = true;
+        try { ytPlayer.pauseVideo(); } catch (e) {}
+        setTimeout(function() {
+          if (typeof closePlayer === "function") {
+            closePlayer();
+          }
+        }, 200);
+      }
     } catch (e) {}
   }
 
@@ -2030,6 +2113,7 @@
 
   progressTrack.addEventListener("click", e => {
     e.stopPropagation();
+    e.preventDefault();
     showCover();
     showSeeking();
 
@@ -2037,11 +2121,9 @@
 
     try {
       const dur = ytPlayer.getDuration() || 0;
-
       if (dur <= 0) return;
 
       const rect = progressTrack.getBoundingClientRect();
-
       const ratio = Math.min(
         1,
         Math.max(0, (e.clientX - rect.left) / rect.width)
@@ -2051,13 +2133,10 @@
       updateProgressOnce();
     } catch (err) {}
 
-    hideControlsImmediately();
+    // Do NOT call hideControlsImmediately — keep bar visible after seek
   });
 
-
-
-
-  function onPlayerError(event) {
+function onPlayerError(event) {
     // YouTube iframe errors:
     //   2   — invalid parameter (bad video ID)
     //   5   — HTML5 player error
@@ -2124,6 +2203,7 @@
     showCover(COVER_VISIBLE_MS_INITIAL);
 
     currentVideoId = id;
+    endCloseScheduled = false;
 
     if (ytApiReady) {
       mountPlayer(id);
@@ -2166,6 +2246,7 @@
     destroyPlayer();
     pendingVideoId = null;
     currentVideoId = null;
+    endCloseScheduled = false;
 
     const shield = stage.querySelector(".click-shield");
 
