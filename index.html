@@ -2684,6 +2684,11 @@ function onPlayerError(event) {
         return videos;
       }, []);
 
+      // Newest videos first: new entries are appended to the end of
+      // catalog.json, so reverse the list so the most recently added
+      // videos appear at the top of the grid and the title catalogue.
+      allVideos.reverse();
+
       if (!allVideos.length) {
         countEl.textContent = "No videos";
         sectionSub.textContent = "Catalogue is empty";
