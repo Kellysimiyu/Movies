@@ -93,7 +93,7 @@ try:
     process = subprocess.Popen(
         cmd,
         stdout=subprocess.PIPE,
-        stderr=subprocess.DEVNULL,
+        stderr=None,
         text=True,
         bufsize=1
     )
