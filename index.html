@@ -2637,7 +2637,7 @@ function onPlayerError(event) {
 
   /* Load pre-generated catalogue */
 
-  fetch("catalog.json", { cache: "force-cache" })
+  fetch("catalog.json?v=" + Date.now(), { cache: "no-store" })
     .then(response => {
       if (!response.ok) {
         throw new Error("Could not load catalog.json");
