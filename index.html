@@ -34,7 +34,7 @@
   <link rel="dns-prefetch" href="https://img.youtube.com">
   <link rel="dns-prefetch" href="https://www.youtube.com">
 
-  <link rel="preload" href="urls.txt" as="fetch" crossorigin>
+  <link rel="preload" href="catalog.json" as="fetch" crossorigin>
 
   <script type="application/ld+json" id="websiteSchema">
   {
@@ -2634,124 +2634,70 @@ function onPlayerError(event) {
     maybeLoadMore();
   }
 
-  /* Load catalogue */
 
-  fetch("urls.txt", { cache: "force-cache" })
+  /* Load pre-generated catalogue */
+
+  fetch("catalog.json", { cache: "force-cache" })
     .then(response => {
       if (!response.ok) {
-        throw new Error("Could not load urls.txt");
+        throw new Error("Could not load catalog.json");
       }
-
-      return response.text();
+      return response.json();
     })
-    .then(text => {
-      const lines = text
-        .split(/\r?\n/)
-        .map(line => line.trim())
-        .filter(line => line && !line.startsWith("#"));
+    .then(catalog => {
+      if (!Array.isArray(catalog)) {
+        throw new Error("Invalid catalogue format");
+      }
 
       const seen = new Set();
 
-      allVideos = [];
-
-      for (const line of lines) {
-        let url = line;
-
-        const split = line.indexOf("|");
-
-        if (split > 0) {
-          const rawLabel = line
-            .slice(0, split)
-            .trim()
-            .toLowerCase();
-
-          const aliases = {
-            movies: "movie",
-            animations: "animation",
-            animated: "animation",
-            "science fiction": "sci-fi",
-            scifi: "sci-fi",
-            "sci fi": "sci-fi",
-            docs: "documentary",
-            documentaries: "documentary",
-            romcom: "comedy",
-            "rom-com": "comedy"
-          };
-
-          const supportedCategories = [
-            "movie", "animation", "action", "adventure",
-            "comedy", "crime", "documentary", "drama",
-            "family", "fantasy", "horror", "mystery",
-            "romance", "sci-fi", "thriller", "music"
-          ];
-
-          const label = aliases[rawLabel] || rawLabel;
-
-          if (supportedCategories.includes(label)) {
-            url = line.slice(split + 1).trim();
-          }
+      allVideos = catalog.reduce((videos, item) => {
+        if (!item || !item.id || !isRealTitle(item.title)) {
+          return videos;
         }
 
-        const id = getYouTubeId(url);
+        const id = String(item.id);
 
-        if (!id || seen.has(id)) continue;
+        if (!/^[\w-]+$/.test(id) || seen.has(id)) {
+          return videos;
+        }
 
         seen.add(id);
 
-        const video = {
-          url,
-          id,
-          title: "",
-          category: "movie"
-        };
+        // Category detection happens locally. No YouTube metadata request.
+        const title = String(item.title).trim();
+        const category = detectCategoryFromTitle(title);
 
-        const cached = getCachedMetadata(id);
-
-        if (cached && isRealTitle(cached.title)) {
-          video.title = cached.title;
-
-          if (
-            cached.version === CATEGORY_RULES_VERSION &&
-            cached.category
-          ) {
-            video.category = cached.category;
-          } else {
-            video.category = detectCategoryFromTitle(video.title);
-
-            saveMetadata(
-              id,
-              video.title,
-              video.category
-            );
-          }
-        }
-
-        // Skip videos marked dead from previous sessions
         if (deadVideoCache[id]) {
-          continue;
+          return videos;
         }
 
-        allVideos.push(video);
-      }
+        videos.push({
+          id,
+          title,
+          category,
+          url: item.url || "https://www.youtube.com/watch?v=" + id,
+          thumbnail: item.thumbnail ||
+            "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg"
+        });
+
+        return videos;
+      }, []);
 
       if (!allVideos.length) {
         countEl.textContent = "No videos";
-        sectionSub.textContent = "Nothing to show";
+        sectionSub.textContent = "Catalogue is empty";
 
         grid.innerHTML =
-          '<p class="error">Add valid YouTube video URLs to urls.txt.</p>';
+          '<p class="error">No valid videos found in catalog.json.</p>';
 
-        titleIndexInfo.textContent = "No videos were found.";
+        titleIndexInfo.textContent = "No videos found.";
         allVideoTitles.innerHTML = "";
-
         return;
       }
 
-      const cachedCount = allVideos.filter(
-        video => isRealTitle(video.title)
-      ).length;
-
-      const uncachedCount = allVideos.length - cachedCount;
+      // All metadata is already available.
+      metadataFinished = true;
 
       const movieCount = allVideos.filter(
         video => video.category !== "music"
@@ -2763,39 +2709,23 @@ function onPlayerError(event) {
 
       sectionSub.textContent =
         movieCount + " movie videos · " +
-        musicCount + " music videos";
+        musicCount + " music videos · catalogue ready";
 
-      /*
-       * Build the visible title catalogue immediately.
-       * Cached titles are available before new YouTube requests begin.
-       */
+      // Display all actual titles immediately.
       buildAllVideoTitles();
 
-      /*
-       * Publish structured data for titles already cached.
-       * More entries will be added as YouTube titles are retrieved.
-       */
+      // Update structured data using saved titles.
       updateVideoStructuredData();
 
-      // Render immediately without waiting for YouTube metadata.
+      // Render immediately.
       resetCatalogue();
       setupInfiniteScroll();
 
-      if (uncachedCount === 0) {
-        metadataFinished = true;
-
-        sectionSub.textContent =
-          movieCount + " movie videos · " +
-          musicCount + " music videos · cached";
-
-        updateVideoStructuredData();
-        updateTitleIndexStatus();
-      } else {
-        sectionSub.textContent =
-          allVideos.length + " videos · retrieving actual YouTube titles";
-
-        classifyVideosInBackground();
-      }
+      console.info(
+        "Movie Zone catalogue loaded:",
+        allVideos.length,
+        "videos. No metadata retrieval required."
+      );
     })
     .catch(error => {
       console.error("Catalogue loading error:", error);
@@ -2804,11 +2734,12 @@ function onPlayerError(event) {
       sectionSub.textContent = "Failed to load catalogue";
 
       grid.innerHTML =
-        '<p class="error">Could not load urls.txt. Keep it in the same folder as index.html.</p>';
+        '<p class="error">Could not load catalog.json. Ensure it is in the same folder as index.html.</p>';
 
       titleIndexInfo.textContent = "Could not load video titles.";
       allVideoTitles.innerHTML = "";
     });
+
 
 })();
 </script>
