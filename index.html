@@ -31,7 +31,6 @@
 
   <link rel="preconnect" href="https://img.youtube.com" crossorigin>
   <link rel="preconnect" href="https://www.youtube.com" crossorigin>
-  <link rel="preconnect" href="https://www.youtube.com" crossorigin>
   <link rel="dns-prefetch" href="https://img.youtube.com">
   <link rel="dns-prefetch" href="https://www.youtube.com">
 
@@ -261,6 +260,8 @@
       transition: transform .2s ease, background .2s ease,
         border-color .2s ease, box-shadow .2s ease;
       contain: layout style paint;
+      content-visibility: auto;
+      contain-intrinsic-size: 280px 190px;
     }
 
     .card:hover {
@@ -1126,6 +1127,7 @@
   const searchInput = document.getElementById("searchInput");
 
   const allVideoTitles = document.getElementById("allVideoTitles");
+  const titleIndex = document.querySelector(".title-index");
   const titleCount = document.getElementById("titleCount");
   const titleIndexInfo = document.getElementById("titleIndexInfo");
 
@@ -1161,11 +1163,12 @@
   const OLD_TITLE_CACHE_KEY = "mc_title_cache_v2";
   const CATEGORY_RULES_VERSION = 1;
 
-  const OEMBED_CONCURRENCY = 100;
+  // Bound metadata requests to keep the UI responsive and avoid request bursts.
+  const OEMBED_CONCURRENCY = 8;
   const PAGE_SIZE = 30;
   const SCROLL_TRIGGER_PX = 800;
-  const EAGER_THUMBS = 6;
-  const HIGH_PRIORITY_THUMBS = 3;
+  const EAGER_THUMBS = 2;
+  const HIGH_PRIORITY_THUMBS = 2;
 
   let searchQuery = "";
   let currentCategory = "all";
@@ -1342,25 +1345,33 @@
   }
 
   function updateTitleIndexStatus() {
-    titleCount.textContent = titleElements.size;
+    const retrievedCount = allVideos.filter(video => isRealTitle(video.title) && !video.__dead).length;
+    titleCount.textContent = retrievedCount;
 
     if (metadataFinished) {
       titleIndexInfo.textContent =
-        titleElements.size + " actual video titles retrieved from " +
-        allVideos.length + " videos.";
+        retrievedCount + " actual video titles retrieved from " +
+        allVideos.length + " videos. Expand this section to load the list.";
     } else {
       titleIndexInfo.textContent =
-        titleElements.size + " titles retrieved so far. Click any title to play it.";
+        retrievedCount + " titles retrieved so far. Expand this section to browse them.";
     }
 
-    if (titleElements.size === 0) {
-      allVideoTitles.innerHTML =
+    if (retrievedCount === 0) {
+      if (titleIndex && titleIndex.open) allVideoTitles.innerHTML =
         '<li class="title-index-empty">Waiting for video titles…</li>';
     } else {
       const emptyMessage = allVideoTitles.querySelector(".title-index-empty");
 
       if (emptyMessage) emptyMessage.remove();
     }
+  }
+
+  // Build the full title catalogue only when the visitor expands it.
+  if (titleIndex) {
+    titleIndex.addEventListener("toggle", function() {
+      if (titleIndex.open) buildAllVideoTitles();
+    });
   }
 
   function saveMetadata(id, title, category) {
@@ -1744,6 +1755,8 @@
     if (!allVideos.length) return;
 
     const graph = allVideos
+      .filter(video => isRealTitle(video.title))
+      .slice(0, 100)
       .map(buildVideoSchema)
       .filter(Boolean);
 
@@ -1934,7 +1947,14 @@
         ) +
         "";
 
-      const response = await fetch(endpoint);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      let response;
+      try {
+        response = await fetch(endpoint, { signal: controller.signal, cache: "force-cache" });
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       if (!response.ok) {
         throw new Error("Could not retrieve video title");
@@ -1998,8 +2018,8 @@
     let completed = 0;
     let index = 0;
 
-    // Larger concurrency for speed
-    const CONCURRENCY = 100;
+    // A small worker pool keeps the interface responsive.
+    const CONCURRENCY = OEMBED_CONCURRENCY;
 
     function updateProgressUI() {
       const movieCount = allVideos.filter(v => v.category !== "music").length;
@@ -2041,7 +2061,7 @@
         completed++;
 
         // Update UI + schema every 50 videos (not every 20)
-                if (completed % 50 === 0) {
+                if (completed % 100 === 0) {
           updateProgressUI();
           scheduleSchemaUpdate();
           updateTitleIndexStatus();
@@ -2063,6 +2083,7 @@
     metadataFinished = true;
     updateVideoStructuredData();
     updateTitleIndexStatus();
+    if (titleIndex && titleIndex.open) buildAllVideoTitles();
     updateProgressUI();
 
     const movieCount = allVideos.filter(v => v.category !== "music").length;
@@ -2357,6 +2378,7 @@ function onPlayerError(event) {
   }
 
   async function closePlayer() {
+    try { if (ytPlayer && typeof ytPlayer.pauseVideo === "function") ytPlayer.pauseVideo(); } catch (e) {}
     playerEl.classList.remove("active");
 
     // Hide the cover and clear any pending timer
