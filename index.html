@@ -815,6 +815,34 @@
         height: 55px;
       }
     }
+
+    .player-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      z-index: 99999;
+      opacity: 1;
+      transition: opacity .3s ease;
+    }
+    .player-loading.hidden { opacity: 0; pointer-events: none; }
+    .player-loading .spinner-big {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255,45,45,.2);
+      border-top-color: #ff2d2d;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    /* Fullscreen button — same style as extra-btn, slightly wider for icon */
+    #fsBtn {
+      min-width: 46px;
+      font-size: 18px;
+      padding: 8px 10px;
+    }
   </style>
 </head>
 
@@ -923,6 +951,10 @@
 
     <div id="videoFrame"></div>
 
+    <div class="player-loading" id="playerLoading">
+      <div class="spinner-big"></div>
+    </div>
+
     <div class="permanent-yt-cover" aria-hidden="true"></div>
 
     <div class="video-bottom-right-cover" aria-hidden="false">
@@ -953,6 +985,9 @@
         </div>
 
         <div class="bar-right">
+          <button class="extra-btn" id="fsBtn" type="button" title="Toggle fullscreen">
+            ⛶
+          </button>
           <button class="extra-btn" id="resBtn" type="button" title="Change resolution">
             🎚️ <span id="resLabel">Auto</span>
           </button>
@@ -1350,7 +1385,7 @@
       host: "https://www.youtube.com",
 
       playerVars: {
-        autoplay: 1,
+        autoplay: 0,  // Don't autoplay — we control when playback starts
         controls: 0,
         disablekb: 1,
         fs: 1,
@@ -1394,6 +1429,12 @@
       updatePauseIcon();
       updateTimeTotal();
       startProgressLoop();
+
+      // Hide the loading spinner ONLY when the video is actually rendering
+      var loadingEl = document.getElementById("playerLoading");
+      if (loadingEl) {
+        loadingEl.classList.add("hidden");
+      }
     } else if (
       event.data === YT.PlayerState.PAUSED ||
       event.data === YT.PlayerState.ENDED
@@ -2211,11 +2252,13 @@ function onPlayerError(event) {
       pendingVideoId = id;
     }
 
-    try {
-      if (playerEl.requestFullscreen) {
-        await playerEl.requestFullscreen();
-      }
-    } catch (e) {}
+    // Skip requestFullscreen — the Activity is already immersive fullscreen.
+    // Requesting it again on the WebView adds 200-500ms startup delay.
+    // try {
+    //   if (playerEl.requestFullscreen) {
+    //     await playerEl.requestFullscreen();
+    //   }
+    // } catch (e) {}
 
     setTimeout(ensureClickShield, 0);
   }
@@ -2243,10 +2286,17 @@ function onPlayerError(event) {
 
     centerControls.classList.remove("hiding");
 
-    destroyPlayer();
+    // DON'T destroy player — keep it alive for instant reuse on next open
+    // destroyPlayer();
     pendingVideoId = null;
     currentVideoId = null;
     endCloseScheduled = false;
+
+    var loadingEl = document.getElementById("playerLoading");
+    if (loadingEl) loadingEl.classList.remove("hidden");
+
+    var loadingEl = document.getElementById("playerLoading");
+    if (loadingEl) loadingEl.classList.remove("hidden");
 
     const shield = stage.querySelector(".click-shield");
 
@@ -2261,11 +2311,12 @@ function onPlayerError(event) {
 
     updatePauseIcon();
 
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      }
-    } catch (e) {}
+    // Skip exitFullscreen — no request means no exit needed
+    // try {
+    //   if (document.fullscreenElement) {
+    //     await document.exitFullscreen();
+    //   }
+    // } catch (e) {}
   }
 
   document.getElementById("backBtn").addEventListener(
@@ -2670,6 +2721,54 @@ function onPlayerError(event) {
     var rm = document.getElementById("resMenu");
     var rl = document.getElementById("resLabel");
     var cb = document.getElementById("ccBtn");
+    var fb = document.getElementById("fsBtn");
+
+    // Fullscreen toggle
+    if (fb) {
+      fb.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var playerEl = document.getElementById("player");
+        if (!playerEl) return;
+
+        try {
+          if (document.fullscreenElement) {
+            // Exit fullscreen
+            document.exitFullscreen().then(function() {
+              fb.textContent = "⛶";
+              fb.title = "Enter fullscreen";
+            }).catch(function() {});
+          } else {
+            // Enter fullscreen
+            if (playerEl.requestFullscreen) {
+              playerEl.requestFullscreen().then(function() {
+                fb.textContent = "🗗";
+                fb.title = "Exit fullscreen";
+              }).catch(function() {});
+            } else if (playerEl.webkitRequestFullscreen) {
+              playerEl.webkitRequestFullscreen();
+              fb.textContent = "🗗";
+            }
+          }
+        } catch (err) {
+          console.warn("Fullscreen toggle failed:", err);
+        }
+        if (typeof showCover === "function") showCover();
+      });
+    }
+
+    // Listen for fullscreen change (user pressed ESC or system)
+    document.addEventListener("fullscreenchange", function() {
+      if (fb) {
+        if (document.fullscreenElement) {
+          fb.textContent = "🗗";
+          fb.title = "Exit fullscreen";
+        } else {
+          fb.textContent = "⛶";
+          fb.title = "Enter fullscreen";
+        }
+      }
+    });
 
     if (rb) {
       rb.addEventListener("click", function(e) {
