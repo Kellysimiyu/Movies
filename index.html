@@ -843,6 +843,88 @@
       font-size: 18px;
       padding: 8px 10px;
     }
+
+    /* ── TV / D-pad Focus Indicators ── */
+    .card:focus,
+    .card:focus-visible {
+      outline: 4px solid #ff2d2d;
+      outline-offset: 3px;
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 32px rgba(255,45,45,.45);
+      z-index: 10;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    /* Small cursor arrow indicator */
+    .card:focus::before {
+      content: "▶";
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      color: #ff2d2d;
+      font-size: 20px;
+      z-index: 20;
+      text-shadow: 0 2px 4px rgba(0,0,0,.8);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.15); }
+    }
+
+    /* Nav links on focus */
+    .nav-link:focus {
+      outline: 3px solid #ff2d2d;
+      background: rgba(255,45,45,.25);
+      color: #fff;
+    }
+
+    /* Buttons and inputs */
+    button:focus,
+    input:focus,
+    summary:focus,
+    a:focus {
+      outline: 3px solid #ff2d2d;
+      outline-offset: 2px;
+    }
+
+    /* Title index items (browse all) */
+    #allVideoTitles li:focus {
+      outline: 3px solid #ff2d2d;
+      background: rgba(255,45,45,.25);
+      color: #fff;
+    }
+
+    /* Player control buttons */
+    .skip-btn:focus,
+    .pause-btn:focus,
+    .extra-btn:focus,
+    .back-btn:focus {
+      outline: 3px solid #ffffff;
+      background: rgba(255,45,45,.55) !important;
+      transform: scale(1.05);
+    }
+
+    /* Make sure cards are positioned for the ::before pseudo-element */
+    .card {
+      position: relative;
+    }
+
+    /* Hide scrollbar on TV for cleaner look */
+    @media (pointer: none), (hover: none) {
+      body {
+        scrollbar-width: none;
+      }
+      body::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    /* Scroll focused card into view smoothly */
+    .card:focus {
+      scroll-margin: 100px;
+    }
   </style>
 </head>
 
@@ -860,23 +942,23 @@
     </a>
 
     <nav class="main-nav" aria-label="Video categories">
-      <button class="nav-link active" type="button" data-category="all">All</button>
-      <button class="nav-link" type="button" data-category="movie">Movies</button>
-      <button class="nav-link" type="button" data-category="animation">Animation</button>
-      <button class="nav-link" type="button" data-category="action">Action</button>
-      <button class="nav-link" type="button" data-category="adventure">Adventure</button>
-      <button class="nav-link" type="button" data-category="comedy">Comedy</button>
-      <button class="nav-link" type="button" data-category="crime">Crime</button>
-      <button class="nav-link" type="button" data-category="documentary">Documentary</button>
-      <button class="nav-link" type="button" data-category="drama">Drama</button>
-      <button class="nav-link" type="button" data-category="family">Family</button>
-      <button class="nav-link" type="button" data-category="fantasy">Fantasy</button>
-      <button class="nav-link" type="button" data-category="horror">Horror</button>
-      <button class="nav-link" type="button" data-category="mystery">Mystery</button>
-      <button class="nav-link" type="button" data-category="romance">Romance</button>
-      <button class="nav-link" type="button" data-category="sci-fi">Sci-Fi</button>
-      <button class="nav-link" type="button" data-category="thriller">Thriller</button>
-      <button class="nav-link" type="button" data-category="music">Music</button>
+      <button class="nav-link active" type="button" data-category="all" tabindex="0">All</button>
+      <button class="nav-link" type="button" data-category="movie" tabindex="0">Movies</button>
+      <button class="nav-link" type="button" data-category="animation" tabindex="0">Animation</button>
+      <button class="nav-link" type="button" data-category="action" tabindex="0">Action</button>
+      <button class="nav-link" type="button" data-category="adventure" tabindex="0">Adventure</button>
+      <button class="nav-link" type="button" data-category="comedy" tabindex="0">Comedy</button>
+      <button class="nav-link" type="button" data-category="crime" tabindex="0">Crime</button>
+      <button class="nav-link" type="button" data-category="documentary" tabindex="0">Documentary</button>
+      <button class="nav-link" type="button" data-category="drama" tabindex="0">Drama</button>
+      <button class="nav-link" type="button" data-category="family" tabindex="0">Family</button>
+      <button class="nav-link" type="button" data-category="fantasy" tabindex="0">Fantasy</button>
+      <button class="nav-link" type="button" data-category="horror" tabindex="0">Horror</button>
+      <button class="nav-link" type="button" data-category="mystery" tabindex="0">Mystery</button>
+      <button class="nav-link" type="button" data-category="romance" tabindex="0">Romance</button>
+      <button class="nav-link" type="button" data-category="sci-fi" tabindex="0">Sci-Fi</button>
+      <button class="nav-link" type="button" data-category="thriller" tabindex="0">Thriller</button>
+      <button class="nav-link" type="button" data-category="music" tabindex="0">Music</button>
     </nav>
 
     <div class="search-wrap">
@@ -1708,6 +1790,8 @@
     card.className = "card";
     card.dataset.videoId = id;
     card.dataset.category = video.category || "movie";
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
 
     const thumb = document.createElement("div");
     thumb.className = "thumb";
@@ -1757,6 +1841,15 @@
     thumb.addEventListener("keydown", e => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
+        openPlayer(id, video.title || "Movie Zone video");
+      }
+    });
+
+    // Card-level focus + Enter/OK handler (needed for TV D-pad)
+    card.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " " || e.keyCode === 13) {
+        e.preventDefault();
+        e.stopPropagation();
         openPlayer(id, video.title || "Movie Zone video");
       }
     });
@@ -2373,6 +2466,39 @@ function onPlayerError(event) {
 
     renderBatch();
   }
+
+
+  // Auto-scroll nav to keep focused item visible (TV D-pad)
+  document.querySelectorAll(".nav-link").forEach(function(link) {
+    link.addEventListener("focus", function() {
+      var rect = link.getBoundingClientRect();
+      var nav = link.parentElement;
+      if (!nav) return;
+      var navRect = nav.getBoundingClientRect();
+      if (rect.left < navRect.left) {
+        nav.scrollLeft -= (navRect.left - rect.left + 20);
+      } else if (rect.right > navRect.right) {
+        nav.scrollLeft += (rect.right - navRect.right + 20);
+      }
+    });
+  });
+
+  // Ensure search input is reachable via keyboard
+  var searchIn = document.getElementById("searchInput");
+  if (searchIn && !searchIn.hasAttribute("tabindex")) {
+    searchIn.setAttribute("tabindex", "0");
+  }
+
+
+  // Handle Enter/OK key on nav links (some TV WebViews send keydown instead of click)
+  document.querySelectorAll(".nav-link").forEach(function(link) {
+    link.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" || e.keyCode === 13) {
+        e.preventDefault();
+        link.click();
+      }
+    });
+  });
 
   navLinks.forEach(link => {
     link.addEventListener("click", () => {
