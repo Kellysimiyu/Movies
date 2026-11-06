@@ -215,6 +215,7 @@
       color: var(--text-dim);
       margin-left: auto;
       white-space: nowrap;
+      padding-right: 90px;
     }
 
     .page {
@@ -529,7 +530,11 @@
       pointer-events: none;
     }
 
-    #player:hover .top-bar {
+    /* Show the back button whenever the bottom bar is visible too,
+       so touch / TV users can always reach it. */
+    #player:hover .top-bar,
+    .video-bottom-right-cover.visible ~ .top-bar,
+    .video-bottom-right-cover.seeking ~ .top-bar {
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
@@ -967,7 +972,7 @@
     </summary>
 
     <p class="title-index-info" id="titleIndexInfo">
-      Video titles will appear here as they are retrieved.
+      Expand to load all video titles.
     </p>
 
     <ol id="allVideoTitles">
@@ -1136,11 +1141,15 @@
   let captionsOn = false;
 
   let scrollCheckScheduled = false;
-  let schemaUpdateTimer = null;
 
   const titleElements = new Map();
 
-  // Persistent dead-video list
+  /* ── Device detection ─────────────────────────────────────────────── */
+  const isTouchOnly = window.matchMedia("(hover: none)").matches;
+  const isInApp = window.MovieZoneApp === true ||
+    navigator.userAgent.indexOf("MovieZoneApp") !== -1;
+
+  /* ── Persistent dead-video list ───────────────────────────────────── */
   let deadVideoCache = {};
   try {
     deadVideoCache = JSON.parse(localStorage.getItem("mz_dead_videos") || "{}");
@@ -1178,6 +1187,7 @@
     }, SEEKING_VISIBLE_MS);
   }
 
+  // Hover support (desktop)
   playerEl.addEventListener("mouseenter", function() {
     if (!coverEl) return;
     if (coverEl.classList.contains("visible")) {
@@ -1233,6 +1243,10 @@
     return null;
   }
 
+  function isFullscreenActive() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+  }
+
   /* ── YouTube IFrame API (lazy) ────────────────────────────────────── */
   function ensureYouTubeApi() {
     if (ytApiReady || ytApiLoading) return;
@@ -1255,8 +1269,14 @@
   function mountPlayer(id) {
     destroyPlayer();
 
-    const container = document.getElementById("videoFrame");
-    container.innerHTML = "";
+    let container = document.getElementById("videoFrame");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "videoFrame";
+      stage.insertBefore(container, stage.firstChild);
+    } else {
+      container.innerHTML = "";
+    }
 
     ytPlayer = new YT.Player("videoFrame", {
       videoId: id,
@@ -1288,6 +1308,16 @@
     }
     ytPlayer = null;
     window.ytPlayer = null;
+  }
+
+  function resizeYtPlayerToStage() {
+    if (!ytPlayer || typeof ytPlayer.setSize !== "function") return;
+    try {
+      const rect = stage.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        ytPlayer.setSize(Math.round(rect.width), Math.round(rect.height));
+      }
+    } catch (e) {}
   }
 
   function onPlayerReady() {
@@ -1404,12 +1434,30 @@
     const shield = document.createElement("div");
     shield.className = "click-shield";
     shield.addEventListener("click", function(e) {
+      // Ignore clicks inside the control bar
       let target = e.target;
       while (target && target !== shield) {
         if (target.classList && target.classList.contains("video-bottom-right-cover")) return;
         target = target.parentElement;
       }
-      togglePause();
+
+      if (isTouchOnly) {
+        // Touch: tap toggles control bar visibility (like YouTube mobile).
+        if (coverEl.classList.contains("visible")) {
+          coverEl.classList.remove("visible");
+          if (coverHideTimer) { clearTimeout(coverHideTimer); coverHideTimer = null; }
+        } else {
+          showCover(COVER_VISIBLE_MS_HOVER);
+        }
+      } else {
+        // Mouse: hover already shows the bar, so a click means pause.
+        // If for some reason it's hidden, show it first (more discoverable).
+        if (!coverEl.classList.contains("visible")) {
+          showCover();
+        } else {
+          togglePause();
+        }
+      }
     });
     stage.appendChild(shield);
   }
@@ -1516,6 +1564,14 @@
     try { if (ytPlayer && typeof ytPlayer.pauseVideo === "function") ytPlayer.pauseVideo(); } catch (e) {}
     playerEl.classList.remove("active");
 
+    // Exit fullscreen if we're still in it (e.g. video ended while fullscreen).
+    if (isFullscreenActive()) {
+      try {
+        if (document.exitFullscreen) document.exitFullscreen().catch(function () {});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } catch (e) {}
+    }
+
     if (coverEl) coverEl.classList.remove("visible");
     if (coverHideTimer) { clearTimeout(coverHideTimer); coverHideTimer = null; }
 
@@ -1544,7 +1600,12 @@
 
   document.addEventListener("keydown", e => {
     if (!playerEl.classList.contains("active")) return;
+
     if (e.key === "Escape") {
+      // If we're in fullscreen, let the browser exit first.
+      // Don't also close the player — that would produce a jarring
+      // "fullscreen transition + player teardown" collision.
+      if (isFullscreenActive()) return;
       closePlayer();
     } else if (e.key === "ArrowLeft") {
       e.preventDefault();
@@ -1557,6 +1618,12 @@
       togglePause();
     }
   });
+
+  // Keep YouTube's canvas in sync with the stage size (rotation, resize)
+  window.addEventListener("resize", function() {
+    if (!playerEl.classList.contains("active")) return;
+    resizeYtPlayerToStage();
+  }, { passive: true });
 
   /* ── Category detection ───────────────────────────────────────────── */
   const categoryNames = {
@@ -1922,13 +1989,13 @@
       });
     }
 
-    // Toggle captions ON/OFF
+    // Captions toggle — module is loaded lazily, then track is selected
+    // from the tracklist via onPlayerApiChange().
     function applyCaptions() {
       if (!ytPlayer || typeof ytPlayer.loadModule !== "function") return;
       try {
         if (captionsOn) {
           ytPlayer.loadModule("captions");
-          // Track selection happens in onPlayerApiChange
         } else {
           try { ytPlayer.setOption("captions", "track", {}); } catch (e) {}
           try { ytPlayer.unloadModule("captions"); } catch (e) {}
@@ -1947,36 +2014,60 @@
       });
     }
 
-    // Fullscreen toggle
-    if (fsBtn) {
-      fsBtn.addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        try {
-          if (document.fullscreenElement) {
-            document.exitFullscreen().catch(function() {});
-          } else if (playerEl.requestFullscreen) {
-            playerEl.requestFullscreen().catch(function() {});
-          } else if (playerEl.webkitRequestFullscreen) {
-            playerEl.webkitRequestFullscreen();
-          }
-        } catch (err) {}
-        showCover();
-      });
+    // Fullscreen button — hidden inside the APK (immersive activity),
+    // and hidden on browsers without the Fullscreen API.
+    const canFullscreen = !!(
+      playerEl.requestFullscreen ||
+      playerEl.webkitRequestFullscreen
+    );
+
+    function handleFsChange() {
+      const isFs = isFullscreenActive();
+      if (fsBtn) {
+        fsBtn.textContent = isFs ? "🗗" : "⛶";
+        fsBtn.title = isFs ? "Exit fullscreen" : "Enter fullscreen";
+      }
+
+      // Force YouTube to recalculate its internal video canvas.
+      // Without this the iframe stalls / stops responding to clicks
+      // for ~200-500ms after the fullscreen transition.
+      resizeYtPlayerToStage();
+      setTimeout(resizeYtPlayerToStage, 100);
+      setTimeout(resizeYtPlayerToStage, 350);
+
+      // Re-show the bar once the transition has settled.
+      setTimeout(function() {
+        if (playerEl.classList.contains("active")) showCover();
+      }, 350);
     }
 
-    document.addEventListener("fullscreenchange", function() {
-      if (!fsBtn) return;
-      if (document.fullscreenElement) {
-        fsBtn.textContent = "🗗";
-        fsBtn.title = "Exit fullscreen";
-      } else {
-        fsBtn.textContent = "⛶";
-        fsBtn.title = "Enter fullscreen";
-      }
-    });
+    document.addEventListener("fullscreenchange", handleFsChange);
+    document.addEventListener("webkitfullscreenchange", handleFsChange);
 
-    // Close res menu on outside click
+    if (fsBtn) {
+      if (isInApp || !canFullscreen) {
+        fsBtn.style.display = "none";
+      } else {
+        fsBtn.addEventListener("click", function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          try {
+            if (isFullscreenActive()) {
+              if (document.exitFullscreen) document.exitFullscreen().catch(function () {});
+              else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            } else if (playerEl.requestFullscreen) {
+              playerEl.requestFullscreen().catch(function () {});
+            } else if (playerEl.webkitRequestFullscreen) {
+              playerEl.webkitRequestFullscreen();
+            }
+          } catch (err) {}
+          // No showCover() here — handleFsChange() shows it after the
+          // transition settles. Calling it now makes the bar flicker.
+        });
+      }
+    }
+
+    // Close resolution menu on outside click
     document.addEventListener("click", function(e) {
       if (resMenu && resMenu.classList.contains("open") &&
           !resMenu.contains(e.target) && e.target !== resBtn) {
@@ -2012,7 +2103,6 @@
         return videos;
       }, []);
 
-      // Newest first
       allVideos.reverse();
 
       if (!allVideos.length) {
@@ -2032,7 +2122,6 @@
         movieCount + " movie videos · " +
         musicCount + " music videos · catalogue ready";
 
-      // Title counter shown immediately; full list is built lazily on expand.
       titleCount.textContent = allVideos.length;
       titleIndexInfo.textContent = allVideos.length +
         " video titles available. Expand this section to load the list.";
