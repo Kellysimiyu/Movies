@@ -34,8 +34,6 @@
   <link rel="dns-prefetch" href="https://img.youtube.com">
   <link rel="dns-prefetch" href="https://www.youtube.com">
 
-  <link rel="preload" href="catalog.json" as="fetch" crossorigin>
-
   <script type="application/ld+json" id="websiteSchema">
   {
     "@context": "https://schema.org",
@@ -253,6 +251,7 @@
     }
 
     .card {
+      position: relative;
       border-radius: var(--radius);
       overflow: hidden;
       background: var(--bg-card);
@@ -351,8 +350,6 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Complete video title catalogue */
-
     .title-index {
       margin-top: 45px;
       padding: 20px;
@@ -385,16 +382,30 @@
     }
 
     #allVideoTitles li {
-      padding: 9px 4px;
+      cursor: pointer;
+      padding: 9px 8px;
+      border-radius: 6px;
       color: var(--text-dim);
       font-size: .9rem;
       border-bottom: 1px solid var(--border);
       line-height: 1.5;
       overflow-wrap: anywhere;
+      transition: background .15s ease, color .15s ease;
     }
 
     #allVideoTitles li:last-child {
       border-bottom: none;
+    }
+
+    #allVideoTitles li:hover,
+    #allVideoTitles li:focus {
+      background: rgba(225, 29, 72, .12);
+      color: #fff;
+      outline: none;
+    }
+
+    #allVideoTitles li:active {
+      background: rgba(225, 29, 72, .22);
     }
 
     .title-index-empty {
@@ -486,8 +497,8 @@
       width: 100%;
       height: auto;
       min-height: 68px;
-      z-index: 100001;   /* above click-shield (100) */
-      pointer-events: auto;  /* ALL clicks captured by the bar */
+      z-index: 100001;
+      pointer-events: auto;
       backdrop-filter: blur(18px) saturate(120%);
       -webkit-backdrop-filter: blur(18px) saturate(120%);
       background: linear-gradient(to top,
@@ -500,10 +511,6 @@
       padding: 10px 16px 14px;
       box-sizing: border-box;
       gap: 8px;
-    }
-
-    .video-bottom-right-cover.visible {
-      opacity: 1;
     }
 
     .video-bottom-right-cover.visible {
@@ -541,12 +548,6 @@
       justify-content: center;
       cursor: pointer;
     }
-
-
-
-
-
-
 
     .skip-row {
       display: flex;
@@ -597,7 +598,6 @@
       margin-top: 0;
     }
 
-    /* Show whenever the whole bar is visible, or when seeking */
     .video-bottom-right-cover.visible .progress-wrap,
     .video-bottom-right-cover.seeking .progress-wrap {
       max-height: 30px;
@@ -692,9 +692,6 @@
       .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
       .brand-tag { display: none; }
 
-      .top-bar,
-
-
       .skip-btn, .pause-btn { width: 56px; height: 56px; }
       .back-btn { width: 42px; height: 42px; font-size: 22px; }
 
@@ -702,7 +699,6 @@
       .progress-wrap { width: 85vw; }
     }
 
-    /* Full-width bottom control bar */
     .bar-buttons-row {
       display: flex;
       align-items: center;
@@ -774,26 +770,6 @@
       color: #fff;
     }
 
-
-
-    /* Browse-all titles: clickable */
-    #allVideoTitles li {
-      cursor: pointer;
-      padding: 9px 8px;
-      border-radius: 6px;
-      transition: background .15s ease, color .15s ease;
-    }
-    #allVideoTitles li:hover,
-    #allVideoTitles li:focus {
-      background: rgba(225, 29, 72, .12);
-      color: #fff;
-      outline: none;
-    }
-    #allVideoTitles li:active {
-      background: rgba(225, 29, 72, .22);
-    }
-
-    /* Permanent cover for YouTube's watermark — always visible */
     .permanent-yt-cover {
       position: absolute;
       right: 0;
@@ -809,7 +785,6 @@
       border-radius: 12px 0 0 0;
     }
 
-    /* On mobile, smaller */
     @media (max-width: 480px) {
       .permanent-yt-cover {
         width: 160px;
@@ -838,14 +813,12 @@
       animation: spin .8s linear infinite;
     }
 
-    /* Fullscreen button — same style as extra-btn, slightly wider for icon */
     #fsBtn {
       min-width: 46px;
       font-size: 18px;
       padding: 8px 10px;
     }
 
-    /* ── TV / D-pad Focus Indicators ── */
     .card:focus,
     .card:focus-visible {
       outline: 4px solid #ff2d2d;
@@ -856,7 +829,6 @@
       transition: transform .15s ease, box-shadow .15s ease;
     }
 
-    /* Small cursor arrow indicator */
     .card:focus::before {
       content: "▶";
       position: absolute;
@@ -874,14 +846,12 @@
       50% { opacity: 0.7; transform: scale(1.15); }
     }
 
-    /* Nav links on focus */
     .nav-link:focus {
       outline: 3px solid #ff2d2d;
       background: rgba(255,45,45,.25);
       color: #fff;
     }
 
-    /* Buttons and inputs */
     button:focus,
     input:focus,
     summary:focus,
@@ -890,14 +860,12 @@
       outline-offset: 2px;
     }
 
-    /* Title index items (browse all) */
     #allVideoTitles li:focus {
       outline: 3px solid #ff2d2d;
       background: rgba(255,45,45,.25);
       color: #fff;
     }
 
-    /* Player control buttons */
     .skip-btn:focus,
     .pause-btn:focus,
     .extra-btn:focus,
@@ -907,12 +875,6 @@
       transform: scale(1.05);
     }
 
-    /* Make sure cards are positioned for the ::before pseudo-element */
-    .card {
-      position: relative;
-    }
-
-    /* Hide scrollbar on TV for cleaner look */
     @media (pointer: none), (hover: none) {
       body {
         scrollbar-width: none;
@@ -922,7 +884,6 @@
       }
     }
 
-    /* Scroll focused card into view smoothly */
     .card:focus {
       scroll-margin: 100px;
     }
@@ -999,8 +960,6 @@
 
   <div class="grid" id="grid"></div>
 
-  <!-- Browse all retrieved video titles -->
-
   <details class="title-index">
     <summary>
       Browse All Video Titles
@@ -1012,7 +971,7 @@
     </p>
 
     <ol id="allVideoTitles">
-      <li class="title-index-empty">Loading video titles…</li>
+      <li class="title-index-empty">Expand to load titles.</li>
     </ol>
   </details>
 
@@ -1043,7 +1002,7 @@
     <div class="video-bottom-right-cover" aria-hidden="false">
       <div class="bar-buttons-row">
         <div class="bar-left">
-          <button class="skip-btn" id="skipBackBtn" aria-label="Rewind 10 seconds" type="button">
+          <button class="skip-btn" id="skipBackBtn" aria-label="Rewind 30 seconds" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
             </svg>
@@ -1059,7 +1018,7 @@
             </svg>
           </button>
 
-          <button class="skip-btn" id="skipForwardBtn" aria-label="Forward 10 seconds" type="button">
+          <button class="skip-btn" id="skipForwardBtn" aria-label="Forward 30 seconds" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
             </svg>
@@ -1068,17 +1027,13 @@
         </div>
 
         <div class="bar-right">
-          <button class="extra-btn" id="fsBtn" type="button" title="Toggle fullscreen">
-            ⛶
-          </button>
+          <button class="extra-btn" id="fsBtn" type="button" title="Toggle fullscreen">⛶</button>
           <button class="extra-btn" id="resBtn" type="button" title="Change resolution">
             🎚️ <span id="resLabel">Auto</span>
           </button>
-          <button class="extra-btn" id="ccBtn" type="button" title="Toggle captions">
-            📝 CC
-          </button>
+          <button class="extra-btn" id="ccBtn" type="button" title="Toggle captions">📝 CC</button>
           <div class="res-menu" id="resMenu">
-            <button class="res-option" data-quality="default" type="button">Auto</button>
+            <button class="res-option active" data-quality="default" type="button">Auto</button>
             <button class="res-option" data-quality="small" type="button">480p</button>
             <button class="res-option" data-quality="medium" type="button">720p</button>
             <button class="res-option" data-quality="large" type="button">1080p</button>
@@ -1110,6 +1065,7 @@
 (function() {
   "use strict";
 
+  /* ── Element references ───────────────────────────────────────────── */
   const grid = document.getElementById("grid");
   const countEl = document.getElementById("count");
   const sectionSub = document.getElementById("sectionSub");
@@ -1118,11 +1074,8 @@
   const sentinel = document.getElementById("sentinel");
   const playerEl = document.getElementById("player");
   const stage = document.getElementById("stage");
-    const coverEl = document.querySelector(".video-bottom-right-cover");
-  const resBtn = document.getElementById("resBtn");
-  const resLabel = document.getElementById("resLabel");
-  const resMenu = document.getElementById("resMenu");
-  const ccBtn = document.getElementById("ccBtn");
+  const coverEl = document.querySelector(".video-bottom-right-cover");
+  const playerLoading = document.getElementById("playerLoading");
 
   const searchInput = document.getElementById("searchInput");
 
@@ -1136,17 +1089,6 @@
   const pauseBtn = document.getElementById("pauseBtn");
   const pauseIcon = document.getElementById("pauseIcon");
   const playIcon = document.getElementById("playIcon");
-  const centerControls = (function() {
-    const el = document.getElementById("centerControls");
-    if (el) return el;
-    // Stub that silently accepts classList operations when element is gone
-    return {
-      classList: {
-        add: function(){}, remove: function(){},
-        toggle: function(){}, contains: function(){ return false; }
-      }
-    };
-  })();
   const progressTrack = document.getElementById("progressTrack");
   const progressFill = document.getElementById("progressFill");
   const timeCurrent = document.getElementById("timeCurrent");
@@ -1155,50 +1097,60 @@
   const sectionTitle = document.getElementById("sectionTitle");
   const navLinks = document.querySelectorAll(".nav-link");
 
+  /* ── Constants ────────────────────────────────────────────────────── */
   const SITE_URL = "https://kellysimiyu.github.io/Movies/";
   const SKIP_SECONDS = 30;
-  const CUT_BEFORE_END_SECONDS = 25;   // Cut this many seconds before the end
-  let endCloseScheduled = false;
-  const METADATA_CACHE_KEY = "movie_zone_metadata_v1";
-  const OLD_TITLE_CACHE_KEY = "mc_title_cache_v2";
-  const CATEGORY_RULES_VERSION = 1;
-
-  // Bound metadata requests to keep the UI responsive and avoid request bursts.
-  const OEMBED_CONCURRENCY = 8;
+  const CUT_BEFORE_END_SECONDS = 25;
   const PAGE_SIZE = 30;
   const SCROLL_TRIGGER_PX = 800;
   const EAGER_THUMBS = 2;
   const HIGH_PRIORITY_THUMBS = 2;
 
+  const COVER_VISIBLE_MS = 5000;
+  const COVER_VISIBLE_MS_INITIAL = 15000;
+  const COVER_VISIBLE_MS_HOVER = 30000;
+  const SEEKING_VISIBLE_MS = 3000;
+
+  /* ── State ────────────────────────────────────────────────────────── */
   let searchQuery = "";
   let currentCategory = "all";
   let allVideos = [];
   let renderedCount = 0;
   let loadingBatch = false;
-  let metadataFinished = false;
+  let catalogLoaded = false;
+  let titlesBuilt = false;
 
   let ytPlayer = null;
   let ytApiReady = false;
+  let ytApiLoading = false;
   let pendingVideoId = null;
   let currentVideoId = null;
 
   let isPaused = false;
   let progressRAF = null;
-  let controlsHidden = false;
-  let hideCooldownTimer = null;
-  let inEdgeZone = false;
+  let endCloseScheduled = false;
 
   let coverHideTimer = null;
-  const COVER_VISIBLE_MS = 5000;           // default for control interactions
-  const COVER_VISIBLE_MS_INITIAL = 15000;  // longer on player open
-  const COVER_VISIBLE_MS_HOVER = 30000;    // 30s after mouse hover/move
+  let seekingHideTimer = null;
 
+  let captionsOn = false;
+
+  let scrollCheckScheduled = false;
+  let schemaUpdateTimer = null;
+
+  const titleElements = new Map();
+
+  // Persistent dead-video list
+  let deadVideoCache = {};
+  try {
+    deadVideoCache = JSON.parse(localStorage.getItem("mz_dead_videos") || "{}");
+  } catch (e) { deadVideoCache = {}; }
+
+  /* ── Cover bar visibility helpers ─────────────────────────────────── */
   function showCover(durationMs) {
     if (!coverEl) return;
     coverEl.classList.add("visible");
-    if (coverHideTimer) {
-      clearTimeout(coverHideTimer);
-    }
+    if (coverHideTimer) clearTimeout(coverHideTimer);
     const ms = durationMs || COVER_VISIBLE_MS;
     coverHideTimer = setTimeout(() => {
       coverEl.classList.remove("visible");
@@ -1208,9 +1160,7 @@
 
   function refreshCoverTimer(durationMs) {
     if (!coverEl || !coverEl.classList.contains("visible")) return;
-    if (coverHideTimer) {
-      clearTimeout(coverHideTimer);
-    }
+    if (coverHideTimer) clearTimeout(coverHideTimer);
     const ms = durationMs || COVER_VISIBLE_MS_HOVER;
     coverHideTimer = setTimeout(() => {
       coverEl.classList.remove("visible");
@@ -1218,248 +1168,83 @@
     }, ms);
   }
 
-  // Hover over the player keeps the control bar alive (extends the timer)
-  if (playerEl) {
-    playerEl.addEventListener("mouseenter", function() {
-      if (coverEl && coverEl.classList.contains("visible")) {
-        refreshCoverTimer(COVER_VISIBLE_MS_HOVER);
-      } else if (coverEl) {
-        showCover(COVER_VISIBLE_MS_HOVER);
-      }
-    }, { passive: true });
-
-    playerEl.addEventListener("mousemove", function() {
-      if (coverEl && coverEl.classList.contains("visible")) {
-        refreshCoverTimer(COVER_VISIBLE_MS_HOVER);
-      }
-    }, { passive: true });
+  function showSeeking() {
+    if (!coverEl) return;
+    coverEl.classList.add("seeking");
+    if (seekingHideTimer) clearTimeout(seekingHideTimer);
+    seekingHideTimer = setTimeout(() => {
+      if (coverEl) coverEl.classList.remove("seeking");
+      seekingHideTimer = null;
+    }, SEEKING_VISIBLE_MS);
   }
 
+  playerEl.addEventListener("mouseenter", function() {
+    if (!coverEl) return;
+    if (coverEl.classList.contains("visible")) {
+      refreshCoverTimer(COVER_VISIBLE_MS_HOVER);
+    } else {
+      showCover(COVER_VISIBLE_MS_HOVER);
+    }
+  }, { passive: true });
 
+  playerEl.addEventListener("mousemove", function() {
+    if (coverEl && coverEl.classList.contains("visible")) {
+      refreshCoverTimer(COVER_VISIBLE_MS_HOVER);
+    }
+  }, { passive: true });
 
-
-  // Load persisted dead-video list — skip these permanently
-  let deadVideoCache = {};
-  try {
-    deadVideoCache = JSON.parse(localStorage.getItem("mz_dead_videos") || "{}");
-  } catch (e) { deadVideoCache = {}; }
-
-  let metadataCache = {};
-  let oldTitleCache = {};
-
-  /*
-   * Store references to title elements.
-   * This prevents duplicate titles from being appended.
-   */
-  const titleElements = new Map();
-
-  try {
-    metadataCache = JSON.parse(
-      localStorage.getItem(METADATA_CACHE_KEY) || "{}"
-    );
-  } catch (e) {
-    metadataCache = {};
-  }
-
-  try {
-    oldTitleCache = JSON.parse(
-      localStorage.getItem(OLD_TITLE_CACHE_KEY) || "{}"
-    );
-  } catch (e) {
-    oldTitleCache = {};
-  }
-
-  function saveMetadataCache() {
-    try {
-      localStorage.setItem(
-        METADATA_CACHE_KEY,
-        JSON.stringify(metadataCache)
-      );
-    } catch (e) {}
+  /* ── Helpers ──────────────────────────────────────────────────────── */
+  function formatTime(seconds) {
+    if (!isFinite(seconds) || seconds < 0) seconds = 0;
+    const total = Math.floor(seconds);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    if (h > 0) {
+      return h + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    }
+    return m + ":" + String(s).padStart(2, "0");
   }
 
   function isRealTitle(title) {
     if (!title || typeof title !== "string") return false;
-
     const cleaned = title.trim();
-
     if (!cleaned) return false;
     if (/^untitled video$/i.test(cleaned)) return false;
     if (/^video\s*\d+$/i.test(cleaned)) return false;
     if (/^movie zone video$/i.test(cleaned)) return false;
     if (/^loading title/i.test(cleaned)) return false;
-
     return true;
   }
 
-  /*
-   * Add or update one title in the complete HTML title catalogue.
-   */
-  function appendVideoTitle(video) {
-    if (!video || !isRealTitle(video.title)) return;
-    if (video.__dead) return;
-
-    let item = titleElements.get(video.id);
-
-    if (!item) {
-      item = document.createElement("li");
-      item.dataset.videoId = video.id;
-      item.tabIndex = 0;
-      item.setAttribute("role", "button");
-      item.title = "Play: " + video.title;
-
-      item.addEventListener("click", function() {
-        openPlayer(video.id, video.title || "Movie Zone video");
-      });
-      item.addEventListener("keydown", function(e) {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          openPlayer(video.id, video.title || "Movie Zone video");
-        }
-      });
-
-      titleElements.set(video.id, item);
-      allVideoTitles.appendChild(item);
-    }
-
-    item.textContent = video.title;
-
-    titleCount.textContent = titleElements.size;
-
-    titleIndexInfo.textContent =
-      titleElements.size + " actual YouTube video titles retrieved. Click any title to play it.";
-  }
-
-  /*
-   * Build the title catalogue from all currently available titles.
-   */
-  function buildAllVideoTitles() {
-    allVideoTitles.innerHTML = "";
-    titleElements.clear();
-
-    allVideos.forEach(video => {
-      appendVideoTitle(video);
-    });
-
-    updateTitleIndexStatus();
-  }
-
-  function updateTitleIndexStatus() {
-    const retrievedCount = allVideos.filter(video => isRealTitle(video.title) && !video.__dead).length;
-    titleCount.textContent = retrievedCount;
-
-    if (metadataFinished) {
-      titleIndexInfo.textContent =
-        retrievedCount + " actual video titles retrieved from " +
-        allVideos.length + " videos. Expand this section to load the list.";
-    } else {
-      titleIndexInfo.textContent =
-        retrievedCount + " titles retrieved so far. Expand this section to browse them.";
-    }
-
-    if (retrievedCount === 0) {
-      if (titleIndex && titleIndex.open) allVideoTitles.innerHTML =
-        '<li class="title-index-empty">Waiting for video titles…</li>';
-    } else {
-      const emptyMessage = allVideoTitles.querySelector(".title-index-empty");
-
-      if (emptyMessage) emptyMessage.remove();
-    }
-  }
-
-  // Build the full title catalogue only when the visitor expands it.
-  if (titleIndex) {
-    titleIndex.addEventListener("toggle", function() {
-      if (titleIndex.open) buildAllVideoTitles();
-    });
-  }
-
-  function saveMetadata(id, title, category) {
-    if (!isRealTitle(title)) return;
-
-    metadataCache[id] = {
-      title,
-      category,
-      version: CATEGORY_RULES_VERSION
-    };
-
-    saveMetadataCache();
-  }
-
-  function getCachedMetadata(id) {
-    const item = metadataCache[id];
-
-    if (
-      item &&
-      typeof item === "object" &&
-      isRealTitle(item.title)
-    ) {
-      return item;
-    }
-
-    if (isRealTitle(oldTitleCache[id])) {
-      return {
-        title: oldTitleCache[id],
-        category: "",
-        version: 0
-      };
-    }
-
+  function getYouTubeId(url) {
+    try {
+      const parsed = new URL(url);
+      const host = parsed.hostname.toLowerCase();
+      if (host === "youtu.be") {
+        return parsed.pathname.split("/").filter(Boolean)[0] || null;
+      }
+      if (host === "youtube.com" || host.endsWith(".youtube.com") || host === "youtube-nocookie.com") {
+        if (parsed.searchParams.has("v")) return parsed.searchParams.get("v");
+        const match = parsed.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]+)/);
+        return match ? match[1] : null;
+      }
+    } catch (e) { return null; }
     return null;
   }
 
-  const oembedQueue = [];
-  const inFlightTitles = new Map();
-  let oembedActive = 0;
-
-  function enqueueOembed(task) {
-    return new Promise((resolve, reject) => {
-      oembedQueue.push({ task, resolve, reject });
-      drainOembedQueue();
-    });
+  /* ── YouTube IFrame API (lazy) ────────────────────────────────────── */
+  function ensureYouTubeApi() {
+    if (ytApiReady || ytApiLoading) return;
+    ytApiLoading = true;
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
   }
-
-  function drainOembedQueue() {
-    while (oembedActive < OEMBED_CONCURRENCY && oembedQueue.length) {
-      const item = oembedQueue.shift();
-      oembedActive++;
-
-      Promise.resolve()
-        .then(item.task)
-        .then(item.resolve)
-        .catch(item.reject)
-        .finally(() => {
-          oembedActive--;
-          drainOembedQueue();
-        });
-    }
-  }
-
-  function formatTime(seconds) {
-    if (!isFinite(seconds) || seconds < 0) seconds = 0;
-
-    const total = Math.floor(seconds);
-    const h = Math.floor(total / 3600);
-    const m = Math.floor((total % 3600) / 60);
-    const s = total % 60;
-
-    if (h > 0) {
-      return h + ":" + String(m).padStart(2, "0") + ":" +
-        String(s).padStart(2, "0");
-    }
-
-    return m + ":" + String(s).padStart(2, "0");
-  }
-
-  /* YouTube iframe API */
-
-  const ytTag = document.createElement("script");
-  ytTag.src = "https://www.youtube.com/iframe_api";
-  document.head.appendChild(ytTag);
 
   window.onYouTubeIframeAPIReady = function() {
     ytApiReady = true;
-
+    ytApiLoading = false;
     if (pendingVideoId) {
       const id = pendingVideoId;
       pendingVideoId = null;
@@ -1476,9 +1261,8 @@
     ytPlayer = new YT.Player("videoFrame", {
       videoId: id,
       host: "https://www.youtube.com",
-
       playerVars: {
-        autoplay: 0,  // Don't autoplay — we control when playback starts
+        autoplay: 0,
         controls: 0,
         disablekb: 1,
         fs: 1,
@@ -1488,32 +1272,29 @@
         iv_load_policy: 3,
         origin: window.location.origin
       },
-
       events: {
         onReady: onPlayerReady,
         onStateChange: onPlayerStateChange,
-        onError: onPlayerError
+        onError: onPlayerError,
+        onApiChange: onPlayerApiChange
       }
     });
+    window.ytPlayer = ytPlayer;
   }
 
   function destroyPlayer() {
     if (ytPlayer && typeof ytPlayer.destroy === "function") {
-      try {
-        ytPlayer.destroy();
-      } catch (e) {}
+      try { ytPlayer.destroy(); } catch (e) {}
     }
-
     ytPlayer = null;
+    window.ytPlayer = null;
   }
 
   function onPlayerReady() {
-    try {
-      ytPlayer.playVideo();
-    } catch (e) {}
-
+    try { ytPlayer.playVideo(); } catch (e) {}
     updateTimeTotal();
     startProgressLoop();
+    if (captionsOn) applyCaptions();
   }
 
   function onPlayerStateChange(event) {
@@ -1522,43 +1303,66 @@
       updatePauseIcon();
       updateTimeTotal();
       startProgressLoop();
-
-      // Hide the loading spinner ONLY when the video is actually rendering
-      var loadingEl = document.getElementById("playerLoading");
-      if (loadingEl) {
-        loadingEl.classList.add("hidden");
-      }
-    } else if (
-      event.data === YT.PlayerState.PAUSED ||
-      event.data === YT.PlayerState.ENDED
-    ) {
+      if (playerLoading) playerLoading.classList.add("hidden");
+    } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
       isPaused = true;
       updatePauseIcon();
       stopProgressLoop();
       updateProgressOnce();
-
-      // If the video ended, close the player to hide YouTube's end screen
       if (event.data === YT.PlayerState.ENDED) {
-        setTimeout(function() {
-          if (typeof closePlayer === "function") {
-            closePlayer();
-          }
-        }, 500);
+        setTimeout(function() { closePlayer(); }, 500);
       }
     }
   }
 
+  // Called when a module (like captions) finishes loading.
+  function onPlayerApiChange() {
+    if (!captionsOn || !ytPlayer) return;
+    try {
+      const tracks = ytPlayer.getOption("captions", "tracklist") || [];
+      if (tracks.length) {
+        ytPlayer.setOption("captions", "track", {
+          languageCode: tracks[0].languageCode
+        });
+      }
+    } catch (e) {}
+  }
+
+  function onPlayerError(event) {
+    console.warn("YouTube player error:", event.data, "for video", currentVideoId);
+
+    if (currentVideoId) {
+      const dead = allVideos.find(v => v.id === currentVideoId);
+      if (dead) {
+        dead.__dead = true;
+        dead.__deadReason = "embed-" + event.data;
+        try {
+          const deadCache = JSON.parse(localStorage.getItem("mz_dead_videos") || "{}");
+          deadCache[dead.id] = event.data;
+          localStorage.setItem("mz_dead_videos", JSON.stringify(deadCache));
+        } catch (e) {}
+      }
+      const card = document.querySelector(
+        `.card[data-video-id="${CSS.escape(currentVideoId)}"]`
+      );
+      if (card) card.remove();
+    }
+
+    setTimeout(() => {
+      closePlayer();
+      setTimeout(() => {
+        alert("This video can't be played here. It has been removed from the catalogue.");
+      }, 500);
+    }, 1500);
+  }
+
   function updateTimeTotal() {
     if (!ytPlayer || typeof ytPlayer.getDuration !== "function") return;
-
-    try {
-      timeTotal.textContent = formatTime(ytPlayer.getDuration() || 0);
-    } catch (e) {}
+    try { timeTotal.textContent = formatTime(ytPlayer.getDuration() || 0); } catch (e) {}
   }
 
   function updateProgressOnce() {
     if (!ytPlayer) return;
-
     try {
       const cur = ytPlayer.getCurrentTime() || 0;
       const dur = ytPlayer.getDuration() || 0;
@@ -1567,19 +1371,13 @@
       timeTotal.textContent = formatTime(dur);
 
       const pct = dur > 0 ? Math.min(100, (cur / dur) * 100) : 0;
-
       progressFill.style.width = pct + "%";
       progressTrack.setAttribute("aria-valuenow", String(Math.round(pct)));
 
-      // Close the player before YouTube's end screen appears
       if (dur > 0 && !endCloseScheduled && (dur - cur) <= CUT_BEFORE_END_SECONDS && cur > 5) {
         endCloseScheduled = true;
         try { ytPlayer.pauseVideo(); } catch (e) {}
-        setTimeout(function() {
-          if (typeof closePlayer === "function") {
-            closePlayer();
-          }
-        }, 200);
+        setTimeout(function() { closePlayer(); }, 200);
       }
     } catch (e) {}
   }
@@ -1602,89 +1400,176 @@
   }
 
   function ensureClickShield() {
-    let shield = stage.querySelector(".click-shield");
-
-    if (shield) return;
-
-    shield = document.createElement("div");
+    if (stage.querySelector(".click-shield")) return;
+    const shield = document.createElement("div");
     shield.className = "click-shield";
     shield.addEventListener("click", function(e) {
-      // Ignore clicks that originate inside the control bar
-      var target = e.target;
+      let target = e.target;
       while (target && target !== shield) {
-        if (target.classList && target.classList.contains("video-bottom-right-cover")) {
-          return; // Click inside the bar — don't pause
-        }
+        if (target.classList && target.classList.contains("video-bottom-right-cover")) return;
         target = target.parentElement;
       }
       togglePause();
     });
-
     stage.appendChild(shield);
   }
 
-  /* YouTube URL parsing */
-
-  function getYouTubeId(url) {
-    try {
-      const parsed = new URL(url);
-      const host = parsed.hostname.toLowerCase();
-
-      if (host === "youtu.be") {
-        return parsed.pathname.split("/").filter(Boolean)[0] || null;
-      }
-
-      if (
-        host === "youtube.com" ||
-        host.endsWith(".youtube.com") ||
-        host === "youtube-nocookie.com"
-      ) {
-        if (parsed.searchParams.has("v")) {
-          return parsed.searchParams.get("v");
-        }
-
-        const match = parsed.pathname.match(
-          /^\/(?:shorts|embed|live)\/([\w-]+)/
-        );
-
-        return match ? match[1] : null;
-      }
-    } catch (e) {
-      return null;
+  /* ── Pause / play / skip ──────────────────────────────────────────── */
+  function updatePauseIcon() {
+    if (isPaused) {
+      pauseIcon.style.display = "none";
+      playIcon.style.display = "";
+      pauseBtn.setAttribute("aria-label", "Play");
+      pauseBtn.title = "Play";
+    } else {
+      pauseIcon.style.display = "";
+      playIcon.style.display = "none";
+      pauseBtn.setAttribute("aria-label", "Pause");
+      pauseBtn.title = "Pause";
     }
-
-    return null;
   }
 
-  /* Category detection */
+  function togglePause() {
+    if (!ytPlayer) return;
+    showCover();
+    try {
+      if (isPaused) ytPlayer.playVideo();
+      else ytPlayer.pauseVideo();
+    } catch (e) {}
+  }
 
+  pauseBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    e.preventDefault();
+    togglePause();
+  });
+
+  function skipBy(seconds) {
+    if (!ytPlayer) return;
+    showCover();
+    showSeeking();
+    try {
+      const cur = ytPlayer.getCurrentTime() || 0;
+      const dur = ytPlayer.getDuration() || 0;
+      let target = cur + seconds;
+      if (target < 0) target = 0;
+      if (dur > 0 && target > dur) target = dur;
+      ytPlayer.seekTo(target, true);
+      updateProgressOnce();
+    } catch (e) {}
+  }
+
+  skipBackBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    e.preventDefault();
+    skipBy(-SKIP_SECONDS);
+  });
+
+  skipFwdBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    e.preventDefault();
+    skipBy(SKIP_SECONDS);
+  });
+
+  progressTrack.addEventListener("click", e => {
+    e.stopPropagation();
+    e.preventDefault();
+    showCover();
+    showSeeking();
+    if (!ytPlayer) return;
+    try {
+      const dur = ytPlayer.getDuration() || 0;
+      if (dur <= 0) return;
+      const rect = progressTrack.getBoundingClientRect();
+      const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+      ytPlayer.seekTo(ratio * dur, true);
+      updateProgressOnce();
+    } catch (err) {}
+  });
+
+  /* ── Open / close player ──────────────────────────────────────────── */
+  function openPlayer(id, title) {
+    timeCurrent.textContent = "0:00";
+    timeTotal.textContent = "0:00";
+    progressFill.style.width = "0%";
+
+    playerEl.classList.add("active");
+    document.body.style.overflow = "hidden";
+    if (playerLoading) playerLoading.classList.remove("hidden");
+
+    showCover(COVER_VISIBLE_MS_INITIAL);
+
+    currentVideoId = id;
+    endCloseScheduled = false;
+
+    if (ytApiReady) {
+      mountPlayer(id);
+    } else {
+      pendingVideoId = id;
+      ensureYouTubeApi();
+    }
+
+    setTimeout(ensureClickShield, 0);
+  }
+
+  function closePlayer() {
+    try { if (ytPlayer && typeof ytPlayer.pauseVideo === "function") ytPlayer.pauseVideo(); } catch (e) {}
+    playerEl.classList.remove("active");
+
+    if (coverEl) coverEl.classList.remove("visible");
+    if (coverHideTimer) { clearTimeout(coverHideTimer); coverHideTimer = null; }
+
+    stopProgressLoop();
+
+    pendingVideoId = null;
+    currentVideoId = null;
+    endCloseScheduled = false;
+
+    if (playerLoading) playerLoading.classList.remove("hidden");
+
+    const shield = stage.querySelector(".click-shield");
+    if (shield) shield.remove();
+
+    isPaused = false;
+    document.body.style.overflow = "";
+
+    timeCurrent.textContent = "0:00";
+    timeTotal.textContent = "0:00";
+    progressFill.style.width = "0%";
+
+    updatePauseIcon();
+  }
+
+  document.getElementById("backBtn").addEventListener("click", closePlayer);
+
+  document.addEventListener("keydown", e => {
+    if (!playerEl.classList.contains("active")) return;
+    if (e.key === "Escape") {
+      closePlayer();
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      skipBy(-SKIP_SECONDS);
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      skipBy(SKIP_SECONDS);
+    } else if (e.key === " " || e.key === "k") {
+      e.preventDefault();
+      togglePause();
+    }
+  });
+
+  /* ── Category detection ───────────────────────────────────────────── */
   const categoryNames = {
-    all: "All Videos",
-    movie: "Movies",
-    animation: "Animation",
-    action: "Action",
-    adventure: "Adventure",
-    comedy: "Comedy",
-    crime: "Crime",
-    documentary: "Documentary",
-    drama: "Drama",
-    family: "Family",
-    fantasy: "Fantasy",
-    horror: "Horror",
-    mystery: "Mystery",
-    romance: "Romance",
-    "sci-fi": "Sci-Fi",
-    thriller: "Thriller",
-    music: "Music"
+    all: "All Videos", movie: "Movies", animation: "Animation",
+    action: "Action", adventure: "Adventure", comedy: "Comedy",
+    crime: "Crime", documentary: "Documentary", drama: "Drama",
+    family: "Family", fantasy: "Fantasy", horror: "Horror",
+    mystery: "Mystery", romance: "Romance", "sci-fi": "Sci-Fi",
+    thriller: "Thriller", music: "Music"
   };
 
   function detectCategoryFromTitle(title) {
-    const t = (title || "")
-      .toLowerCase()
-      .replace(/[^a-z0-9+\s-]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-
+    const t = (title || "").toLowerCase().replace(/[^a-z0-9+\s-]/g, " ").replace(/\s+/g, " ").trim();
     const rules = [
       ["music", /\b(music video|official music video|official video|lyric video|lyrics|audio|feat\.?|ft\.?|song|album|live performance|concert|remix)\b/],
       ["animation", /\b(animation|animated|anime|cartoon|pixar|disney animation|dreamworks)\b/],
@@ -1702,18 +1587,14 @@
       ["thriller", /\b(thriller|suspense|psychological|hostage|serial killer)\b/],
       ["drama", /\b(drama|emotional|family drama)\b/]
     ];
-
     for (const [category, pattern] of rules) {
       if (pattern.test(t)) return category;
     }
-
     return "movie";
   }
 
-  /* Google VideoObject structured data */
-
+  /* ── Structured data ──────────────────────────────────────────────── */
   let videoSchemaScript = document.getElementById("videoSchema");
-
   if (!videoSchemaScript) {
     videoSchemaScript = document.createElement("script");
     videoSchemaScript.type = "application/ld+json";
@@ -1723,81 +1604,78 @@
 
   function buildVideoSchema(video) {
     if (!isRealTitle(video.title)) return null;
-
-    const videoUrl = "https://www.youtube.com/watch?v=" + video.id;
-    const embedUrl = "https://www.youtube.com/embed/" + video.id;
-    const thumbnailUrl = "https://img.youtube.com/vi/" +
-      video.id + "/hqdefault.jpg";
-
+    const thumbnailUrl = "https://img.youtube.com/vi/" + video.id + "/hqdefault.jpg";
     return {
       "@type": "VideoObject",
       "@id": SITE_URL + "#video-" + video.id,
       "name": video.title,
       "description": video.title + " — watch on Movie Zone.",
       "thumbnailUrl": [thumbnailUrl],
-      "embedUrl": embedUrl,
-      "url": videoUrl,
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": SITE_URL
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "Movie Zone",
-        "url": SITE_URL
-      }
+      "embedUrl": "https://www.youtube.com/embed/" + video.id,
+      "url": "https://www.youtube.com/watch?v=" + video.id,
+      "mainEntityOfPage": { "@type": "WebPage", "@id": SITE_URL },
+      "publisher": { "@type": "Organization", "name": "Movie Zone", "url": SITE_URL }
     };
   }
 
-  let schemaUpdateTimer = null;
-
   function updateVideoStructuredData() {
     if (!allVideos.length) return;
-
     const graph = allVideos
       .filter(video => isRealTitle(video.title))
       .slice(0, 100)
       .map(buildVideoSchema)
       .filter(Boolean);
-
-    const schema = {
+    videoSchemaScript.textContent = JSON.stringify({
       "@context": "https://schema.org",
       "@graph": graph
-    };
-
-    videoSchemaScript.textContent = JSON.stringify(schema);
-
-    console.info(
-      "Movie Zone structured data updated:",
-      graph.length,
-      "videos with actual titles."
-    );
+    });
   }
 
-  function scheduleSchemaUpdate() {
-    if (schemaUpdateTimer) {
-      clearTimeout(schemaUpdateTimer);
-    }
+  /* ── Title index (lazy build) ─────────────────────────────────────── */
+  function buildAllVideoTitles() {
+    if (titlesBuilt) return;
+    titlesBuilt = true;
 
-    schemaUpdateTimer = setTimeout(() => {
-      updateVideoStructuredData();
-      schemaUpdateTimer = null;
-    }, 500);
+    allVideoTitles.innerHTML = "";
+    titleElements.clear();
+
+    const frag = document.createDocumentFragment();
+    allVideos.forEach(function(video) {
+      if (!isRealTitle(video.title)) return;
+      const item = document.createElement("li");
+      item.dataset.videoId = video.id;
+      item.tabIndex = 0;
+      item.setAttribute("role", "button");
+      item.title = "Play: " + video.title;
+      item.textContent = video.title;
+      item.addEventListener("click", function() {
+        openPlayer(video.id, video.title || "Movie Zone video");
+      });
+      item.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openPlayer(video.id, video.title || "Movie Zone video");
+        }
+      });
+      titleElements.set(video.id, item);
+      frag.appendChild(item);
+    });
+
+    allVideoTitles.appendChild(frag);
+    titleCount.textContent = titleElements.size;
+    titleIndexInfo.textContent = titleElements.size + " video titles. Click any title to play it.";
   }
 
-  /* Cards */
+  if (titleIndex) {
+    titleIndex.addEventListener("toggle", function() {
+      if (titleIndex.open) buildAllVideoTitles();
+    });
+  }
 
+  /* ── Card creation ────────────────────────────────────────────────── */
   function makeCard(video, index) {
     const id = video.id;
     const titleText = video.title || "Loading title…";
-
-    // Skip dead videos — they'll be removed from the grid
-    if (video.__dead) {
-      const blank = document.createElement("span");
-      blank.style.display = "none";
-      blank.dataset.deadVideo = video.id;
-      return blank;
-    }
 
     const card = document.createElement("article");
     card.className = "card";
@@ -1819,10 +1697,7 @@
     img.height = 270;
     img.decoding = "async";
     img.loading = index < EAGER_THUMBS ? "eager" : "lazy";
-
-    if (index < HIGH_PRIORITY_THUMBS) {
-      img.setAttribute("fetchpriority", "high");
-    }
+    if (index < HIGH_PRIORITY_THUMBS) img.setAttribute("fetchpriority", "high");
 
     const play = document.createElement("div");
     play.className = "play-btn";
@@ -1835,30 +1710,20 @@
 
     const title = document.createElement("p");
     title.className = "title";
-
-    if (!video.title) {
-      title.classList.add("loading");
-    }
-
+    if (!video.title) title.classList.add("loading");
     title.textContent = titleText;
-
     info.appendChild(title);
-    card.append(thumb, info);
 
+    card.append(thumb, info);
     card.dataset.searchTitle = (video.title || "").toLowerCase();
 
-    thumb.addEventListener("click", () => {
-      openPlayer(id, video.title || "Movie Zone video");
-    });
-
+    thumb.addEventListener("click", () => openPlayer(id, video.title || "Movie Zone video"));
     thumb.addEventListener("keydown", e => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         openPlayer(id, video.title || "Movie Zone video");
       }
     });
-
-    // Card-level focus + Enter/OK handler (needed for TV D-pad)
     card.addEventListener("keydown", e => {
       if (e.key === "Enter" || e.key === " " || e.keyCode === 13) {
         e.preventDefault();
@@ -1870,255 +1735,20 @@
     return card;
   }
 
-  function updateExistingCard(video) {
-    const cards = document.querySelectorAll(
-      `.card[data-video-id="${CSS.escape(video.id)}"]`
-    );
-
-    cards.forEach(card => {
-      card.dataset.category = video.category;
-      applyTitle(card, video.title);
-    });
-
-    // Also update the complete title catalogue.
-    appendVideoTitle(video);
-  }
-
-  function applyTitle(card, text) {
-    const titleEl = card.querySelector(".title");
-
-    if (!titleEl) return;
-
-    titleEl.classList.remove("loading");
-    titleEl.textContent = text;
-    card.dataset.searchTitle = text.toLowerCase();
-
-    const img = card.querySelector("img");
-
-    if (img) {
-      img.alt = text + " thumbnail";
-    }
-
-    const thumb = card.querySelector(".thumb");
-
-    if (thumb) {
-      thumb.setAttribute("aria-label", "Play " + text);
-    }
-  }
-
-  /* YouTube title retrieval */
-
-  function fetchVideoTitle(video) {
-    if (isRealTitle(video.title)) {
-      appendVideoTitle(video);
-      return Promise.resolve(video.title);
-    }
-
-    if (inFlightTitles.has(video.id)) {
-      return inFlightTitles.get(video.id);
-    }
-
-    const cached = getCachedMetadata(video.id);
-
-    if (cached && isRealTitle(cached.title)) {
-      video.title = cached.title;
-
-      if (
-        cached.version === CATEGORY_RULES_VERSION &&
-        cached.category
-      ) {
-        video.category = cached.category;
-      } else {
-        video.category = detectCategoryFromTitle(video.title);
-        saveMetadata(video.id, video.title, video.category);
-      }
-
-      // Add cached titles too.
-      appendVideoTitle(video);
-
-      return Promise.resolve(video.title);
-    }
-
-    const request = enqueueOembed(async () => {
-      const endpoint =
-        "https://noembed.com/embed?url=" +
-        encodeURIComponent(
-          "https://www.youtube.com/watch?v=" + video.id
-        ) +
-        "";
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
-      let response;
-      try {
-        response = await fetch(endpoint, { signal: controller.signal, cache: "force-cache" });
-      } finally {
-        clearTimeout(timeoutId);
-      }
-
-      if (!response.ok) {
-        throw new Error("Could not retrieve video title");
-      }
-
-      const data = await response.json();
-      const title = (data.title || "").trim();
-
-      if (!isRealTitle(title)) {
-        throw new Error("YouTube did not return a valid title");
-      }
-
-      video.title = title;
-      video.category = detectCategoryFromTitle(title);
-
-      saveMetadata(video.id, title, video.category);
-
-      // Append the actual title immediately.
-      appendVideoTitle(video);
-
-      return title;
-    })
-    .catch(error => {
-      console.warn(
-        "Could not retrieve title for video:",
-        video.id,
-        error
-      );
-
-      // Mark the video as dead (private, deleted, or unavailable)
-      video.__dead = true;
-      video.title = "Unavailable video";
-      video.category = "movie";
-
-      return video.title;
-    })
-    .finally(() => {
-      inFlightTitles.delete(video.id);
-    });
-
-    inFlightTitles.set(video.id, request);
-
-    return request;
-  }
-
-  /* Background classification */
-
-  async function classifyVideosInBackground() {
-    const pending = allVideos.filter(
-      video => !isRealTitle(video.title)
-    );
-
-    if (pending.length === 0) {
-      metadataFinished = true;
-      updateVideoStructuredData();
-      updateTitleIndexStatus();
-      return;
-    }
-
-    const total = pending.length;
-    let completed = 0;
-    let index = 0;
-
-    // A small worker pool keeps the interface responsive.
-    const CONCURRENCY = OEMBED_CONCURRENCY;
-
-    function updateProgressUI() {
-      const movieCount = allVideos.filter(v => v.category !== "music").length;
-      const musicCount = allVideos.filter(v => v.category === "music").length;
-      sectionSub.textContent =
-        movieCount + " movie videos · " +
-        musicCount + " music videos · retrieving titles " +
-        completed + "/" + total;
-    }
-
-    async function worker() {
-      while (true) {
-        const myIndex = index++;
-        if (myIndex >= pending.length) return;
-
-        const video = pending[myIndex];
-
-        try {
-          await fetchVideoTitle(video);
-
-          if (!video.category) {
-            video.category = detectCategoryFromTitle(video.title);
-          }
-
-          if (isRealTitle(video.title)) {
-            updateExistingCard(video);
-            appendVideoTitle(video);
-          }
-
-          // If the video is dead, remove its card from the grid immediately
-          if (video.__dead) {
-            const card = document.querySelector(
-              `.card[data-video-id="${CSS.escape(video.id)}"]`
-            );
-            if (card) card.remove();
-          }
-        } catch (e) {}
-
-        completed++;
-
-        // Update UI + schema every 50 videos (not every 20)
-                if (completed % 100 === 0) {
-          updateProgressUI();
-          scheduleSchemaUpdate();
-          updateTitleIndexStatus();
-          // Do NOT reset the catalogue here — that reorders cards mid-browse.
-          // Only refresh the counts at the top.
-          applySearchFilter();
-        }
-      }
-    }
-
-    // Launch workers — each pulls from the shared index
-    const workers = [];
-    for (let w = 0; w < CONCURRENCY; w++) {
-      workers.push(worker());
-    }
-    await Promise.all(workers);
-
-    // Final update
-    metadataFinished = true;
-    updateVideoStructuredData();
-    updateTitleIndexStatus();
-    if (titleIndex && titleIndex.open) buildAllVideoTitles();
-    updateProgressUI();
-
-    const movieCount = allVideos.filter(v => v.category !== "music").length;
-    const musicCount = allVideos.filter(v => v.category === "music").length;
-    const titledCount = allVideos.filter(v => isRealTitle(v.title)).length;
-
-    sectionSub.textContent =
-      movieCount + " movie videos · " +
-      musicCount + " music videos · " +
-      titledCount + "/" + allVideos.length + " titles retrieved";
-  }
-
-  /* Search */
-
+  /* ── Search ───────────────────────────────────────────────────────── */
   function applySearchFilter() {
     const query = searchQuery.trim().toLowerCase();
     const cards = grid.querySelectorAll(".card");
 
     let visible = 0;
-
     cards.forEach(card => {
-      if (!card || card.dataset.deadVideo) {
-        if (card) card.style.display = "none";
-        return;
-      }
       const title = card.dataset.searchTitle || "";
       const show = !query || title.includes(query);
-
       card.style.display = show ? "" : "none";
-
       if (show) visible++;
     });
 
     const total = categoryVideos().length;
-
     countEl.textContent =
       visible + (visible === 1 ? " item" : " items") +
       (renderedCount < total ? " · " + total + " total" : "");
@@ -2129,345 +1759,11 @@
     applySearchFilter();
   });
 
-  /* Pause and play */
-
-  function updatePauseIcon() {
-    if (isPaused) {
-      pauseIcon.style.display = "none";
-      playIcon.style.display = "";
-      pauseBtn.setAttribute("aria-label", "Play");
-      pauseBtn.title = "Play";
-    } else {
-      pauseIcon.style.display = "";
-      playIcon.style.display = "none";
-      pauseBtn.setAttribute("aria-label", "Pause");
-      pauseBtn.title = "Pause";
-    }
-  }
-
-  function togglePause() {
-    if (!ytPlayer) return;
-    showCover();
-
-    try {
-      if (isPaused) {
-        ytPlayer.playVideo();
-      } else {
-        ytPlayer.pauseVideo();
-      }
-    } catch (e) {}
-
-    hideControlsImmediately();
-  }
-
-  pauseBtn.addEventListener("click", e => {
-    e.stopPropagation();
-    e.preventDefault();
-    togglePause();
-  });
-
-  function hideControlsImmediately() {
-    controlsHidden = true;
-    centerControls.classList.add("hiding");
-
-    if (hideCooldownTimer) {
-      clearTimeout(hideCooldownTimer);
-      hideCooldownTimer = null;
-    }
-
-    hideCooldownTimer = setTimeout(() => {
-      hideCooldownTimer = null;
-      controlsHidden = false;
-      centerControls.classList.remove("hiding");
-    }, 350);
-  }
-
-  playerEl.addEventListener("pointerleave", () => {
-    if (hideCooldownTimer) {
-      clearTimeout(hideCooldownTimer);
-      hideCooldownTimer = null;
-    }
-
-    controlsHidden = false;
-    centerControls.classList.remove("hiding");
-    inEdgeZone = false;
-  });
-
-  function isPointerAtEdge(x, y) {
-    const edge = 40;
-
-    return (
-      x <= edge ||
-      y <= edge ||
-      x >= window.innerWidth - edge ||
-      y >= window.innerHeight - edge
-    );
-  }
-
-  playerEl.addEventListener("pointermove", e => {
-    const atEdge = isPointerAtEdge(e.clientX, e.clientY);
-
-    if (atEdge === inEdgeZone) return;
-
-    inEdgeZone = atEdge;
-
-    if (atEdge) {
-      centerControls.classList.add("hiding");
-    } else if (!controlsHidden) {
-      centerControls.classList.remove("hiding");
-    }
-  }, { passive: true });
-
-  let seekingHideTimer = null;
-  const SEEKING_VISIBLE_MS = 3000;
-
-  function showSeeking() {
-    if (!coverEl) return;
-    coverEl.classList.add("seeking");
-    if (seekingHideTimer) {
-      clearTimeout(seekingHideTimer);
-    }
-    seekingHideTimer = setTimeout(() => {
-      if (coverEl) coverEl.classList.remove("seeking");
-      seekingHideTimer = null;
-    }, SEEKING_VISIBLE_MS);
-  }
-
-  function skipBy(seconds) {
-    if (!ytPlayer) return;
-    showCover();
-    showSeeking();
-
-    try {
-      const cur = ytPlayer.getCurrentTime() || 0;
-      const dur = ytPlayer.getDuration() || 0;
-
-      let target = cur + seconds;
-
-      if (target < 0) target = 0;
-      if (dur > 0 && target > dur) target = dur;
-
-      ytPlayer.seekTo(target, true);
-      updateProgressOnce();
-    } catch (e) {}
-
-    hideControlsImmediately();
-  }
-
-  skipBackBtn.addEventListener("click", e => {
-    e.stopPropagation();
-    e.preventDefault();
-    skipBy(-SKIP_SECONDS);
-  });
-
-  skipFwdBtn.addEventListener("click", e => {
-    e.stopPropagation();
-    e.preventDefault();
-    skipBy(SKIP_SECONDS);
-  });
-
-  progressTrack.addEventListener("click", e => {
-    e.stopPropagation();
-    e.preventDefault();
-    showCover();
-    showSeeking();
-
-    if (!ytPlayer) return;
-
-    try {
-      const dur = ytPlayer.getDuration() || 0;
-      if (dur <= 0) return;
-
-      const rect = progressTrack.getBoundingClientRect();
-      const ratio = Math.min(
-        1,
-        Math.max(0, (e.clientX - rect.left) / rect.width)
-      );
-
-      ytPlayer.seekTo(ratio * dur, true);
-      updateProgressOnce();
-    } catch (err) {}
-
-    // Do NOT call hideControlsImmediately — keep bar visible after seek
-  });
-
-function onPlayerError(event) {
-    // YouTube iframe errors:
-    //   2   — invalid parameter (bad video ID)
-    //   5   — HTML5 player error
-    //   100 — video not found / private
-    //   101 / 150 — embedding disabled by owner
-    //   153 — referer header missing (rare)
-    console.warn("YouTube player error:", event.data, "for video", currentVideoId);
-
-    // Mark the currently-open video as dead so it doesn't appear again
-    if (currentVideoId) {
-      const dead = allVideos.find(v => v.id === currentVideoId);
-      if (dead) {
-        dead.__dead = true;
-        dead.__deadReason = "embed-" + event.data;
-        saveMetadata(dead.id, dead.title, dead.category);
-        // Persist the dead flag so future loads skip it
-        try {
-          const deadCache = JSON.parse(localStorage.getItem("mz_dead_videos") || "{}");
-          deadCache[dead.id] = event.data;
-          localStorage.setItem("mz_dead_videos", JSON.stringify(deadCache));
-        } catch (e) {}
-      }
-      // Remove the card from the grid
-      const card = document.querySelector(
-        `.card[data-video-id="${CSS.escape(currentVideoId)}"]`
-      );
-      if (card) card.remove();
-    }
-
-    // Close the player — the video doesn't work
-    setTimeout(() => {
-      if (typeof closePlayer === "function") {
-        closePlayer();
-        // Notify the user
-        setTimeout(() => {
-          alert("This video can't be played here. It has been removed from the catalogue.");
-        }, 500);
-      }
-    }, 1500);
-  }
-
-  /* Player open and close */
-
-  async function openPlayer(id, title) {
-    controlsHidden = false;
-    inEdgeZone = false;
-
-    if (hideCooldownTimer) {
-      clearTimeout(hideCooldownTimer);
-      hideCooldownTimer = null;
-    }
-
-    centerControls.classList.remove("hiding");
-    updatePauseIcon();
-
-    timeCurrent.textContent = "0:00";
-    timeTotal.textContent = "0:00";
-    progressFill.style.width = "0%";
-
-    playerEl.classList.add("active");
-    document.body.style.overflow = "hidden";
-
-    // Show the bottom-right cover for 5s when the player opens
-    showCover(COVER_VISIBLE_MS_INITIAL);
-
-    currentVideoId = id;
-    endCloseScheduled = false;
-
-    if (ytApiReady) {
-      mountPlayer(id);
-    } else {
-      pendingVideoId = id;
-    }
-
-    // Skip requestFullscreen — the Activity is already immersive fullscreen.
-    // Requesting it again on the WebView adds 200-500ms startup delay.
-    // try {
-    //   if (playerEl.requestFullscreen) {
-    //     await playerEl.requestFullscreen();
-    //   }
-    // } catch (e) {}
-
-    setTimeout(ensureClickShield, 0);
-  }
-
-  async function closePlayer() {
-    try { if (ytPlayer && typeof ytPlayer.pauseVideo === "function") ytPlayer.pauseVideo(); } catch (e) {}
-    playerEl.classList.remove("active");
-
-    // Hide the cover and clear any pending timer
-    if (coverEl) coverEl.classList.remove("visible");
-    if (coverHideTimer) {
-      clearTimeout(coverHideTimer);
-      coverHideTimer = null;
-    }
-
-
-    stopProgressLoop();
-
-    controlsHidden = false;
-    inEdgeZone = false;
-
-    if (hideCooldownTimer) {
-      clearTimeout(hideCooldownTimer);
-      hideCooldownTimer = null;
-    }
-
-    centerControls.classList.remove("hiding");
-
-    // DON'T destroy player — keep it alive for instant reuse on next open
-    // destroyPlayer();
-    pendingVideoId = null;
-    currentVideoId = null;
-    endCloseScheduled = false;
-
-    var loadingEl = document.getElementById("playerLoading");
-    if (loadingEl) loadingEl.classList.remove("hidden");
-
-    var loadingEl = document.getElementById("playerLoading");
-    if (loadingEl) loadingEl.classList.remove("hidden");
-
-    const shield = stage.querySelector(".click-shield");
-
-    if (shield) shield.remove();
-
-    isPaused = false;
-    document.body.style.overflow = "";
-
-    timeCurrent.textContent = "0:00";
-    timeTotal.textContent = "0:00";
-    progressFill.style.width = "0%";
-
-    updatePauseIcon();
-
-    // Skip exitFullscreen — no request means no exit needed
-    // try {
-    //   if (document.fullscreenElement) {
-    //     await document.exitFullscreen();
-    //   }
-    // } catch (e) {}
-  }
-
-  document.getElementById("backBtn").addEventListener(
-    "click",
-    closePlayer
-  );
-
-  document.addEventListener("keydown", e => {
-    if (!playerEl.classList.contains("active")) return;
-
-    if (e.key === "Escape") {
-      closePlayer();
-    } else if (e.key === "ArrowLeft") {
-      e.preventDefault();
-      skipBy(-SKIP_SECONDS);
-    } else if (e.key === "ArrowRight") {
-      e.preventDefault();
-      skipBy(SKIP_SECONDS);
-    } else if (e.key === " " || e.key === "k") {
-      e.preventDefault();
-      togglePause();
-    }
-  });
-
-  /* Category filtering */
-
+  /* ── Category + rendering ─────────────────────────────────────────── */
   function categoryVideos() {
     const alive = allVideos.filter(video => !video.__dead);
-
-    if (currentCategory === "all") {
-      return alive;
-    }
-
-    return alive.filter(
-      video => video.category === currentCategory
-    );
+    if (currentCategory === "all") return alive;
+    return alive.filter(video => video.category === currentCategory);
   }
 
   function resetCatalogue() {
@@ -2479,80 +1775,24 @@ function onPlayerError(event) {
     loader.style.display = "none";
 
     const list = categoryVideos();
-
-    sectionTitle.textContent =
-      categoryNames[currentCategory] || "Movies";
-
-    countEl.textContent =
-      list.length + (list.length === 1 ? " item" : " items");
+    sectionTitle.textContent = categoryNames[currentCategory] || "Movies";
+    countEl.textContent = list.length + (list.length === 1 ? " item" : " items");
 
     renderBatch();
   }
 
-
-  // Auto-scroll nav to keep focused item visible (TV D-pad)
-  document.querySelectorAll(".nav-link").forEach(function(link) {
-    link.addEventListener("focus", function() {
-      var rect = link.getBoundingClientRect();
-      var nav = link.parentElement;
-      if (!nav) return;
-      var navRect = nav.getBoundingClientRect();
-      if (rect.left < navRect.left) {
-        nav.scrollLeft -= (navRect.left - rect.left + 20);
-      } else if (rect.right > navRect.right) {
-        nav.scrollLeft += (rect.right - navRect.right + 20);
-      }
-    });
-  });
-
-  // Ensure search input is reachable via keyboard
-  var searchIn = document.getElementById("searchInput");
-  if (searchIn && !searchIn.hasAttribute("tabindex")) {
-    searchIn.setAttribute("tabindex", "0");
-  }
-
-
-  // Handle Enter/OK key on nav links (some TV WebViews send keydown instead of click)
-  document.querySelectorAll(".nav-link").forEach(function(link) {
-    link.addEventListener("keydown", function(e) {
-      if (e.key === "Enter" || e.keyCode === 13) {
-        e.preventDefault();
-        link.click();
-      }
-    });
-  });
-
-  navLinks.forEach(link => {
-    link.addEventListener("click", () => {
-      currentCategory = link.dataset.category;
-
-      navLinks.forEach(item => {
-        item.classList.toggle("active", item === link);
-      });
-
-      resetCatalogue();
-    });
-  });
-
-  /* Immediate rendering */
-
   function renderBatch() {
-    const list = categoryVideos();
-
+    if (!catalogLoaded) return;
     if (loadingBatch) return;
+
+    const list = categoryVideos();
 
     if (renderedCount >= list.length) {
       loader.style.display = "none";
-
-      if (list.length && renderedCount >= list.length) {
-        endMessage.style.display = "";
+      if (list.length) endMessage.style.display = "";
+      if (!list.length) {
+        grid.innerHTML = '<p class="error">No videos were automatically matched to this category.</p>';
       }
-
-      if (!list.length && metadataFinished) {
-        grid.innerHTML =
-          '<p class="error">No videos were automatically matched to this category.</p>';
-      }
-
       return;
     }
 
@@ -2564,11 +1804,7 @@ function onPlayerError(event) {
     const batch = list.slice(from, to);
 
     const frag = document.createDocumentFragment();
-
-    batch.forEach((video, i) => {
-      frag.appendChild(makeCard(video, from + i));
-    });
-
+    batch.forEach((video, i) => frag.appendChild(makeCard(video, from + i)));
     grid.appendChild(frag);
 
     renderedCount = to;
@@ -2585,171 +1821,241 @@ function onPlayerError(event) {
     requestAnimationFrame(maybeLoadMore);
   }
 
-/* Infinite scrolling */
-
-  let scrollCheckScheduled = false;
-
   function maybeLoadMore() {
     if (scrollCheckScheduled) return;
-
     scrollCheckScheduled = true;
 
     requestAnimationFrame(() => {
       scrollCheckScheduled = false;
-
-      if (
-        loadingBatch ||
-        renderedCount >= categoryVideos().length
-      ) {
-        return;
-      }
-
-      const distance =
-        sentinel.getBoundingClientRect().top - window.innerHeight;
-
-      if (distance <= SCROLL_TRIGGER_PX) {
-        renderBatch();
-      }
+      if (loadingBatch || renderedCount >= categoryVideos().length) return;
+      const distance = sentinel.getBoundingClientRect().top - window.innerHeight;
+      if (distance <= SCROLL_TRIGGER_PX) renderBatch();
     });
   }
 
   function setupInfiniteScroll() {
     if ("IntersectionObserver" in window) {
       const io = new IntersectionObserver(entries => {
-        if (entries.some(entry => entry.isIntersecting)) {
-          maybeLoadMore();
-        }
-      }, {
-        root: null,
-        rootMargin: `0px 0px ${SCROLL_TRIGGER_PX}px 0px`,
-        threshold: 0
-      });
-
+        if (entries.some(entry => entry.isIntersecting)) maybeLoadMore();
+      }, { root: null, rootMargin: `0px 0px ${SCROLL_TRIGGER_PX}px 0px`, threshold: 0 });
       io.observe(sentinel);
     }
-
     window.addEventListener("scroll", maybeLoadMore, { passive: true });
     window.addEventListener("resize", maybeLoadMore, { passive: true });
-
     maybeLoadMore();
   }
 
-
-  /* Load pre-generated catalogue */
-
-  fetch("catalog.json?v=" + Date.now(), { cache: "no-store" })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("Could not load catalog.json");
+  /* ── Nav links ────────────────────────────────────────────────────── */
+  document.querySelectorAll(".nav-link").forEach(function(link) {
+    link.addEventListener("focus", function() {
+      const rect = link.getBoundingClientRect();
+      const nav = link.parentElement;
+      if (!nav) return;
+      const navRect = nav.getBoundingClientRect();
+      if (rect.left < navRect.left) nav.scrollLeft -= (navRect.left - rect.left + 20);
+      else if (rect.right > navRect.right) nav.scrollLeft += (rect.right - navRect.right + 20);
+    });
+    link.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" || e.keyCode === 13) {
+        e.preventDefault();
+        link.click();
       }
+    });
+  });
+
+  navLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      currentCategory = link.dataset.category;
+      navLinks.forEach(item => item.classList.toggle("active", item === link));
+      resetCatalogue();
+    });
+  });
+
+  /* ── Player extra controls: resolution, captions, fullscreen ─────── */
+  (function initExtraPlayerControls() {
+    const resBtn = document.getElementById("resBtn");
+    const resLabel = document.getElementById("resLabel");
+    const resMenu = document.getElementById("resMenu");
+    const ccBtn = document.getElementById("ccBtn");
+    const fsBtn = document.getElementById("fsBtn");
+
+    function setQuality(q, label) {
+      if (ytPlayer) {
+        try {
+          if (typeof ytPlayer.setPlaybackQualityRange === "function") {
+            if (q === "default") ytPlayer.setPlaybackQualityRange("default");
+            else ytPlayer.setPlaybackQualityRange(q, q);
+          }
+          if (typeof ytPlayer.setPlaybackQuality === "function") {
+            ytPlayer.setPlaybackQuality(q);
+          }
+        } catch (e) {}
+      }
+      if (resLabel) resLabel.textContent = label;
+      if (resMenu) {
+        resMenu.querySelectorAll(".res-option").forEach(function(o) {
+          o.classList.toggle("active", o.getAttribute("data-quality") === q);
+        });
+      }
+    }
+
+    if (resBtn) {
+      resBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (resMenu) resMenu.classList.toggle("open");
+        showCover();
+      });
+    }
+
+    if (resMenu) {
+      resMenu.querySelectorAll(".res-option").forEach(function(opt) {
+        opt.addEventListener("click", function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const q = opt.getAttribute("data-quality");
+          const label = opt.textContent.trim();
+          setQuality(q, label);
+          resMenu.classList.remove("open");
+          showCover();
+        });
+      });
+    }
+
+    // Toggle captions ON/OFF
+    function applyCaptions() {
+      if (!ytPlayer || typeof ytPlayer.loadModule !== "function") return;
+      try {
+        if (captionsOn) {
+          ytPlayer.loadModule("captions");
+          // Track selection happens in onPlayerApiChange
+        } else {
+          try { ytPlayer.setOption("captions", "track", {}); } catch (e) {}
+          try { ytPlayer.unloadModule("captions"); } catch (e) {}
+        }
+      } catch (e) {}
+    }
+
+    if (ccBtn) {
+      ccBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        captionsOn = !captionsOn;
+        ccBtn.classList.toggle("active", captionsOn);
+        applyCaptions();
+        showCover();
+      });
+    }
+
+    // Fullscreen toggle
+    if (fsBtn) {
+      fsBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        try {
+          if (document.fullscreenElement) {
+            document.exitFullscreen().catch(function() {});
+          } else if (playerEl.requestFullscreen) {
+            playerEl.requestFullscreen().catch(function() {});
+          } else if (playerEl.webkitRequestFullscreen) {
+            playerEl.webkitRequestFullscreen();
+          }
+        } catch (err) {}
+        showCover();
+      });
+    }
+
+    document.addEventListener("fullscreenchange", function() {
+      if (!fsBtn) return;
+      if (document.fullscreenElement) {
+        fsBtn.textContent = "🗗";
+        fsBtn.title = "Exit fullscreen";
+      } else {
+        fsBtn.textContent = "⛶";
+        fsBtn.title = "Enter fullscreen";
+      }
+    });
+
+    // Close res menu on outside click
+    document.addEventListener("click", function(e) {
+      if (resMenu && resMenu.classList.contains("open") &&
+          !resMenu.contains(e.target) && e.target !== resBtn) {
+        resMenu.classList.remove("open");
+      }
+    });
+  })();
+
+  /* ── Load catalogue ───────────────────────────────────────────────── */
+  fetch("catalog.json", { cache: "no-cache" })
+    .then(response => {
+      if (!response.ok) throw new Error("Could not load catalog.json");
       return response.json();
     })
     .then(catalog => {
-      if (!Array.isArray(catalog)) {
-        throw new Error("Invalid catalogue format");
-      }
+      if (!Array.isArray(catalog)) throw new Error("Invalid catalogue format");
 
       const seen = new Set();
-
       allVideos = catalog.reduce((videos, item) => {
-        if (!item || !item.id || !isRealTitle(item.title)) {
-          return videos;
-        }
-
+        if (!item || !item.id || !isRealTitle(item.title)) return videos;
         const id = String(item.id);
-
-        if (!/^[\w-]+$/.test(id) || seen.has(id)) {
-          return videos;
-        }
-
+        if (!/^[\w-]+$/.test(id) || seen.has(id)) return videos;
         seen.add(id);
+        if (deadVideoCache[id]) return videos;
 
-        // Category detection happens locally. No YouTube metadata request.
         const title = String(item.title).trim();
-        const category = detectCategoryFromTitle(title);
-
-        if (deadVideoCache[id]) {
-          return videos;
-        }
-
         videos.push({
           id,
           title,
-          category,
-          url: item.url || "https://www.youtube.com/watch?v=" + id,
-          thumbnail: item.thumbnail ||
-            "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg"
+          category: detectCategoryFromTitle(title),
+          url: item.url || "https://www.youtube.com/watch?v=" + id
         });
-
         return videos;
       }, []);
 
-      // Newest videos first: new entries are appended to the end of
-      // catalog.json, so reverse the list so the most recently added
-      // videos appear at the top of the grid and the title catalogue.
+      // Newest first
       allVideos.reverse();
 
       if (!allVideos.length) {
         countEl.textContent = "No videos";
         sectionSub.textContent = "Catalogue is empty";
-
-        grid.innerHTML =
-          '<p class="error">No valid videos found in catalog.json.</p>';
-
+        grid.innerHTML = '<p class="error">No valid videos found in catalog.json.</p>';
         titleIndexInfo.textContent = "No videos found.";
         allVideoTitles.innerHTML = "";
         return;
       }
 
-      // All metadata is already available.
-      metadataFinished = true;
+      catalogLoaded = true;
 
-      const movieCount = allVideos.filter(
-        video => video.category !== "music"
-      ).length;
-
-      const musicCount = allVideos.filter(
-        video => video.category === "music"
-      ).length;
-
+      const movieCount = allVideos.filter(v => v.category !== "music").length;
+      const musicCount = allVideos.filter(v => v.category === "music").length;
       sectionSub.textContent =
         movieCount + " movie videos · " +
         musicCount + " music videos · catalogue ready";
 
-      // Display all actual titles immediately.
-      buildAllVideoTitles();
+      // Title counter shown immediately; full list is built lazily on expand.
+      titleCount.textContent = allVideos.length;
+      titleIndexInfo.textContent = allVideos.length +
+        " video titles available. Expand this section to load the list.";
 
-      // Update structured data using saved titles.
       updateVideoStructuredData();
-
-      // Render immediately.
       resetCatalogue();
       setupInfiniteScroll();
 
-      console.info(
-        "Movie Zone catalogue loaded:",
-        allVideos.length,
-        "videos. No metadata retrieval required."
-      );
+      console.info("Movie Zone catalogue loaded:", allVideos.length, "videos.");
     })
     .catch(error => {
       console.error("Catalogue loading error:", error);
-
       countEl.textContent = "Unable to load videos";
       sectionSub.textContent = "Failed to load catalogue";
-
-      grid.innerHTML =
-        '<p class="error">Could not load catalog.json. Ensure it is in the same folder as index.html.</p>';
-
+      grid.innerHTML = '<p class="error">Could not load catalog.json. Ensure it is in the same folder as index.html.</p>';
       titleIndexInfo.textContent = "Could not load video titles.";
       allVideoTitles.innerHTML = "";
     });
 
-
 })();
 </script>
 
-<!-- ── Small top-right App Download button (hidden inside the Android app) ── -->
+<!-- ── Small top-right App Download button ── -->
 <a id="appDownloadBtn"
    href="https://kellysimiyu.github.io/Movies/MovieZone-v1.2.apk"
    download="MovieZone-v1.2.apk"
@@ -2794,130 +2100,9 @@ function onPlayerError(event) {
   "use strict";
   var btn = document.getElementById("appDownloadBtn");
   if (!btn) return;
-
   if (window.MovieZoneApp === true || navigator.userAgent.indexOf("MovieZoneApp") !== -1) {
     btn.style.display = "none";
   }
-
-  /* ── Resolution + captions controls ── */
-  (function initExtraControls() {
-    var rb = document.getElementById("resBtn");
-    var rm = document.getElementById("resMenu");
-    var rl = document.getElementById("resLabel");
-    var cb = document.getElementById("ccBtn");
-    var fb = document.getElementById("fsBtn");
-
-    // Fullscreen toggle
-    if (fb) {
-      fb.addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var playerEl = document.getElementById("player");
-        if (!playerEl) return;
-
-        try {
-          if (document.fullscreenElement) {
-            // Exit fullscreen
-            document.exitFullscreen().then(function() {
-              fb.textContent = "⛶";
-              fb.title = "Enter fullscreen";
-            }).catch(function() {});
-          } else {
-            // Enter fullscreen
-            if (playerEl.requestFullscreen) {
-              playerEl.requestFullscreen().then(function() {
-                fb.textContent = "🗗";
-                fb.title = "Exit fullscreen";
-              }).catch(function() {});
-            } else if (playerEl.webkitRequestFullscreen) {
-              playerEl.webkitRequestFullscreen();
-              fb.textContent = "🗗";
-            }
-          }
-        } catch (err) {
-          console.warn("Fullscreen toggle failed:", err);
-        }
-        if (typeof showCover === "function") showCover();
-      });
-    }
-
-    // Listen for fullscreen change (user pressed ESC or system)
-    document.addEventListener("fullscreenchange", function() {
-      if (fb) {
-        if (document.fullscreenElement) {
-          fb.textContent = "🗗";
-          fb.title = "Exit fullscreen";
-        } else {
-          fb.textContent = "⛶";
-          fb.title = "Enter fullscreen";
-        }
-      }
-    });
-
-    if (rb) {
-      rb.addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (rm) rm.classList.toggle("open");
-        if (typeof showCover === "function") showCover();
-      });
-    }
-
-    if (rm) {
-      var opts = rm.querySelectorAll(".res-option");
-      for (var i = 0; i < opts.length; i++) {
-        (function(opt) {
-          opt.addEventListener("click", function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var q = opt.getAttribute("data-quality");
-            var label = opt.textContent.trim();
-            if (window.ytPlayer && typeof ytPlayer.setPlaybackQuality === "function") {
-              try { ytPlayer.setPlaybackQuality(q); } catch (err) {}
-            }
-            if (rl) rl.textContent = label;
-            var all = rm.querySelectorAll(".res-option");
-            for (var j = 0; j < all.length; j++) all[j].classList.remove("active");
-            opt.classList.add("active");
-            rm.classList.remove("open");
-            if (typeof showCover === "function") showCover();
-          });
-        })(opts[i]);
-      }
-    }
-
-    if (cb) {
-      cb.addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!window.ytPlayer) return;
-        try {
-          if (!window.__captionsLoaded) {
-            ytPlayer.loadModule("captions");
-            window.__captionsLoaded = true;
-          }
-          window.__captionsOn = !window.__captionsOn;
-          if (window.__captionsOn) {
-            ytPlayer.setOption("captions", "track", {});
-            cb.classList.add("active");
-          } else {
-            ytPlayer.setOption("captions", "track", { languageCode: "" });
-            cb.classList.remove("active");
-          }
-        } catch (err) {}
-        if (typeof showCover === "function") showCover();
-      });
-    }
-
-    // Close the menu when clicking elsewhere
-    document.addEventListener("click", function(e) {
-      if (rm && rm.classList.contains("open") &&
-          !rm.contains(e.target) && e.target !== rb) {
-        rm.classList.remove("open");
-      }
-    });
-  })();
-
 })();
 </script>
 </body>
