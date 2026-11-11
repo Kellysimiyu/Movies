@@ -1260,6 +1260,53 @@
     return true;
   }
 
+  /* Shorten a YouTube-style title to just the movie/show name.
+     Keeps only the first meaningful chunk (before |, », //, spaced dash),
+     strips trailing brackets and generic descriptors (Official Trailer,
+     Full Movie, HD, etc.), and falls back to the original if over-cleaned. */
+  function makeShortTitle(raw) {
+    if (!raw || typeof raw !== "string") return raw || "";
+    const original = raw.replace(/\s+/g, " ").trim();
+    let t = original;
+
+    // 1. Keep only the part before the first strong separator.
+    const strongSep = /\s*(?:\||»|\/\/)\s*|\s+[–—]\s+|\s+-\s+|\s+[·•]\s+/;
+    const firstChunk = t.split(strongSep)[0];
+    if (firstChunk && firstChunk.trim().length >= 1) {
+      t = firstChunk.trim();
+    }
+
+    // 2. Drop trailing bracketed groups: (2023), [HD], (Official Trailer)…
+    for (let i = 0; i < 4; i++) {
+      const next = t.replace(/\s*[\(\[]([^\)\]]*)[\)\]]\s*$/, "").trim();
+      if (next === t || next.length < 2) break;
+      t = next;
+    }
+
+    // 3. Drop trailing descriptor words (Official Trailer, Full Movie, HD…).
+    const junk = /(?:\s*[-–—:|]\s*)?(?:official(?:\s+(?:trailer|video|music\s+video))?|full\s+(?:movie|film|video)|movie\s+clip|teaser(?:\s+trailer)?|trailer|clip|video|hd|4k|1080p|720p|480p|360p|new\s+release|latest|watch\s+online|free\s+download|subtitles?|dubbed|english|hindi|tamil|telugu|malayalam|kannada)\s*$/i;
+    for (let i = 0; i < 8; i++) {
+      const next = t.replace(junk, "").trim();
+      if (next === t || next.length < 2) break;
+      t = next;
+    }
+
+    // 4. Trim leftover separators / punctuation at the edges.
+    t = t.replace(/^[\s\-–—:|·•»]+/, "").replace(/[\s\-–—:|·•»]+$/, "").trim();
+
+    // 5. If we over-cleaned, fall back to the original title.
+    if (!t || t.length < 2) return original;
+
+    // 6. Safety cap for very long titles.
+    if (t.length > 70) {
+      const cut = t.slice(0, 70);
+      const space = cut.lastIndexOf(" ");
+      t = (space > 40 ? cut.slice(0, space) : cut).trim() + "…";
+    }
+
+    return t;
+  }
+
   function getYouTubeId(url) {
     try {
       const parsed = new URL(url);
@@ -1748,7 +1795,7 @@
       item.dataset.videoId = video.id;
       item.tabIndex = 0;
       item.setAttribute("role", "button");
-      item.title = "Play: " + video.title;
+      item.title = "Play: " + (video.fullTitle || video.title);
       item.textContent = video.title;
       item.addEventListener("click", function() {
         openPlayer(video.id, video.title || "Movie Zone video");
@@ -1814,10 +1861,11 @@
     title.className = "title";
     if (!video.title) title.classList.add("loading");
     title.textContent = titleText;
+    title.title = video.fullTitle || video.title || "";
     info.appendChild(title);
 
     card.append(thumb, info);
-    card.dataset.searchTitle = (video.title || "").toLowerCase();
+    card.dataset.searchTitle = ((video.fullTitle || video.title) || "").toLowerCase();
 
     thumb.addEventListener("click", () => openPlayer(id, video.title || "Movie Zone video"));
     thumb.addEventListener("keydown", e => {
@@ -2128,11 +2176,13 @@
         seen.add(id);
         if (deadVideoCache[id]) return videos;
 
-        const title = String(item.title).trim();
+        const fullTitle = String(item.title).trim();
+        const title = makeShortTitle(fullTitle);
         videos.push({
           id,
           title,
-          category: detectCategoryFromTitle(title),
+          fullTitle,
+          category: detectCategoryFromTitle(fullTitle),
           url: item.url || "https://www.youtube.com/watch?v=" + id
         });
         return videos;
