@@ -1260,17 +1260,39 @@
     return true;
   }
 
+  /* Matches emoji + common decorative icons used as separators
+     (arrows, stars, bullets, box-drawing, dingbats…). */
+  let EMOJI_RE;
+  try {
+    EMOJI_RE = /[\p{Extended_Pictographic}\u2190-\u21FF\u2300-\u23FF\u2460-\u24FF\u2500-\u27BF\u2B00-\u2BFF\uFE0F]/u;
+  } catch (e) {
+    EMOJI_RE = /[\u2190-\u21FF\u2300-\u23FF\u2460-\u24FF\u2500-\u27BF\u2B00-\u2BFF\uFE0F]/;
+  }
+
   /* Shorten a YouTube-style title to just the movie/show name.
-     Keeps only the first meaningful chunk (before |, », //, spaced dash),
-     strips trailing brackets and generic descriptors (Official Trailer,
-     Full Movie, HD, etc.), and falls back to the original if over-cleaned. */
+     Handles emoji/icon separators, pipes, dashes, trailing brackets,
+     and generic descriptors (Official Trailer, Full Movie, HD…). */
   function makeShortTitle(raw) {
     if (!raw || typeof raw !== "string") return raw || "";
     const original = raw.replace(/\s+/g, " ").trim();
     let t = original;
 
-    // 1. Keep only the part before the first strong separator.
-    const strongSep = /\s*(?:\||»|\/\/)\s*|\s+[–—]\s+|\s+-\s+|\s+[·•]\s+/;
+    // 0a. Strip any leading emoji / decorative symbols.
+    t = t.replace(
+      /^[\s\p{Extended_Pictographic}\u2190-\u21FF\u2300-\u23FF\u2460-\u24FF\u2500-\u27BF\u2B00-\u2BFF\uFE0F]+/u,
+      ""
+    ).trim();
+
+    // 0b. Truncate at the first emoji / icon that appears after the title,
+    //     e.g. "Inception 🎬 Full Movie HD" → "Inception".
+    const m = t.match(EMOJI_RE);
+    if (m && typeof m.index === "number" && m.index > 0) {
+      const before = t.slice(0, m.index).replace(/[\s\-–—:|·•»«]+$/, "").trim();
+      if (before.length >= 2) t = before;
+    }
+
+    // 1. Keep only the part before the first strong text separator.
+    const strongSep = /\s*(?:\||»|«|\/\/|：|｜)\s*|\s+[–—]\s*|\s+-\s*|\s+[·•∙⋅・]\s+|\s+:\s+/;
     const firstChunk = t.split(strongSep)[0];
     if (firstChunk && firstChunk.trim().length >= 1) {
       t = firstChunk.trim();
@@ -1284,15 +1306,23 @@
     }
 
     // 3. Drop trailing descriptor words (Official Trailer, Full Movie, HD…).
-    const junk = /(?:\s*[-–—:|]\s*)?(?:official(?:\s+(?:trailer|video|music\s+video))?|full\s+(?:movie|film|video)|movie\s+clip|teaser(?:\s+trailer)?|trailer|clip|video|hd|4k|1080p|720p|480p|360p|new\s+release|latest|watch\s+online|free\s+download|subtitles?|dubbed|english|hindi|tamil|telugu|malayalam|kannada)\s*$/i;
-    for (let i = 0; i < 8; i++) {
+    const junk = /(?:\s*[-–—:|]\s*)?(?:official(?:\s+(?:trailer|video|music\s+video))?|full\s+(?:movie|film|video)|movie\s+clip|teaser(?:\s+trailer)?|trailer|clip|video|hd|4k|1080p|720p|480p|360p|new\s+release|latest|watch\s+online|free\s+download|download|subtitles?|subbed|dubbed|english|hindi|tamil|telugu|malayalam|kannada|in\s+hindi|in\s+english)\s*$/i;
+    for (let i = 0; i < 10; i++) {
       const next = t.replace(junk, "").trim();
       if (next === t || next.length < 2) break;
       t = next;
     }
 
+    // 3b. Drop trailing filler words left behind ("… in", "… with"…).
+    const filler = /\s+(?:in|with|on|at|for|and|of|the|a|an|to|by|from)\s*$/i;
+    for (let i = 0; i < 6; i++) {
+      const next = t.replace(filler, "").trim();
+      if (next === t || next.length < 2) break;
+      t = next;
+    }
+
     // 4. Trim leftover separators / punctuation at the edges.
-    t = t.replace(/^[\s\-–—:|·•»]+/, "").replace(/[\s\-–—:|·•»]+$/, "").trim();
+    t = t.replace(/^[\s\-–—:|·•»«]+/, "").replace(/[\s\-–—:|·•»«]+$/, "").trim();
 
     // 5. If we over-cleaned, fall back to the original title.
     if (!t || t.length < 2) return original;
