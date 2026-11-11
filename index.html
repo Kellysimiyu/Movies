@@ -775,83 +775,59 @@
       color: #fff;
     }
 
-    /* ── Soft-fade cover over YouTube logo / watermark (bottom-right) ──
-       Solid in the corner (where the logo sits) and feathered outward
-       so the edge blends into the video instead of reading as a block. */
+    /* ── Straight-edged solid covers over YouTube branding ── */
     .permanent-yt-cover {
       position: absolute;
       right: 0;
       bottom: 0;
       width: 320px;
-      height: 130px;
+      height: 110px;
       z-index: 99998;
       pointer-events: none;
-      background: radial-gradient(
-        ellipse 95% 105% at 100% 100%,
-        #000 0%,
-        #000 40%,
-        rgba(0, 0, 0, 0.97) 52%,
-        rgba(0, 0, 0, 0.86) 65%,
-        rgba(0, 0, 0, 0.60) 78%,
-        rgba(0, 0, 0, 0.28) 90%,
-        rgba(0, 0, 0, 0.05) 97%,
-        transparent 100%
-      );
+      background: #000;
+      border-radius: 0;
+      outline: none;
+      box-shadow: none;
     }
 
-    /* Soft cover over YouTube title bar + top-right share / watch-later */
     .permanent-yt-top-cover {
       position: absolute;
       left: 0;
       right: 0;
       top: 0;
-      height: 90px;
+      height: 80px;
       z-index: 99998;
       pointer-events: none;
-      background: linear-gradient(
-        to bottom,
-        #000 0%,
-        #000 35%,
-        rgba(0, 0, 0, 0.92) 55%,
-        rgba(0, 0, 0, 0.6) 75%,
-        rgba(0, 0, 0, 0.2) 90%,
-        transparent 100%
-      );
+      background: #000;
+      border-radius: 0;
+      outline: none;
+      box-shadow: none;
     }
 
-    /* Full-width soft strip along the bottom so no logo / progress bar shows.
-       Solid at the very bottom (covers YouTube's own progress bar), then
-       fades up so it doesn't look like a hard bar. */
     .permanent-yt-bottom-strip {
       position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
-      height: 100px;
+      height: 72px;
       z-index: 99997;
       pointer-events: none;
-      background: linear-gradient(
-        to top,
-        #000 0%,
-        #000 35%,
-        rgba(0, 0, 0, 0.95) 48%,
-        rgba(0, 0, 0, 0.72) 64%,
-        rgba(0, 0, 0, 0.40) 82%,
-        rgba(0, 0, 0, 0.12) 93%,
-        transparent 100%
-      );
+      background: #000;
+      border-radius: 0;
+      outline: none;
+      box-shadow: none;
     }
 
     @media (max-width: 480px) {
       .permanent-yt-cover {
-        width: 210px;
-        height: 95px;
+        width: 200px;
+        height: 80px;
       }
       .permanent-yt-top-cover {
-        height: 70px;
+        height: 64px;
       }
       .permanent-yt-bottom-strip {
-        height: 85px;
+        height: 64px;
       }
     }
 
