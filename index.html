@@ -1263,6 +1263,36 @@
     return true;
   }
 
+  /* Detect titles that are not English.
+     Uses non-Latin script detection plus a heuristic for titles
+     with heavy use of accented Latin letters (Spanish, French,
+     Vietnamese, etc.) which are almost always non-English. */
+  function isNonEnglishTitle(title) {
+    if (!title || typeof title !== "string") return false;
+
+    // Strip emoji / decorative symbols first so they don't skew the check.
+    let t = title;
+    try {
+      t = t.replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, "");
+    } catch (e) {
+      t = t.replace(/[\u2190-\u21FF\u2300-\u23FF\u2460-\u24FF\u2500-\u27BF\u2B00-\u2BFF\uFE0F]/g, "");
+    }
+    t = t.trim();
+    if (!t) return false;
+
+    // Any character from a non-Latin script → non-English.
+    if (/[\u0370-\u03FF\u0400-\u052F\u0530-\u058F\u0590-\u05FF\u0600-\u06FF\u0700-\u074F\u0750-\u077F\u0780-\u07BF\u0900-\u097F\u0980-\u09FF\u0A00-\u0A7F\u0A80-\u0AFF\u0B00-\u0B7F\u0B80-\u0BFF\u0C00-\u0C7F\u0C80-\u0CFF\u0D00-\u0D7F\u0E00-\u0E7F\u0E80-\u0EFF\u0F00-\u0FFF\u1000-\u109F\u10A0-\u10FF\u1100-\u11FF\u1200-\u137F\u13A0-\u13FF\u1400-\u167F\u1780-\u17FF\u1800-\u18AF\u3040-\u30FF\u3100-\u312F\u31A0-\u31BF\u3400-\u4DBF\u4E00-\u9FFF\uA000-\uA48F\uAC00-\uD7AF\uF900-\uFAFF]/u.test(t)) {
+      return true;
+    }
+
+    // Heavy use of accented Latin letters → likely non-English
+    // (e.g. "Amélie", "Película completa", "Bộ phim").
+    const accented = (t.match(/[\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u017F\u1E00-\u1EFF]/g) || []).length;
+    if (accented >= 2) return true;
+
+    return false;
+  }
+
   /* Matches emoji + common decorative icons used as separators
      (arrows, stars, bullets, box-drawing, dingbats…). */
   let EMOJI_RE;
@@ -2222,6 +2252,21 @@
       }, []);
 
       allVideos.reverse();
+
+      // ── Put English titles first, non-English titles last ──────────
+      // The original order inside each group is preserved (stable).
+      if (allVideos.length) {
+        const englishFirst = [];
+        const nonEnglishLast = [];
+        for (const video of allVideos) {
+          if (isNonEnglishTitle(video.fullTitle || video.title)) {
+            nonEnglishLast.push(video);
+          } else {
+            englishFirst.push(video);
+          }
+        }
+        allVideos = englishFirst.concat(nonEnglishLast);
+      }
 
       if (!allVideos.length) {
         countEl.textContent = "No videos";
