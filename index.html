@@ -2307,55 +2307,5 @@
 })();
 </script>
 
-<!-- ── Small top-right App Download button ── -->
-<a id="appDownloadBtn"
-   href="https://kellysimiyu.github.io/Movies/MovieZone-v1.2.apk"
-   download="MovieZone-v1.2.apk"
-   class="app-dl-btn"
-   title="Download the Movie Zone Android app">
-  <span class="app-dl-icon">📱</span><span class="app-dl-label">Get App</span>
-</a>
-<style>
-  .app-dl-btn {
-    position: fixed;
-    top: 12px;
-    right: 12px;
-    z-index: 100000;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    background: linear-gradient(135deg, #ff2d2d, #c91f1f);
-    color: #fff;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: .82rem;
-    border-radius: 999px;
-    box-shadow: 0 4px 14px rgba(255,45,45,.35), 0 2px 6px rgba(0,0,0,.4);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    white-space: nowrap;
-    transition: transform .15s ease, box-shadow .15s ease;
-  }
-  .app-dl-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(255,45,45,.45), 0 3px 8px rgba(0,0,0,.5);
-  }
-  .app-dl-btn:active { transform: translateY(0); }
-  .app-dl-icon { font-size: 1rem; line-height: 1; }
-  .app-dl-label { line-height: 1; }
-  @media (max-width: 480px) {
-    .app-dl-btn { top: 8px; right: 8px; padding: 6px 10px; font-size: .75rem; }
-  }
-</style>
-<script>
-(function () {
-  "use strict";
-  var btn = document.getElementById("appDownloadBtn");
-  if (!btn) return;
-  if (window.MovieZoneApp === true || navigator.userAgent.indexOf("MovieZoneApp") !== -1) {
-    btn.style.display = "none";
-  }
-})();
-</script>
 </body>
 </html>
