@@ -1,0 +1,2361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <title>Movie Zone — Watch Free Movies &amp; Videos Online</title>
+
+  <meta name="description" content="Discover movies, trailers, animations, music and videos on Movie Zone. Search and watch instantly without signing up.">
+  <meta name="keywords" content="free movies, watch movies online, free movies online, streaming movies, movie trailers, free films, online movies, video streaming">
+  <meta name="author" content="Movie Zone">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow">
+  <meta name="theme-color" content="#0b0b0d">
+
+  <link rel="canonical" href="https://kellysimiyu.github.io/Movies/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Movie Zone — Watch Free Movies &amp; Videos Online">
+  <meta property="og:description" content="Discover movies, trailers, animations, music and videos on Movie Zone.">
+  <meta property="og:site_name" content="Movie Zone">
+  <meta property="og:url" content="https://kellysimiyu.github.io/Movies/">
+  <meta property="og:locale" content="en_US">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Movie Zone — Watch Free Movies &amp; Videos Online">
+  <meta name="twitter:description" content="Discover and watch movies, trailers and videos on Movie Zone.">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+
+  <link rel="preconnect" href="https://img.youtube.com" crossorigin>
+  <link rel="preconnect" href="https://www.youtube.com" crossorigin>
+  <link rel="dns-prefetch" href="https://img.youtube.com">
+  <link rel="dns-prefetch" href="https://www.youtube.com">
+
+  <script type="application/ld+json" id="websiteSchema">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Movie Zone",
+    "alternateName": "Free Movies Online",
+    "description": "Discover movies, trailers, animations, music and videos on Movie Zone.",
+    "url": "https://kellysimiyu.github.io/Movies/"
+  }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --bg: #0b0b0d;
+      --bg-elev: #131316;
+      --bg-card: #17171b;
+      --bg-card-hover: #1c1c22;
+      --border: #232329;
+      --border-strong: #2f2f38;
+      --text: #f2f2f4;
+      --text-dim: #9a9aa5;
+      --text-muted: #6b6b76;
+      --accent: #ff2d2d;
+      --accent-dim: #c91f1f;
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(11, 11, 13, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1520px;
+      margin: 0 auto;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 14px rgba(255, 45, 45, 0.28);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .brand-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-tag {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .main-nav {
+      order: 3;
+      flex: 1 1 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      overflow-x: auto;
+      padding: 3px 0 7px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-strong) transparent;
+    }
+
+    .nav-link {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-dim);
+      padding: 9px 13px;
+      border-radius: 9px;
+      font: inherit;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: #fff;
+      background: rgba(255,45,45,.12);
+      border-color: rgba(255,45,45,.25);
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 240px;
+      max-width: 520px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 11px 16px 11px 40px;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-elev);
+      color: var(--text);
+      font-size: .9rem;
+      outline: none;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+      font-family: inherit;
+    }
+
+    .search-input::placeholder { color: var(--text-muted); }
+
+    .search-input:focus {
+      border-color: var(--accent);
+      background: #18181d;
+      box-shadow: 0 0 0 3px rgba(255,45,45,.12);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      fill: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .header-meta {
+      font-size: .82rem;
+      color: var(--text-dim);
+      margin-left: auto;
+      white-space: nowrap;
+      padding-right: 90px;
+    }
+
+    .page {
+      max-width: 1520px;
+      margin: 0 auto;
+      padding: 28px 28px 80px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin: 0;
+    }
+
+    .section-sub {
+      font-size: .82rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      position: relative;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      transition: transform .2s ease, background .2s ease,
+        border-color .2s ease, box-shadow .2s ease;
+      contain: layout style paint;
+      content-visibility: auto;
+      contain-intrinsic-size: 280px 190px;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      background: var(--bg-card-hover);
+      border-color: var(--border-strong);
+      box-shadow: 0 12px 28px rgba(0,0,0,.45);
+    }
+
+    .thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #1a1a1e;
+      overflow: hidden;
+      cursor: pointer;
+      transform: translateZ(0);
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s ease;
+    }
+
+    .thumb:hover img { transform: scale(1.05); }
+
+    .play-btn {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to top, rgba(0,0,0,.6), transparent 70%);
+      pointer-events: none;
+      opacity: .95;
+    }
+
+    .play-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.94);
+      color: #0b0b0d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      padding-left: 3px;
+      transition: transform .2s ease;
+      box-shadow: 0 4px 16px rgba(0,0,0,.4);
+    }
+
+    .thumb:hover .play-circle { transform: scale(1.1); }
+
+    .info {
+      padding: 14px 14px 16px;
+      min-height: 58px;
+    }
+
+    .title {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: .9rem;
+      font-weight: 500;
+      line-height: 1.45;
+      color: var(--text);
+      margin: 0;
+      user-select: text;
+      pointer-events: none;
+    }
+
+    .title.loading {
+      background: linear-gradient(90deg, #222 25%, #2b2b2b 37%, #222 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.2s ease-in-out infinite;
+      color: transparent;
+      border-radius: 4px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .title-index {
+      margin-top: 45px;
+      padding: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .title-index summary {
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      user-select: none;
+    }
+
+    .title-index summary:hover {
+      color: var(--accent);
+    }
+
+    .title-index-info {
+      color: var(--text-muted);
+      font-size: .82rem;
+      margin: 12px 0;
+    }
+
+    #allVideoTitles {
+      padding-left: 25px;
+      margin: 18px 0 0;
+    }
+
+    #allVideoTitles li {
+      cursor: pointer;
+      padding: 9px 8px;
+      border-radius: 6px;
+      color: var(--text-dim);
+      font-size: .9rem;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      transition: background .15s ease, color .15s ease;
+    }
+
+    #allVideoTitles li:last-child {
+      border-bottom: none;
+    }
+
+    #allVideoTitles li:hover,
+    #allVideoTitles li:focus {
+      background: rgba(225, 29, 72, .12);
+      color: #fff;
+      outline: none;
+    }
+
+    #allVideoTitles li:active {
+      background: rgba(225, 29, 72, .22);
+    }
+
+    .title-index-empty {
+      color: var(--text-muted);
+      font-size: .9rem;
+      padding: 12px 0;
+    }
+
+    .scroll-sentinel { height: 1px; width: 100%; }
+
+    .loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 0;
+      color: var(--text-muted);
+      font-size: .85rem;
+      gap: 12px;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-strong);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .end-message {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: .85rem;
+      padding: 32px 0 16px;
+    }
+
+    #player {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      width: 100%;
+      height: 100%;
+      background: #000;
+    }
+
+    #player.active { display: block; }
+
+    #stage {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #videoFrame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #videoFrame iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+    }
+
+    #stage .click-shield {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .video-bottom-right-cover {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: auto;
+      min-height: 68px;
+      z-index: 100001;
+      pointer-events: auto;
+      background: #000;
+      opacity: 0;
+      transition: opacity .4s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 10px 16px 14px;
+      box-sizing: border-box;
+      gap: 8px;
+    }
+
+    .video-bottom-right-cover.visible {
+      opacity: 1;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 100000;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .2s, visibility .2s;
+      pointer-events: none;
+    }
+
+    /* Show the back button whenever the bottom bar is visible too,
+       so touch / TV users can always reach it. */
+    #player:hover .top-bar,
+    .video-bottom-right-cover.visible ~ .top-bar,
+    .video-bottom-right-cover.seeking ~ .top-bar {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .back-btn {
+      border: none;
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      background: rgba(35,35,35,.85);
+      color: white;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .skip-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .skip-btn,
+    .pause-btn {
+      border: none;
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      background: rgba(20,20,20,.82);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      backdrop-filter: blur(4px);
+    }
+
+    .skip-btn { flex-direction: column; }
+
+    .skip-btn svg { width: 26px; height: 26px; fill: #fff; }
+    .pause-btn svg { width: 30px; height: 30px; fill: #fff; }
+
+    .skip-btn .skip-label {
+      position: absolute;
+      bottom: 8px;
+      font-size: 10px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .progress-wrap {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0;
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height .25s ease, opacity .2s ease, margin-top .25s ease;
+      margin-top: 0;
+    }
+
+    .video-bottom-right-cover.visible .progress-wrap,
+    .video-bottom-right-cover.seeking .progress-wrap {
+      max-height: 30px;
+      opacity: 1;
+      margin-top: 6px;
+    }
+
+    .progress-track {
+      position: relative;
+      flex: 1;
+      height: 5px;
+      background: rgba(255,255,255,.22);
+      border-radius: 3px;
+      cursor: pointer;
+      overflow: hidden;
+      padding: 8px 0;
+      margin: -8px 0;
+      background-clip: content-box;
+      box-sizing: content-box;
+    }
+
+    .progress-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    .progress-time {
+      color: #ddd;
+      font-size: .75rem;
+      font-variant-numeric: tabular-nums;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .error { color: #ff6666; padding: 20px; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .title.loading { animation: none; }
+      .thumb img, .card { transition: none; }
+    }
+
+    @media (max-width: 720px) {
+      .header-inner {
+        padding: 14px 16px;
+        gap: 14px;
+      }
+
+      .header-meta { display: none; }
+
+      .main-nav {
+        order: 3;
+        width: 100%;
+        flex: 1 1 100%;
+      }
+
+      .page { padding: 22px 16px 60px; }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 14px;
+      }
+
+      .info { padding: 10px 10px 12px; min-height: 48px; }
+      .title { font-size: .84rem; }
+      .play-circle { width: 42px; height: 42px; font-size: 16px; }
+
+      .title-index {
+        padding: 15px;
+        margin-top: 32px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .brand-tag { display: none; }
+
+      .skip-btn, .pause-btn { width: 56px; height: 56px; }
+      .back-btn { width: 42px; height: 42px; font-size: 22px; }
+
+      .skip-row { gap: 12px; }
+      .progress-wrap { width: 85vw; }
+    }
+
+    .bar-buttons-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .bar-left, .bar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .bar-right {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .extra-btn {
+      border: none;
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: inherit;
+      height: 46px;
+      white-space: nowrap;
+    }
+    .extra-btn:hover { background: rgba(255,255,255,.22); }
+    .extra-btn.active { background: rgba(225,29,72,.55); }
+
+    .res-menu {
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      margin-bottom: 8px;
+      background: rgba(20,20,20,.95);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
+      padding: 4px;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 100px;
+      z-index: 100001;
+    }
+    .res-menu.open { display: flex; }
+
+    .res-option {
+      border: none;
+      background: transparent;
+      color: #ddd;
+      font-size: 12px;
+      padding: 8px 12px;
+      text-align: left;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .res-option:hover, .res-option.active {
+      background: rgba(225,29,72,.4);
+      color: #fff;
+    }
+
+    /* ── Straight-edged solid covers over YouTube branding ── */
+    .permanent-yt-cover {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 320px;
+      height: 110px;
+      z-index: 99998;
+      pointer-events: none;
+      background: #000;
+      border-radius: 0;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .permanent-yt-top-cover {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 80px;
+      z-index: 99998;
+      pointer-events: none;
+      background: #000;
+      border-radius: 0;
+      outline: none;
+      box-shadow: none;
+    }
+
+    .permanent-yt-bottom-strip {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 72px;
+      z-index: 99997;
+      pointer-events: none;
+      background: #000;
+      border-radius: 0;
+      outline: none;
+      box-shadow: none;
+    }
+
+    @media (max-width: 480px) {
+      .permanent-yt-cover {
+        width: 200px;
+        height: 80px;
+      }
+      .permanent-yt-top-cover {
+        height: 64px;
+      }
+      .permanent-yt-bottom-strip {
+        height: 64px;
+      }
+    }
+
+    .player-loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      z-index: 99999;
+      opacity: 1;
+      transition: opacity .3s ease;
+    }
+    .player-loading.hidden { opacity: 0; pointer-events: none; }
+    .player-loading .spinner-big {
+      width: 48px;
+      height: 48px;
+      border: 4px solid rgba(255,45,45,.2);
+      border-top-color: #ff2d2d;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    #fsBtn {
+      min-width: 46px;
+      font-size: 18px;
+      padding: 8px 10px;
+    }
+
+    .card:focus,
+    .card:focus-visible {
+      outline: 4px solid #ff2d2d;
+      outline-offset: 3px;
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 32px rgba(255,45,45,.45);
+      z-index: 10;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .card:focus::before {
+      content: "▶";
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      color: #ff2d2d;
+      font-size: 20px;
+      z-index: 20;
+      text-shadow: 0 2px 4px rgba(0,0,0,.8);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.15); }
+    }
+
+    .nav-link:focus {
+      outline: 3px solid #ff2d2d;
+      background: rgba(255,45,45,.25);
+      color: #fff;
+    }
+
+    button:focus,
+    input:focus,
+    summary:focus,
+    a:focus {
+      outline: 3px solid #ff2d2d;
+      outline-offset: 2px;
+    }
+
+    #allVideoTitles li:focus {
+      outline: 3px solid #ff2d2d;
+      background: rgba(255,45,45,.25);
+      color: #fff;
+    }
+
+    .skip-btn:focus,
+    .pause-btn:focus,
+    .extra-btn:focus,
+    .back-btn:focus {
+      outline: 3px solid #ffffff;
+      background: rgba(255,45,45,.55) !important;
+      transform: scale(1.05);
+    }
+
+    @media (pointer: none), (hover: none) {
+      body {
+        scrollbar-width: none;
+      }
+      body::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    .card:focus {
+      scroll-margin: 100px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+
+    <a class="brand" href="https://kellysimiyu.github.io/Movies/">
+      <span class="brand-mark" aria-hidden="true">🎬</span>
+      <span class="brand-text">
+        <span class="brand-name">Movie Zone</span>
+        <span class="brand-tag">Watch Free</span>
+      </span>
+    </a>
+
+    <nav class="main-nav" aria-label="Video categories">
+      <button class="nav-link active" type="button" data-category="all" tabindex="0">All</button>
+      <button class="nav-link" type="button" data-category="movie" tabindex="0">Movies</button>
+      <button class="nav-link" type="button" data-category="animation" tabindex="0">Animation</button>
+      <button class="nav-link" type="button" data-category="action" tabindex="0">Action</button>
+      <button class="nav-link" type="button" data-category="adventure" tabindex="0">Adventure</button>
+      <button class="nav-link" type="button" data-category="comedy" tabindex="0">Comedy</button>
+      <button class="nav-link" type="button" data-category="crime" tabindex="0">Crime</button>
+      <button class="nav-link" type="button" data-category="documentary" tabindex="0">Documentary</button>
+      <button class="nav-link" type="button" data-category="drama" tabindex="0">Drama</button>
+      <button class="nav-link" type="button" data-category="family" tabindex="0">Family</button>
+      <button class="nav-link" type="button" data-category="fantasy" tabindex="0">Fantasy</button>
+      <button class="nav-link" type="button" data-category="horror" tabindex="0">Horror</button>
+      <button class="nav-link" type="button" data-category="mystery" tabindex="0">Mystery</button>
+      <button class="nav-link" type="button" data-category="romance" tabindex="0">Romance</button>
+      <button class="nav-link" type="button" data-category="sci-fi" tabindex="0">Sci-Fi</button>
+      <button class="nav-link" type="button" data-category="thriller" tabindex="0">Thriller</button>
+      <button class="nav-link" type="button" data-category="music" tabindex="0">Music</button>
+    </nav>
+
+    <div class="search-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/>
+      </svg>
+
+      <input
+        type="text"
+        id="searchInput"
+        class="search-input"
+        placeholder="Search movies &amp; videos…"
+        aria-label="Search movies and videos"
+        autocomplete="off"
+      >
+    </div>
+
+    <p class="header-meta" id="count">Loading videos…</p>
+
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="sr-only">
+    <h1>Watch Free Movies and Videos Online</h1>
+    <p>
+      Discover movies, trailers, animations, music and videos on Movie Zone.
+      Search the catalogue and watch videos instantly in your browser.
+    </p>
+  </section>
+
+  <div class="section-head">
+    <h2 class="section-title" id="sectionTitle">All Videos</h2>
+    <p class="section-sub" id="sectionSub">Loading catalogue…</p>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <details class="title-index">
+    <summary>
+      Browse All Video Titles
+      (<span id="titleCount">0</span>)
+    </summary>
+
+    <p class="title-index-info" id="titleIndexInfo">
+      Expand to load all video titles.
+    </p>
+
+    <ol id="allVideoTitles">
+      <li class="title-index-empty">Expand to load titles.</li>
+    </ol>
+  </details>
+
+  <div class="scroll-sentinel" id="sentinel"></div>
+
+  <div class="loader" id="loader" style="display:none">
+    <span class="spinner" aria-hidden="true"></span>
+    <span>Loading more videos…</span>
+  </div>
+
+  <p class="end-message" id="endMessage" style="display:none">
+    You've reached the end of the catalogue.
+  </p>
+
+</main>
+
+<div id="player">
+  <div id="stage">
+
+    <div id="videoFrame"></div>
+
+    <div class="player-loading" id="playerLoading">
+      <div class="spinner-big"></div>
+    </div>
+
+    <div class="permanent-yt-top-cover" aria-hidden="true"></div>
+    <div class="permanent-yt-bottom-strip" aria-hidden="true"></div>
+    <div class="permanent-yt-cover" aria-hidden="true"></div>
+
+    <div class="video-bottom-right-cover" aria-hidden="false">
+      <div class="bar-buttons-row">
+        <div class="bar-left">
+          <button class="skip-btn" id="skipBackBtn" aria-label="Rewind 30 seconds" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+            </svg>
+            <span class="skip-label">30</span>
+          </button>
+
+          <button class="pause-btn" id="pauseBtn" aria-label="Pause" type="button">
+            <svg id="pauseIcon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M6 5h4v14H6zM14 5h4v14h-4z"/>
+            </svg>
+            <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true" style="display:none">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </button>
+
+          <button class="skip-btn" id="skipForwardBtn" aria-label="Forward 30 seconds" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/>
+            </svg>
+            <span class="skip-label">30</span>
+          </button>
+        </div>
+
+        <div class="bar-right">
+          <button class="extra-btn" id="fsBtn" type="button" title="Toggle fullscreen">⛶</button>
+          <button class="extra-btn" id="resBtn" type="button" title="Change resolution">
+            🎚️ <span id="resLabel">Auto</span>
+          </button>
+          <button class="extra-btn" id="ccBtn" type="button" title="Toggle captions">📝 CC</button>
+          <div class="res-menu" id="resMenu">
+            <button class="res-option active" data-quality="default" type="button">Auto</button>
+            <button class="res-option" data-quality="small" type="button">480p</button>
+            <button class="res-option" data-quality="medium" type="button">720p</button>
+            <button class="res-option" data-quality="large" type="button">1080p</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <span class="progress-time" id="timeCurrent">0:00</span>
+        <div class="progress-track" id="progressTrack"
+             role="progressbar" aria-valuemin="0" aria-valuemax="100"
+             aria-valuenow="0" title="Seek">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <span class="progress-time" id="timeTotal">0:00</span>
+      </div>
+    </div>
+
+    <div class="top-bar">
+      <button class="back-btn" id="backBtn" aria-label="Back to videos" title="Back to videos" type="button">
+        &#8592;
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  "use strict";
+
+  /* ── Element references ───────────────────────────────────────────── */
+  const grid = document.getElementById("grid");
+  const countEl = document.getElementById("count");
+  const sectionSub = document.getElementById("sectionSub");
+  const loader = document.getElementById("loader");
+  const endMessage = document.getElementById("endMessage");
+  const sentinel = document.getElementById("sentinel");
+  const playerEl = document.getElementById("player");
+  const stage = document.getElementById("stage");
+  const coverEl = document.querySelector(".video-bottom-right-cover");
+  const playerLoading = document.getElementById("playerLoading");
+
+  const searchInput = document.getElementById("searchInput");
+
+  const allVideoTitles = document.getElementById("allVideoTitles");
+  const titleIndex = document.querySelector(".title-index");
+  const titleCount = document.getElementById("titleCount");
+  const titleIndexInfo = document.getElementById("titleIndexInfo");
+
+  const skipBackBtn = document.getElementById("skipBackBtn");
+  const skipFwdBtn = document.getElementById("skipForwardBtn");
+  const pauseBtn = document.getElementById("pauseBtn");
+  const pauseIcon = document.getElementById("pauseIcon");
+  const playIcon = document.getElementById("playIcon");
+  const progressTrack = document.getElementById("progressTrack");
+  const progressFill = document.getElementById("progressFill");
+  const timeCurrent = document.getElementById("timeCurrent");
+  const timeTotal = document.getElementById("timeTotal");
+
+  const sectionTitle = document.getElementById("sectionTitle");
+  const navLinks = document.querySelectorAll(".nav-link");
+
+  /* ── Constants ────────────────────────────────────────────────────── */
+  const SITE_URL = "https://kellysimiyu.github.io/Movies/";
+  const SKIP_SECONDS = 30;
+  const CUT_BEFORE_END_SECONDS = 40;
+  const PAGE_SIZE = 30;
+  const SCROLL_TRIGGER_PX = 800;
+  const EAGER_THUMBS = 2;
+  const HIGH_PRIORITY_THUMBS = 2;
+
+  const COVER_VISIBLE_MS = 5000;
+  const COVER_VISIBLE_MS_INITIAL = 15000;
+  const COVER_VISIBLE_MS_HOVER = 30000;
+  const SEEKING_VISIBLE_MS = 3000;
+
+  /* ── State ────────────────────────────────────────────────────────── */
+  let searchQuery = "";
+  let currentCategory = "all";
+  let allVideos = [];
+  let renderedCount = 0;
+  let loadingBatch = false;
+  let catalogLoaded = false;
+  let titlesBuilt = false;
+
+  let ytPlayer = null;
+  let ytApiReady = false;
+  let ytApiLoading = false;
+  let pendingVideoId = null;
+  let currentVideoId = null;
+
+  let isPaused = false;
+  let progressRAF = null;
+  let endCloseScheduled = false;
+
+  let coverHideTimer = null;
+  let seekingHideTimer = null;
+
+  let captionsOn = false;
+
+  let scrollCheckScheduled = false;
+
+  const titleElements = new Map();
+
+  /* ── Device detection ─────────────────────────────────────────────── */
+  const isTouchOnly = window.matchMedia("(hover: none)").matches;
+  const isInApp = window.MovieZoneApp === true ||
+    navigator.userAgent.indexOf("MovieZoneApp") !== -1;
+
+  /* ── Persistent dead-video list ───────────────────────────────────── */
+  let deadVideoCache = {};
+  try {
+    deadVideoCache = JSON.parse(localStorage.getItem("mz_dead_videos") || "{}");
+  } catch (e) { deadVideoCache = {}; }
+
+  /* ── Cover bar visibility helpers ─────────────────────────────────── */
+  function showCover(durationMs) {
+    if (!coverEl) return;
+    coverEl.classList.add("visible");
+    if (coverHideTimer) clearTimeout(coverHideTimer);
+    const ms = durationMs || COVER_VISIBLE_MS;
+    coverHideTimer = setTimeout(() => {
+      coverEl.classList.remove("visible");
+      coverHideTimer = null;
+    }, ms);
+  }
+
+  function refreshCoverTimer(durationMs) {
+    if (!coverEl || !coverEl.classList.contains("visible")) return;
+    if (coverHideTimer) clearTimeout(coverHideTimer);
+    const ms = durationMs || COVER_VISIBLE_MS_HOVER;
+    coverHideTimer = setTimeout(() => {
+      coverEl.classList.remove("visible");
+      coverHideTimer = null;
+    }, ms);
+  }
+
+  function showSeeking() {
+    if (!coverEl) return;
+    coverEl.classList.add("seeking");
+    if (seekingHideTimer) clearTimeout(seekingHideTimer);
+    seekingHideTimer = setTimeout(() => {
+      if (coverEl) coverEl.classList.remove("seeking");
+      seekingHideTimer = null;
+    }, SEEKING_VISIBLE_MS);
+  }
+
+  // Hover support (desktop)
+  playerEl.addEventListener("mouseenter", function() {
+    if (!coverEl) return;
+    if (coverEl.classList.contains("visible")) {
+      refreshCoverTimer(COVER_VISIBLE_MS_HOVER);
+    } else {
+      showCover(COVER_VISIBLE_MS_HOVER);
+    }
+  }, { passive: true });
+
+  playerEl.addEventListener("mousemove", function() {
+    if (coverEl && coverEl.classList.contains("visible")) {
+      refreshCoverTimer(COVER_VISIBLE_MS_HOVER);
+    }
+  }, { passive: true });
+
+  /* ── Helpers ──────────────────────────────────────────────────────── */
+  function formatTime(seconds) {
+    if (!isFinite(seconds) || seconds < 0) seconds = 0;
+    const total = Math.floor(seconds);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    if (h > 0) {
+      return h + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    }
+    return m + ":" + String(s).padStart(2, "0");
+  }
+
+  function isRealTitle(title) {
+    if (!title || typeof title !== "string") return false;
+    const cleaned = title.trim();
+    if (!cleaned) return false;
+    if (/^untitled video$/i.test(cleaned)) return false;
+    if (/^video\s*\d+$/i.test(cleaned)) return false;
+    if (/^movie zone video$/i.test(cleaned)) return false;
+    if (/^loading title/i.test(cleaned)) return false;
+    return true;
+  }
+
+  /* Detect titles that are not English.
+     Uses non-Latin script detection plus a heuristic for titles
+     with heavy use of accented Latin letters (Spanish, French,
+     Vietnamese, etc.) which are almost always non-English. */
+  function isNonEnglishTitle(title) {
+    if (!title || typeof title !== "string") return false;
+
+    // Strip emoji / decorative symbols first so they don't skew the check.
+    let t = title;
+    try {
+      t = t.replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, "");
+    } catch (e) {
+      t = t.replace(/[\u2190-\u21FF\u2300-\u23FF\u2460-\u24FF\u2500-\u27BF\u2B00-\u2BFF\uFE0F]/g, "");
+    }
+    t = t.trim();
+    if (!t) return false;
+
+    // Any character from a non-Latin script → non-English.
+    if (/[\u0370-\u03FF\u0400-\u052F\u0530-\u058F\u0590-\u05FF\u0600-\u06FF\u0700-\u074F\u0750-\u077F\u0780-\u07BF\u0900-\u097F\u0980-\u09FF\u0A00-\u0A7F\u0A80-\u0AFF\u0B00-\u0B7F\u0B80-\u0BFF\u0C00-\u0C7F\u0C80-\u0CFF\u0D00-\u0D7F\u0E00-\u0E7F\u0E80-\u0EFF\u0F00-\u0FFF\u1000-\u109F\u10A0-\u10FF\u1100-\u11FF\u1200-\u137F\u13A0-\u13FF\u1400-\u167F\u1780-\u17FF\u1800-\u18AF\u3040-\u30FF\u3100-\u312F\u31A0-\u31BF\u3400-\u4DBF\u4E00-\u9FFF\uA000-\uA48F\uAC00-\uD7AF\uF900-\uFAFF]/u.test(t)) {
+      return true;
+    }
+
+    // Heavy use of accented Latin letters → likely non-English
+    // (e.g. "Amélie", "Película completa", "Bộ phim").
+    const accented = (t.match(/[\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u017F\u1E00-\u1EFF]/g) || []).length;
+    if (accented >= 2) return true;
+
+    return false;
+  }
+
+  /* Matches emoji + common decorative icons used as separators
+     (arrows, stars, bullets, box-drawing, dingbats…). */
+  let EMOJI_RE;
+  try {
+    EMOJI_RE = /[\p{Extended_Pictographic}\u2190-\u21FF\u2300-\u23FF\u2460-\u24FF\u2500-\u27BF\u2B00-\u2BFF\uFE0F]/u;
+  } catch (e) {
+    EMOJI_RE = /[\u2190-\u21FF\u2300-\u23FF\u2460-\u24FF\u2500-\u27BF\u2B00-\u2BFF\uFE0F]/;
+  }
+
+  /* Shorten a YouTube-style title to just the movie/show name.
+     Handles emoji/icon separators, pipes, dashes, trailing brackets,
+     and generic descriptors (Official Trailer, Full Movie, HD…). */
+  function makeShortTitle(raw) {
+    if (!raw || typeof raw !== "string") return raw || "";
+    const original = raw.replace(/\s+/g, " ").trim();
+    let t = original;
+
+    // 0a. Strip any leading emoji / decorative symbols.
+    t = t.replace(
+      /^[\s\p{Extended_Pictographic}\u2190-\u21FF\u2300-\u23FF\u2460-\u24FF\u2500-\u27BF\u2B00-\u2BFF\uFE0F]+/u,
+      ""
+    ).trim();
+
+    // 0b. Truncate at the first emoji / icon that appears after the title,
+    //     e.g. "Inception 🎬 Full Movie HD" → "Inception".
+    const m = t.match(EMOJI_RE);
+    if (m && typeof m.index === "number" && m.index > 0) {
+      const before = t.slice(0, m.index).replace(/[\s\-–—:|·•»«]+$/, "").trim();
+      if (before.length >= 2) t = before;
+    }
+
+    // 1. Keep only the part before the first strong text separator.
+    const strongSep = /\s*(?:\||»|«|\/\/|：|｜)\s*|\s+[–—]\s*|\s+-\s*|\s+[·•∙⋅・]\s+|\s+:\s+/;
+    const firstChunk = t.split(strongSep)[0];
+    if (firstChunk && firstChunk.trim().length >= 1) {
+      t = firstChunk.trim();
+    }
+
+    // 2. Drop trailing bracketed groups: (2023), [HD], (Official Trailer)…
+    for (let i = 0; i < 4; i++) {
+      const next = t.replace(/\s*[\(\[]([^\)\]]*)[\)\]]\s*$/, "").trim();
+      if (next === t || next.length < 2) break;
+      t = next;
+    }
+
+    // 3. Drop trailing descriptor words (Official Trailer, Full Movie, HD…).
+    const junk = /(?:\s*[-–—:|]\s*)?(?:official(?:\s+(?:trailer|video|music\s+video))?|full\s+(?:movie|film|video)|movie\s+clip|teaser(?:\s+trailer)?|trailer|clip|video|hd|4k|1080p|720p|480p|360p|new\s+release|latest|watch\s+online|free\s+download|download|subtitles?|subbed|dubbed|english|hindi|tamil|telugu|malayalam|kannada|in\s+hindi|in\s+english)\s*$/i;
+    for (let i = 0; i < 10; i++) {
+      const next = t.replace(junk, "").trim();
+      if (next === t || next.length < 2) break;
+      t = next;
+    }
+
+    // 3b. Drop trailing filler words left behind ("… in", "… with"…).
+    const filler = /\s+(?:in|with|on|at|for|and|of|the|a|an|to|by|from)\s*$/i;
+    for (let i = 0; i < 6; i++) {
+      const next = t.replace(filler, "").trim();
+      if (next === t || next.length < 2) break;
+      t = next;
+    }
+
+    // 4. Trim leftover separators / punctuation at the edges.
+    t = t.replace(/^[\s\-–—:|·•»«]+/, "").replace(/[\s\-–—:|·•»«]+$/, "").trim();
+
+    // 5. If we over-cleaned, fall back to the original title.
+    if (!t || t.length < 2) return original;
+
+    // 6. Safety cap for very long titles.
+    if (t.length > 70) {
+      const cut = t.slice(0, 70);
+      const space = cut.lastIndexOf(" ");
+      t = (space > 40 ? cut.slice(0, space) : cut).trim() + "…";
+    }
+
+    return t;
+  }
+
+  function getYouTubeId(url) {
+    try {
+      const parsed = new URL(url);
+      const host = parsed.hostname.toLowerCase();
+      if (host === "youtu.be") {
+        return parsed.pathname.split("/").filter(Boolean)[0] || null;
+      }
+      if (host === "youtube.com" || host.endsWith(".youtube.com") || host === "youtube-nocookie.com") {
+        if (parsed.searchParams.has("v")) return parsed.searchParams.get("v");
+        const match = parsed.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]+)/);
+        return match ? match[1] : null;
+      }
+    } catch (e) { return null; }
+    return null;
+  }
+
+  function isFullscreenActive() {
+    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+  }
+
+  /* ── YouTube IFrame API (lazy) ────────────────────────────────────── */
+  function ensureYouTubeApi() {
+    if (ytApiReady || ytApiLoading) return;
+    ytApiLoading = true;
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+  }
+
+  window.onYouTubeIframeAPIReady = function() {
+    ytApiReady = true;
+    ytApiLoading = false;
+    if (pendingVideoId) {
+      const id = pendingVideoId;
+      pendingVideoId = null;
+      mountPlayer(id);
+    }
+  };
+
+  function mountPlayer(id) {
+    destroyPlayer();
+
+    let container = document.getElementById("videoFrame");
+    if (!container) {
+      container = document.createElement("div");
+      container.id = "videoFrame";
+      stage.insertBefore(container, stage.firstChild);
+    } else {
+      container.innerHTML = "";
+    }
+
+    ytPlayer = new YT.Player("videoFrame", {
+      videoId: id,
+      host: "https://www.youtube-nocookie.com",
+      playerVars: {
+        autoplay: 0,
+        controls: 0,
+        disablekb: 1,
+        fs: 0,
+        rel: 0,
+        playsinline: 1,
+        modestbranding: 1,
+        iv_load_policy: 3,
+        cc_load_policy: 0,
+        showinfo: 0,
+        origin: window.location.origin
+      },
+      events: {
+        onReady: onPlayerReady,
+        onStateChange: onPlayerStateChange,
+        onError: onPlayerError,
+        onApiChange: onPlayerApiChange
+      }
+    });
+    window.ytPlayer = ytPlayer;
+  }
+
+  function destroyPlayer() {
+    if (ytPlayer && typeof ytPlayer.destroy === "function") {
+      try { ytPlayer.destroy(); } catch (e) {}
+    }
+    ytPlayer = null;
+    window.ytPlayer = null;
+  }
+
+  function resizeYtPlayerToStage() {
+    if (!ytPlayer || typeof ytPlayer.setSize !== "function") return;
+    try {
+      const rect = stage.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        ytPlayer.setSize(Math.round(rect.width), Math.round(rect.height));
+      }
+    } catch (e) {}
+  }
+
+  function onPlayerReady() {
+    try { ytPlayer.playVideo(); } catch (e) {}
+    updateTimeTotal();
+    startProgressLoop();
+    if (captionsOn) applyCaptions();
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+      isPaused = false;
+      updatePauseIcon();
+      updateTimeTotal();
+      startProgressLoop();
+      if (playerLoading) playerLoading.classList.add("hidden");
+    } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+      isPaused = true;
+      updatePauseIcon();
+      stopProgressLoop();
+      updateProgressOnce();
+      if (event.data === YT.PlayerState.ENDED) {
+        setTimeout(function() { closePlayer(); }, 500);
+      }
+    }
+  }
+
+  // Called when a module (like captions) finishes loading.
+  function onPlayerApiChange() {
+    if (!captionsOn || !ytPlayer) return;
+    try {
+      const tracks = ytPlayer.getOption("captions", "tracklist") || [];
+      if (tracks.length) {
+        ytPlayer.setOption("captions", "track", {
+          languageCode: tracks[0].languageCode
+        });
+      }
+    } catch (e) {}
+  }
+
+  function onPlayerError(event) {
+    console.warn("YouTube player error:", event.data, "for video", currentVideoId);
+
+    if (currentVideoId) {
+      const dead = allVideos.find(v => v.id === currentVideoId);
+      if (dead) {
+        dead.__dead = true;
+        dead.__deadReason = "embed-" + event.data;
+        try {
+          const deadCache = JSON.parse(localStorage.getItem("mz_dead_videos") || "{}");
+          deadCache[dead.id] = event.data;
+          localStorage.setItem("mz_dead_videos", JSON.stringify(deadCache));
+        } catch (e) {}
+      }
+      const card = document.querySelector(
+        `.card[data-video-id="${CSS.escape(currentVideoId)}"]`
+      );
+      if (card) card.remove();
+    }
+
+    setTimeout(() => {
+      closePlayer();
+      setTimeout(() => {
+        alert("This video can't be played here. It has been removed from the catalogue.");
+      }, 500);
+    }, 1500);
+  }
+
+  function updateTimeTotal() {
+    if (!ytPlayer || typeof ytPlayer.getDuration !== "function") return;
+    try { timeTotal.textContent = formatTime(ytPlayer.getDuration() || 0); } catch (e) {}
+  }
+
+  function updateProgressOnce() {
+    if (!ytPlayer) return;
+    try {
+      const cur = ytPlayer.getCurrentTime() || 0;
+      const dur = ytPlayer.getDuration() || 0;
+
+      timeCurrent.textContent = formatTime(cur);
+      timeTotal.textContent = formatTime(dur);
+
+      const pct = dur > 0 ? Math.min(100, (cur / dur) * 100) : 0;
+      progressFill.style.width = pct + "%";
+      progressTrack.setAttribute("aria-valuenow", String(Math.round(pct)));
+
+      if (dur > 0 && !endCloseScheduled && (dur - cur) <= CUT_BEFORE_END_SECONDS && cur > 5) {
+        endCloseScheduled = true;
+        try { ytPlayer.pauseVideo(); } catch (e) {}
+        setTimeout(function() { closePlayer(); }, 200);
+      }
+    } catch (e) {}
+  }
+
+  function updateProgress() {
+    updateProgressOnce();
+    progressRAF = requestAnimationFrame(updateProgress);
+  }
+
+  function startProgressLoop() {
+    stopProgressLoop();
+    progressRAF = requestAnimationFrame(updateProgress);
+  }
+
+  function stopProgressLoop() {
+    if (progressRAF) {
+      cancelAnimationFrame(progressRAF);
+      progressRAF = null;
+    }
+  }
+
+  function ensureClickShield() {
+    if (stage.querySelector(".click-shield")) return;
+    const shield = document.createElement("div");
+    shield.className = "click-shield";
+    shield.addEventListener("click", function(e) {
+      // Ignore clicks inside the control bar
+      let target = e.target;
+      while (target && target !== shield) {
+        if (target.classList && target.classList.contains("video-bottom-right-cover")) return;
+        target = target.parentElement;
+      }
+
+      if (isTouchOnly) {
+        // Touch: tap toggles control bar visibility (like YouTube mobile).
+        if (coverEl.classList.contains("visible")) {
+          coverEl.classList.remove("visible");
+          if (coverHideTimer) { clearTimeout(coverHideTimer); coverHideTimer = null; }
+        } else {
+          showCover(COVER_VISIBLE_MS_HOVER);
+        }
+      } else {
+        // Mouse: hover already shows the bar, so a click means pause.
+        // If for some reason it's hidden, show it first (more discoverable).
+        if (!coverEl.classList.contains("visible")) {
+          showCover();
+        } else {
+          togglePause();
+        }
+      }
+    });
+    stage.appendChild(shield);
+  }
+
+  /* ── Pause / play / skip ──────────────────────────────────────────── */
+  function updatePauseIcon() {
+    if (isPaused) {
+      pauseIcon.style.display = "none";
+      playIcon.style.display = "";
+      pauseBtn.setAttribute("aria-label", "Play");
+      pauseBtn.title = "Play";
+    } else {
+      pauseIcon.style.display = "";
+      playIcon.style.display = "none";
+      pauseBtn.setAttribute("aria-label", "Pause");
+      pauseBtn.title = "Pause";
+    }
+  }
+
+  function togglePause() {
+    if (!ytPlayer) return;
+    showCover();
+    try {
+      if (isPaused) ytPlayer.playVideo();
+      else ytPlayer.pauseVideo();
+    } catch (e) {}
+  }
+
+  pauseBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    e.preventDefault();
+    togglePause();
+  });
+
+  function skipBy(seconds) {
+    if (!ytPlayer) return;
+    showCover();
+    showSeeking();
+    try {
+      const cur = ytPlayer.getCurrentTime() || 0;
+      const dur = ytPlayer.getDuration() || 0;
+      let target = cur + seconds;
+      if (target < 0) target = 0;
+      if (dur > 0 && target > dur) target = dur;
+      ytPlayer.seekTo(target, true);
+      updateProgressOnce();
+    } catch (e) {}
+  }
+
+  skipBackBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    e.preventDefault();
+    skipBy(-SKIP_SECONDS);
+  });
+
+  skipFwdBtn.addEventListener("click", e => {
+    e.stopPropagation();
+    e.preventDefault();
+    skipBy(SKIP_SECONDS);
+  });
+
+  progressTrack.addEventListener("click", e => {
+    e.stopPropagation();
+    e.preventDefault();
+    showCover();
+    showSeeking();
+    if (!ytPlayer) return;
+    try {
+      const dur = ytPlayer.getDuration() || 0;
+      if (dur <= 0) return;
+      const rect = progressTrack.getBoundingClientRect();
+      const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+      ytPlayer.seekTo(ratio * dur, true);
+      updateProgressOnce();
+    } catch (err) {}
+  });
+
+  /* ── Open / close player ──────────────────────────────────────────── */
+  function openPlayer(id, title) {
+    timeCurrent.textContent = "0:00";
+    timeTotal.textContent = "0:00";
+    progressFill.style.width = "0%";
+
+    playerEl.classList.add("active");
+    document.body.style.overflow = "hidden";
+    if (playerLoading) playerLoading.classList.remove("hidden");
+
+    showCover(COVER_VISIBLE_MS_INITIAL);
+
+    currentVideoId = id;
+    endCloseScheduled = false;
+
+    if (ytApiReady) {
+      mountPlayer(id);
+    } else {
+      pendingVideoId = id;
+      ensureYouTubeApi();
+    }
+
+    setTimeout(ensureClickShield, 0);
+  }
+
+  function closePlayer() {
+    try { if (ytPlayer && typeof ytPlayer.pauseVideo === "function") ytPlayer.pauseVideo(); } catch (e) {}
+    playerEl.classList.remove("active");
+
+    // Exit fullscreen if we're still in it (e.g. video ended while fullscreen).
+    if (isFullscreenActive()) {
+      try {
+        if (document.exitFullscreen) document.exitFullscreen().catch(function () {});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } catch (e) {}
+    }
+
+    if (coverEl) coverEl.classList.remove("visible");
+    if (coverHideTimer) { clearTimeout(coverHideTimer); coverHideTimer = null; }
+
+    stopProgressLoop();
+
+    pendingVideoId = null;
+    currentVideoId = null;
+    endCloseScheduled = false;
+
+    if (playerLoading) playerLoading.classList.remove("hidden");
+
+    const shield = stage.querySelector(".click-shield");
+    if (shield) shield.remove();
+
+    isPaused = false;
+    document.body.style.overflow = "";
+
+    timeCurrent.textContent = "0:00";
+    timeTotal.textContent = "0:00";
+    progressFill.style.width = "0%";
+
+    updatePauseIcon();
+  }
+
+  document.getElementById("backBtn").addEventListener("click", closePlayer);
+
+  document.addEventListener("keydown", e => {
+    if (!playerEl.classList.contains("active")) return;
+
+    if (e.key === "Escape") {
+      // If we're in fullscreen, let the browser exit first.
+      // Don't also close the player — that would produce a jarring
+      // "fullscreen transition + player teardown" collision.
+      if (isFullscreenActive()) return;
+      closePlayer();
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      skipBy(-SKIP_SECONDS);
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      skipBy(SKIP_SECONDS);
+    } else if (e.key === " " || e.key === "k") {
+      e.preventDefault();
+      togglePause();
+    }
+  });
+
+  // Keep YouTube's canvas in sync with the stage size (rotation, resize)
+  window.addEventListener("resize", function() {
+    if (!playerEl.classList.contains("active")) return;
+    resizeYtPlayerToStage();
+  }, { passive: true });
+
+  /* ── Category detection ───────────────────────────────────────────── */
+  const categoryNames = {
+    all: "All Videos", movie: "Movies", animation: "Animation",
+    action: "Action", adventure: "Adventure", comedy: "Comedy",
+    crime: "Crime", documentary: "Documentary", drama: "Drama",
+    family: "Family", fantasy: "Fantasy", horror: "Horror",
+    mystery: "Mystery", romance: "Romance", "sci-fi": "Sci-Fi",
+    thriller: "Thriller", music: "Music"
+  };
+
+  function detectCategoryFromTitle(title) {
+    const t = (title || "").toLowerCase().replace(/[^a-z0-9+\s-]/g, " ").replace(/\s+/g, " ").trim();
+    const rules = [
+      ["music", /\b(music video|official music video|official video|lyric video|lyrics|audio|feat\.?|ft\.?|song|album|live performance|concert|remix)\b/],
+      ["animation", /\b(animation|animated|anime|cartoon|pixar|disney animation|dreamworks)\b/],
+      ["horror", /\b(horror|haunted|ghost|demon|zombie|vampire|possessed|exorcism|scary)\b/],
+      ["sci-fi", /\b(sci[ -]?fi|science fiction|alien|spaceship|space war|robot|cyborg|time travel|dystopian)\b/],
+      ["comedy", /\b(comedy|funny|hilarious|stand up|standup|parody|satire|romcom|rom-com)\b/],
+      ["action", /\b(action|fight|fighting|martial arts|assassin|warrior|battle|explosion|superhero)\b/],
+      ["adventure", /\b(adventure|quest|journey|expedition|treasure hunt)\b/],
+      ["crime", /\b(crime|criminal|gangster|mafia|robbery|heist|detective|murder case)\b/],
+      ["documentary", /\b(documentary|documentaries|true story|real story|biography|history of|explained)\b/],
+      ["family", /\b(family movie|for the whole family|kids movie|children.s movie)\b/],
+      ["fantasy", /\b(fantasy|magic|magical|wizard|witch|dragon|kingdom|fairy tale)\b/],
+      ["mystery", /\b(mystery|mysterious|whodunit|disappearance|unsolved)\b/],
+      ["romance", /\b(romance|romantic|love story|love triangle|romcom|rom-com)\b/],
+      ["thriller", /\b(thriller|suspense|psychological|hostage|serial killer)\b/],
+      ["drama", /\b(drama|emotional|family drama)\b/]
+    ];
+    for (const [category, pattern] of rules) {
+      if (pattern.test(t)) return category;
+    }
+    return "movie";
+  }
+
+  /* ── Structured data ──────────────────────────────────────────────── */
+  let videoSchemaScript = document.getElementById("videoSchema");
+  if (!videoSchemaScript) {
+    videoSchemaScript = document.createElement("script");
+    videoSchemaScript.type = "application/ld+json";
+    videoSchemaScript.id = "videoSchema";
+    document.head.appendChild(videoSchemaScript);
+  }
+
+  function buildVideoSchema(video) {
+    if (!isRealTitle(video.title)) return null;
+    const thumbnailUrl = "https://img.youtube.com/vi/" + video.id + "/hqdefault.jpg";
+    return {
+      "@type": "VideoObject",
+      "@id": SITE_URL + "#video-" + video.id,
+      "name": video.title,
+      "description": video.title + " — watch on Movie Zone.",
+      "thumbnailUrl": [thumbnailUrl],
+      "embedUrl": "https://www.youtube.com/embed/" + video.id,
+      "url": "https://www.youtube.com/watch?v=" + video.id,
+      "mainEntityOfPage": { "@type": "WebPage", "@id": SITE_URL },
+      "publisher": { "@type": "Organization", "name": "Movie Zone", "url": SITE_URL }
+    };
+  }
+
+  function updateVideoStructuredData() {
+    if (!allVideos.length) return;
+    const graph = allVideos
+      .filter(video => isRealTitle(video.title))
+      .slice(0, 100)
+      .map(buildVideoSchema)
+      .filter(Boolean);
+    videoSchemaScript.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": graph
+    });
+  }
+
+  /* ── Title index (lazy build) ─────────────────────────────────────── */
+  function buildAllVideoTitles() {
+    if (titlesBuilt) return;
+    titlesBuilt = true;
+
+    allVideoTitles.innerHTML = "";
+    titleElements.clear();
+
+    const frag = document.createDocumentFragment();
+    allVideos.forEach(function(video) {
+      if (!isRealTitle(video.title)) return;
+      const item = document.createElement("li");
+      item.dataset.videoId = video.id;
+      item.tabIndex = 0;
+      item.setAttribute("role", "button");
+      item.title = "Play: " + (video.fullTitle || video.title);
+      item.textContent = video.title;
+      item.addEventListener("click", function() {
+        openPlayer(video.id, video.title || "Movie Zone video");
+      });
+      item.addEventListener("keydown", function(e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openPlayer(video.id, video.title || "Movie Zone video");
+        }
+      });
+      titleElements.set(video.id, item);
+      frag.appendChild(item);
+    });
+
+    allVideoTitles.appendChild(frag);
+    titleCount.textContent = titleElements.size;
+    titleIndexInfo.textContent = titleElements.size + " video titles. Click any title to play it.";
+  }
+
+  if (titleIndex) {
+    titleIndex.addEventListener("toggle", function() {
+      if (titleIndex.open) buildAllVideoTitles();
+    });
+  }
+
+  /* ── Card creation ────────────────────────────────────────────────── */
+  function makeCard(video, index) {
+    const id = video.id;
+    const titleText = video.title || "Loading title…";
+
+    const card = document.createElement("article");
+    card.className = "card";
+    card.dataset.videoId = id;
+    card.dataset.category = video.category || "movie";
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+
+    const thumb = document.createElement("div");
+    thumb.className = "thumb";
+    thumb.tabIndex = 0;
+    thumb.setAttribute("role", "button");
+    thumb.setAttribute("aria-label", "Play " + titleText);
+
+    const img = document.createElement("img");
+    img.src = "https://img.youtube.com/vi/" + id + "/hqdefault.jpg";
+    img.alt = video.title ? video.title + " thumbnail" : "Video thumbnail";
+    img.width = 480;
+    img.height = 270;
+    img.decoding = "async";
+    img.loading = index < EAGER_THUMBS ? "eager" : "lazy";
+    if (index < HIGH_PRIORITY_THUMBS) img.setAttribute("fetchpriority", "high");
+
+    const play = document.createElement("div");
+    play.className = "play-btn";
+    play.innerHTML = '<div class="play-circle">&#9654;</div>';
+
+    thumb.append(img, play);
+
+    const info = document.createElement("div");
+    info.className = "info";
+
+    const title = document.createElement("p");
+    title.className = "title";
+    if (!video.title) title.classList.add("loading");
+    title.textContent = titleText;
+    title.title = video.fullTitle || video.title || "";
+    info.appendChild(title);
+
+    card.append(thumb, info);
+    card.dataset.searchTitle = ((video.fullTitle || video.title) || "").toLowerCase();
+
+    thumb.addEventListener("click", () => openPlayer(id, video.title || "Movie Zone video"));
+    thumb.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openPlayer(id, video.title || "Movie Zone video");
+      }
+    });
+    card.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " " || e.keyCode === 13) {
+        e.preventDefault();
+        e.stopPropagation();
+        openPlayer(id, video.title || "Movie Zone video");
+      }
+    });
+
+    return card;
+  }
+
+  /* ── Search ───────────────────────────────────────────────────────── */
+  function applySearchFilter() {
+    const query = searchQuery.trim().toLowerCase();
+    const cards = grid.querySelectorAll(".card");
+
+    let visible = 0;
+    cards.forEach(card => {
+      const title = card.dataset.searchTitle || "";
+      const show = !query || title.includes(query);
+      card.style.display = show ? "" : "none";
+      if (show) visible++;
+    });
+
+    const total = categoryVideos().length;
+    countEl.textContent =
+      visible + (visible === 1 ? " item" : " items") +
+      (renderedCount < total ? " · " + total + " total" : "");
+  }
+
+  searchInput.addEventListener("input", e => {
+    searchQuery = e.target.value;
+    applySearchFilter();
+  });
+
+  /* ── Category + rendering ─────────────────────────────────────────── */
+  function categoryVideos() {
+    const alive = allVideos.filter(video => !video.__dead);
+    if (currentCategory === "all") return alive;
+    return alive.filter(video => video.category === currentCategory);
+  }
+
+  function resetCatalogue() {
+    renderedCount = 0;
+    loadingBatch = false;
+
+    grid.innerHTML = "";
+    endMessage.style.display = "none";
+    loader.style.display = "none";
+
+    const list = categoryVideos();
+    sectionTitle.textContent = categoryNames[currentCategory] || "Movies";
+    countEl.textContent = list.length + (list.length === 1 ? " item" : " items");
+
+    renderBatch();
+  }
+
+  function renderBatch() {
+    if (!catalogLoaded) return;
+    if (loadingBatch) return;
+
+    const list = categoryVideos();
+
+    if (renderedCount >= list.length) {
+      loader.style.display = "none";
+      if (list.length) endMessage.style.display = "";
+      if (!list.length) {
+        grid.innerHTML = '<p class="error">No videos were automatically matched to this category.</p>';
+      }
+      return;
+    }
+
+    loadingBatch = true;
+    loader.style.display = "";
+
+    const from = renderedCount;
+    const to = Math.min(from + PAGE_SIZE, list.length);
+    const batch = list.slice(from, to);
+
+    const frag = document.createDocumentFragment();
+    batch.forEach((video, i) => frag.appendChild(makeCard(video, from + i)));
+    grid.appendChild(frag);
+
+    renderedCount = to;
+
+    applySearchFilter();
+
+    loader.style.display = "none";
+    loadingBatch = false;
+
+    if (renderedCount >= categoryVideos().length) {
+      endMessage.style.display = "";
+    }
+
+    requestAnimationFrame(maybeLoadMore);
+  }
+
+  function maybeLoadMore() {
+    if (scrollCheckScheduled) return;
+    scrollCheckScheduled = true;
+
+    requestAnimationFrame(() => {
+      scrollCheckScheduled = false;
+      if (loadingBatch || renderedCount >= categoryVideos().length) return;
+      const distance = sentinel.getBoundingClientRect().top - window.innerHeight;
+      if (distance <= SCROLL_TRIGGER_PX) renderBatch();
+    });
+  }
+
+  function setupInfiniteScroll() {
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(entries => {
+        if (entries.some(entry => entry.isIntersecting)) maybeLoadMore();
+      }, { root: null, rootMargin: `0px 0px ${SCROLL_TRIGGER_PX}px 0px`, threshold: 0 });
+      io.observe(sentinel);
+    }
+    window.addEventListener("scroll", maybeLoadMore, { passive: true });
+    window.addEventListener("resize", maybeLoadMore, { passive: true });
+    maybeLoadMore();
+  }
+
+  /* ── Nav links ────────────────────────────────────────────────────── */
+  document.querySelectorAll(".nav-link").forEach(function(link) {
+    link.addEventListener("focus", function() {
+      const rect = link.getBoundingClientRect();
+      const nav = link.parentElement;
+      if (!nav) return;
+      const navRect = nav.getBoundingClientRect();
+      if (rect.left < navRect.left) nav.scrollLeft -= (navRect.left - rect.left + 20);
+      else if (rect.right > navRect.right) nav.scrollLeft += (rect.right - navRect.right + 20);
+    });
+    link.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" || e.keyCode === 13) {
+        e.preventDefault();
+        link.click();
+      }
+    });
+  });
+
+  navLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      currentCategory = link.dataset.category;
+      navLinks.forEach(item => item.classList.toggle("active", item === link));
+      resetCatalogue();
+    });
+  });
+
+  /* ── Player extra controls: resolution, captions, fullscreen ─────── */
+  (function initExtraPlayerControls() {
+    const resBtn = document.getElementById("resBtn");
+    const resLabel = document.getElementById("resLabel");
+    const resMenu = document.getElementById("resMenu");
+    const ccBtn = document.getElementById("ccBtn");
+    const fsBtn = document.getElementById("fsBtn");
+
+    function setQuality(q, label) {
+      if (ytPlayer) {
+        try {
+          if (typeof ytPlayer.setPlaybackQualityRange === "function") {
+            if (q === "default") ytPlayer.setPlaybackQualityRange("default");
+            else ytPlayer.setPlaybackQualityRange(q, q);
+          }
+          if (typeof ytPlayer.setPlaybackQuality === "function") {
+            ytPlayer.setPlaybackQuality(q);
+          }
+        } catch (e) {}
+      }
+      if (resLabel) resLabel.textContent = label;
+      if (resMenu) {
+        resMenu.querySelectorAll(".res-option").forEach(function(o) {
+          o.classList.toggle("active", o.getAttribute("data-quality") === q);
+        });
+      }
+    }
+
+    if (resBtn) {
+      resBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (resMenu) resMenu.classList.toggle("open");
+        showCover();
+      });
+    }
+
+    if (resMenu) {
+      resMenu.querySelectorAll(".res-option").forEach(function(opt) {
+        opt.addEventListener("click", function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const q = opt.getAttribute("data-quality");
+          const label = opt.textContent.trim();
+          setQuality(q, label);
+          resMenu.classList.remove("open");
+          showCover();
+        });
+      });
+    }
+
+    // Captions toggle — module is loaded lazily, then track is selected
+    // from the tracklist via onPlayerApiChange().
+    function applyCaptions() {
+      if (!ytPlayer || typeof ytPlayer.loadModule !== "function") return;
+      try {
+        if (captionsOn) {
+          ytPlayer.loadModule("captions");
+        } else {
+          try { ytPlayer.setOption("captions", "track", {}); } catch (e) {}
+          try { ytPlayer.unloadModule("captions"); } catch (e) {}
+        }
+      } catch (e) {}
+    }
+
+    if (ccBtn) {
+      ccBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        captionsOn = !captionsOn;
+        ccBtn.classList.toggle("active", captionsOn);
+        applyCaptions();
+        showCover();
+      });
+    }
+
+    // Fullscreen button — hidden inside the APK (immersive activity),
+    // and hidden on browsers without the Fullscreen API.
+    const canFullscreen = !!(
+      playerEl.requestFullscreen ||
+      playerEl.webkitRequestFullscreen
+    );
+
+    function handleFsChange() {
+      const isFs = isFullscreenActive();
+      if (fsBtn) {
+        fsBtn.textContent = isFs ? "🗗" : "⛶";
+        fsBtn.title = isFs ? "Exit fullscreen" : "Enter fullscreen";
+      }
+
+      // Force YouTube to recalculate its internal video canvas.
+      // Without this the iframe stalls / stops responding to clicks
+      // for ~200-500ms after the fullscreen transition.
+      resizeYtPlayerToStage();
+      setTimeout(resizeYtPlayerToStage, 100);
+      setTimeout(resizeYtPlayerToStage, 350);
+
+      // Re-show the bar once the transition has settled.
+      setTimeout(function() {
+        if (playerEl.classList.contains("active")) showCover();
+      }, 350);
+    }
+
+    document.addEventListener("fullscreenchange", handleFsChange);
+    document.addEventListener("webkitfullscreenchange", handleFsChange);
+
+    if (fsBtn) {
+      if (isInApp || !canFullscreen) {
+        fsBtn.style.display = "none";
+      } else {
+        fsBtn.addEventListener("click", function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          try {
+            if (isFullscreenActive()) {
+              if (document.exitFullscreen) document.exitFullscreen().catch(function () {});
+              else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            } else if (playerEl.requestFullscreen) {
+              playerEl.requestFullscreen().catch(function () {});
+            } else if (playerEl.webkitRequestFullscreen) {
+              playerEl.webkitRequestFullscreen();
+            }
+          } catch (err) {}
+          // No showCover() here — handleFsChange() shows it after the
+          // transition settles. Calling it now makes the bar flicker.
+        });
+      }
+    }
+
+    // Close resolution menu on outside click
+    document.addEventListener("click", function(e) {
+      if (resMenu && resMenu.classList.contains("open") &&
+          !resMenu.contains(e.target) && e.target !== resBtn) {
+        resMenu.classList.remove("open");
+      }
+    });
+  })();
+
+  /* ── Load catalogue ───────────────────────────────────────────────── */
+  fetch("catalog.json", { cache: "no-cache" })
+    .then(response => {
+      if (!response.ok) throw new Error("Could not load catalog.json");
+      return response.json();
+    })
+    .then(catalog => {
+      if (!Array.isArray(catalog)) throw new Error("Invalid catalogue format");
+
+      const seen = new Set();
+      allVideos = catalog.reduce((videos, item) => {
+        if (!item || !item.id || !isRealTitle(item.title)) return videos;
+        const id = String(item.id);
+        if (!/^[\w-]+$/.test(id) || seen.has(id)) return videos;
+        seen.add(id);
+        if (deadVideoCache[id]) return videos;
+
+        const fullTitle = String(item.title).trim();
+        const title = makeShortTitle(fullTitle);
+        videos.push({
+          id,
+          title,
+          fullTitle,
+          category: detectCategoryFromTitle(fullTitle),
+          url: item.url || "https://www.youtube.com/watch?v=" + id
+        });
+        return videos;
+      }, []);
+
+      allVideos.reverse();
+
+      // ── Put English titles first, non-English titles last ──────────
+      // The original order inside each group is preserved (stable).
+      if (allVideos.length) {
+        const englishFirst = [];
+        const nonEnglishLast = [];
+        for (const video of allVideos) {
+          if (isNonEnglishTitle(video.fullTitle || video.title)) {
+            nonEnglishLast.push(video);
+          } else {
+            englishFirst.push(video);
+          }
+        }
+        allVideos = englishFirst.concat(nonEnglishLast);
+      }
+
+      if (!allVideos.length) {
+        countEl.textContent = "No videos";
+        sectionSub.textContent = "Catalogue is empty";
+        grid.innerHTML = '<p class="error">No valid videos found in catalog.json.</p>';
+        titleIndexInfo.textContent = "No videos found.";
+        allVideoTitles.innerHTML = "";
+        return;
+      }
+
+      catalogLoaded = true;
+
+      const movieCount = allVideos.filter(v => v.category !== "music").length;
+      const musicCount = allVideos.filter(v => v.category === "music").length;
+      sectionSub.textContent =
+        movieCount + " movie videos · " +
+        musicCount + " music videos · catalogue ready";
+
+      titleCount.textContent = allVideos.length;
+      titleIndexInfo.textContent = allVideos.length +
+        " video titles available. Expand this section to load the list.";
+
+      updateVideoStructuredData();
+      resetCatalogue();
+      setupInfiniteScroll();
+
+      console.info("Movie Zone catalogue loaded:", allVideos.length, "videos.");
+    })
+    .catch(error => {
+      console.error("Catalogue loading error:", error);
+      countEl.textContent = "Unable to load videos";
+      sectionSub.textContent = "Failed to load catalogue";
+      grid.innerHTML = '<p class="error">Could not load catalog.json. Ensure it is in the same folder as index.html.</p>';
+      titleIndexInfo.textContent = "Could not load video titles.";
+      allVideoTitles.innerHTML = "";
+    });
+
+})();
+</script>
+
+<!-- ── Small top-right App Download button ── -->
+<a id="appDownloadBtn"
+   href="https://kellysimiyu.github.io/Movies/MovieZone-v1.2.apk"
+   download="MovieZone-v1.2.apk"
+   class="app-dl-btn"
+   title="Download the Movie Zone Android app">
+  <span class="app-dl-icon">📱</span><span class="app-dl-label">Get App</span>
+</a>
+<style>
+  .app-dl-btn {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 100000;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #ff2d2d, #c91f1f);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: .82rem;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(255,45,45,.35), 0 2px 6px rgba(0,0,0,.4);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    white-space: nowrap;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .app-dl-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(255,45,45,.45), 0 3px 8px rgba(0,0,0,.5);
+  }
+  .app-dl-btn:active { transform: translateY(0); }
+  .app-dl-icon { font-size: 1rem; line-height: 1; }
+  .app-dl-label { line-height: 1; }
+  @media (max-width: 480px) {
+    .app-dl-btn { top: 8px; right: 8px; padding: 6px 10px; font-size: .75rem; }
+  }
+</style>
+<script>
+(function () {
+  "use strict";
+  var btn = document.getElementById("appDownloadBtn");
+  if (!btn) return;
+  if (window.MovieZoneApp === true || navigator.userAgent.indexOf("MovieZoneApp") !== -1) {
+    btn.style.display = "none";
+  }
+})();
+</script>
+</body>
+</html>
