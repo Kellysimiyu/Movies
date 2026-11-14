@@ -2307,5 +2307,124 @@
 })();
 </script>
 
+
+<script>
+/* =========================================================
+   TV D-Pad Navigation
+   - Nav bar: Left/Right cycles through category tabs
+   - Cards: Left/Right/Up/Down navigate spatially
+   - Search: Down to cards, Up to nav
+   ========================================================= */
+(function () {
+  "use strict";
+
+  const navLinks = Array.from(document.querySelectorAll(".nav-link"));
+
+  // ---- 1. Nav bar: cycle through tabs with Left/Right ----
+  navLinks.forEach(function (link) {
+    link.addEventListener("keydown", function (e) {
+      const i = navLinks.indexOf(link);
+      if (e.key === "ArrowRight" && i < navLinks.length - 1) {
+        e.preventDefault();
+        e.stopPropagation();
+        const next = navLinks[i + 1];
+        next.focus();
+        next.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+      } else if (e.key === "ArrowLeft" && i > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+        const prev = navLinks[i - 1];
+        prev.focus();
+        prev.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const firstCard = document.querySelector(".card");
+        if (firstCard) {
+          firstCard.focus();
+          firstCard.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
+      }
+    });
+  });
+
+  // ---- 2. Cards: spatial arrow navigation ----
+  function visibleCards() {
+    return Array.from(document.querySelectorAll(".card")).filter(function (c) {
+      return c.style.display !== "none" && c.offsetParent !== null;
+    });
+  }
+
+  function navigateCard(current, dir) {
+    const cards = visibleCards();
+    const cr = current.getBoundingClientRect();
+    const cx = cr.left + cr.width / 2;
+    const cy = cr.top + cr.height / 2;
+
+    let best = null;
+    let bestScore = Infinity;
+
+    for (const c of cards) {
+      if (c === current) continue;
+      const r = c.getBoundingClientRect();
+      const x = r.left + r.width / 2;
+      const y = r.top + r.height / 2;
+
+      let primary = 0, secondary = 0, candidate = false;
+      if (dir === "right" && x > cx + 5) { candidate = true; primary = x - cx; secondary = Math.abs(y - cy); }
+      else if (dir === "left" && x < cx - 5) { candidate = true; primary = cx - x; secondary = Math.abs(y - cy); }
+      else if (dir === "down" && y > cy + 5) { candidate = true; primary = y - cy; secondary = Math.abs(x - cx); }
+      else if (dir === "up" && y < cy - 5) { candidate = true; primary = cy - y; secondary = Math.abs(x - cx); }
+
+      if (candidate) {
+        const score = primary + secondary * 2;
+        if (score < bestScore) { bestScore = score; best = c; }
+      }
+    }
+
+    if (best) {
+      best.focus();
+      best.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      return true;
+    }
+    return false;
+  }
+
+  document.addEventListener("keydown", function (e) {
+    const focused = document.activeElement;
+    if (!focused || !focused.classList.contains("card")) return;
+    const player = document.getElementById("player");
+    if (player && player.classList.contains("active")) return;
+
+    if (e.key === "ArrowRight") { if (navigateCard(focused, "right")) e.preventDefault(); }
+    else if (e.key === "ArrowLeft") { if (navigateCard(focused, "left")) e.preventDefault(); }
+    else if (e.key === "ArrowDown") { if (navigateCard(focused, "down")) e.preventDefault(); }
+    else if (e.key === "ArrowUp") {
+      if (navigateCard(focused, "up")) {
+        e.preventDefault();
+      } else {
+        e.preventDefault();
+        const search = document.getElementById("searchInput");
+        if (search) { search.focus(); search.scrollIntoView({ block: "center", behavior: "smooth" }); }
+      }
+    }
+  });
+
+  // ---- 3. Search input: Up to nav, Down to cards ----
+  const search = document.getElementById("searchInput");
+  if (search) {
+    search.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (navLinks[0]) navLinks[0].focus();
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const first = visibleCards()[0];
+        if (first) { first.focus(); first.scrollIntoView({ block: "center", behavior: "smooth" }); }
+      }
+    });
+  }
+})();
+</script>
+
 </body>
 </html>
