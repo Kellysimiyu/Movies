@@ -14,6 +14,31 @@ CATALOG_FILE = BASE / "catalog.json"
 
 BATCH_SIZE = 25
 
+# Only keep videos 1 hour (3600 seconds) or longer.
+MIN_DURATION = 3600
+
+# Fast filter: titles that mean the video is gone.
+DEAD_TITLES = {
+    "[deleted video]",
+    "[private video]",
+    "[unavailable video]",
+    "deleted video",
+    "private video",
+    "unavailable video",
+}
+
+# Fast filter: availability values that mean it's not publicly watchable.
+BAD_AVAILABILITY = {
+    "private",
+    "premium_only",
+    "subscriber_only",
+    "needs_auth",
+    "unavailable",
+}
+
+# Slow verification: availability values we accept as "alive".
+GOOD_AVAILABILITY = {"public", "unlisted", ""}
+
 
 def valid_title(title):
     return (
@@ -86,6 +111,71 @@ def get_existing_ids():
     return ids
 
 
+def is_obviously_dead(item):
+    """Fast check — uses only flat-playlist metadata, no network."""
+
+    title = (item.get("title") or "").strip().lower()
+
+    if title in DEAD_TITLES:
+        return True
+
+    availability = (item.get("availability") or "").lower()
+
+    if availability in BAD_AVAILABILITY:
+        return True
+
+    return False
+
+
+def verify_video_alive(video_id, timeout=60):
+    """Slow check — resolves the video with yt-dlp to confirm it exists.
+
+    Returns True only if yt-dlp can fetch it AND reports a public/unlisted
+    availability. Any error (deleted, private, geo-blocked, members-only,
+    bot-check, network failure) returns False.
+    """
+
+    command = [
+        sys.executable,
+        "-m",
+        "yt_dlp",
+
+        "--ignore-config",
+        "--simulate",
+        "--skip-download",
+        "--no-warnings",
+        "--print", "%(id)s|%(availability)s",
+
+        f"https://www.youtube.com/watch?v={video_id}",
+    ]
+
+    try:
+
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+
+    except subprocess.TimeoutExpired:
+
+        return False
+
+    if result.returncode != 0:
+        return False
+
+    for line in result.stdout.strip().splitlines():
+
+        if line.startswith(video_id + "|"):
+
+            availability = line.split("|", 1)[1].strip().lower()
+
+            return availability in GOOD_AVAILABILITY
+
+    return False
+
+
 def save_new_video(video, existing_ids):
 
     video_id = video["id"]
@@ -140,6 +230,8 @@ def run_ytdlp(url):
     print("\nStarting channel extraction...")
     print("Playlist limit: UNLIMITED")
     print("Downloading videos: DISABLED")
+    print(f"Minimum duration: {MIN_DURATION} seconds (1 hour)")
+    print("Dead-link filter: ENABLED (fast + per-candidate verify)")
     print("Saving results progressively.\n")
 
     process = subprocess.Popen(
@@ -155,6 +247,8 @@ def run_ytdlp(url):
     discovered = 0
     added = 0
     skipped = 0
+    too_short = 0
+    dead = 0
 
     seen = set()
 
@@ -170,6 +264,7 @@ def run_ytdlp(url):
 
             video_id = item.get("id")
             title = item.get("title")
+            duration = item.get("duration")
 
             if not video_id:
                 continue
@@ -180,6 +275,31 @@ def run_ytdlp(url):
             seen.add(video_id)
 
             if not valid_title(title):
+                continue
+
+            # Only keep videos 1 hour (3600s) or longer.
+            # Entries with unknown duration are skipped.
+            if not isinstance(duration, (int, float)) or duration < MIN_DURATION:
+                too_short += 1
+                continue
+
+            # Already in catalog / urls.txt → don't re-check.
+            if video_id in existing_ids:
+                skipped += 1
+                continue
+
+            # Fast, no-network dead-link filter.
+            if is_obviously_dead(item):
+                dead += 1
+                continue
+
+            # Slow verification — actually resolve the video.
+            if not verify_video_alive(video_id):
+                dead += 1
+                print(
+                    f"Skipped dead link: {video_id} — {title[:60]}",
+                    flush=True,
+                )
                 continue
 
             discovered += 1
@@ -197,7 +317,9 @@ def run_ytdlp(url):
                     item.get("thumbnail")
                     or
                     f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg"
-                )
+                ),
+
+                "duration": int(duration),
             }
 
             if save_new_video(video, existing_ids):
@@ -213,7 +335,9 @@ def run_ytdlp(url):
                 print(
                     f"Discovered: {discovered:,} | "
                     f"New: {added:,} | "
-                    f"Duplicates: {skipped:,}",
+                    f"Duplicates: {skipped:,} | "
+                    f"<1hr: {too_short:,} | "
+                    f"Dead: {dead:,}",
                     end="\r",
                     flush=True
                 )
@@ -233,9 +357,11 @@ def run_ytdlp(url):
 
     print("\n\n========== EXTRACTION COMPLETE ==========")
 
-    print(f"Videos discovered: {discovered:,}")
-    print(f"New videos added: {added:,}")
-    print(f"Duplicates skipped: {skipped:,}")
+    print(f"Videos ≥ 1hr discovered: {discovered:,}")
+    print(f"New videos added:        {added:,}")
+    print(f"Duplicates skipped:      {skipped:,}")
+    print(f"Skipped (< 1hr/unknown): {too_short:,}")
+    print(f"Skipped (dead link):     {dead:,}")
 
     print(
         f"Total catalogue: {len(load_catalog()):,}"
@@ -392,5 +518,9 @@ if __name__ == "__main__":
     print("- 4,000+ videos")
     print("- 10,000+ videos")
     print("- Unlimited available public videos")
+
+    print("\nFilters:")
+    print("- Only videos 1 hour or longer are saved")
+    print("- Dead / private / unavailable links are ignored")
 
     collect_channel()
