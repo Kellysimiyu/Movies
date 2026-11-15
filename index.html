@@ -1149,6 +1149,121 @@
     .card:focus {
       scroll-margin: 100px;
     }
+
+    /* ── Delete modal (opens with Shift + D) ──────────────────────── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200001;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .modal-backdrop.open { display: flex; }
+
+    .delete-modal {
+      width: 100%;
+      max-width: 440px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.7);
+    }
+    .delete-modal h3 {
+      margin: 0 0 6px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .delete-modal p {
+      margin: 0 0 14px;
+      font-size: .82rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+    .delete-label {
+      display: block;
+      font-size: .76rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      margin: 12px 0 6px;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    .delete-label small {
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+    .delete-modal input {
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-elev);
+      color: var(--text);
+      font-size: .9rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .delete-modal input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255,45,45,.12);
+    }
+    .delete-hint {
+      font-size: .72rem !important;
+      color: var(--text-muted) !important;
+      margin: 6px 0 0 !important;
+    }
+    .delete-modal-error {
+      color: #ff6b6b;
+      font-size: .78rem;
+      min-height: 18px;
+      margin: 10px 0 4px;
+      line-height: 1.4;
+    }
+    .delete-modal-error.success {
+      color: #4ade80;
+    }
+    .delete-modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+    .delete-modal-actions button {
+      border: none;
+      font: inherit;
+      font-weight: 600;
+      font-size: .85rem;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .delete-modal-actions button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .delete-modal-cancel {
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+    }
+    .delete-modal-cancel:hover:not(:disabled) { background: rgba(255,255,255,.14); }
+    .delete-modal-confirm {
+      background: var(--accent);
+      color: #fff;
+    }
+    .delete-modal-confirm:hover:not(:disabled) { background: var(--accent-dim); }
   </style>
 </head>
 
@@ -1332,6 +1447,29 @@
   </div>
 </div>
 
+<!-- Shift + D → GitHub-token-protected delete (commits to GitHub) -->
+<div class="modal-backdrop" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+  <div class="delete-modal">
+    <h3 id="deleteModalTitle">Delete this video?</h3>
+    <p id="deleteModalText">Enter your GitHub token to permanently remove this video from the website.</p>
+
+    <div id="deleteTokenRow">
+      <label class="delete-label" for="deleteToken">GitHub token <small>contents:write</small></label>
+      <input type="password" id="deleteToken" placeholder="ghp_…" autocomplete="off">
+      <p class="delete-hint">Asked once per session. Kept in sessionStorage only (clears when you close the tab).</p>
+    </div>
+
+    <label class="delete-label" for="deleteBranch">Branch</label>
+    <input type="text" id="deleteBranch" placeholder="main" autocomplete="off">
+
+    <div class="delete-modal-error" id="deleteError"></div>
+    <div class="delete-modal-actions">
+      <button type="button" class="delete-modal-cancel" id="deleteCancel">Cancel</button>
+      <button type="button" class="delete-modal-confirm" id="deleteConfirm">Delete</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function() {
   "use strict";
@@ -1375,6 +1513,16 @@
   const heroPrevBtn = document.getElementById("heroPrev");
   const heroNextBtn = document.getElementById("heroNext");
 
+  /* Delete modal refs */
+  const deleteModal = document.getElementById("deleteModal");
+  const deleteModalText = document.getElementById("deleteModalText");
+  const deleteTokenRow = document.getElementById("deleteTokenRow");
+  const deleteToken = document.getElementById("deleteToken");
+  const deleteBranch = document.getElementById("deleteBranch");
+  const deleteError = document.getElementById("deleteError");
+  const deleteCancel = document.getElementById("deleteCancel");
+  const deleteConfirm = document.getElementById("deleteConfirm");
+
   /* ── Constants ────────────────────────────────────────────────────── */
   const SITE_URL = "https://kellysimiyu.github.io/Movies/";
   const SKIP_SECONDS = 30;
@@ -1391,6 +1539,21 @@
 
   const HERO_COUNT = 6;
   const HERO_INTERVAL_MS = 6000;
+
+  /* The GitHub token is the only credential — no separate password. */
+
+  /* ── GitHub repo configuration ────────────────────────────────────
+     Deletions are committed to catalog.json in this repo via the
+     GitHub REST API, so they're permanent for everyone who visits
+     the site (not just your browser).
+     The user provides a Personal Access Token with `contents:write`
+     permission the first time per session. The token is NEVER stored
+     in localStorage — only sessionStorage, so it vanishes on tab close. */
+  const GH_OWNER = "kellysimiyu";
+  const GH_REPO  = "Movies";
+  const GH_PATH  = "catalog.json";
+  const GH_TOKEN_KEY  = "mz_gh_token";
+  const GH_BRANCH_KEY = "mz_gh_branch";
 
   /* ── State ────────────────────────────────────────────────────────── */
   let searchQuery = "";
@@ -1426,17 +1589,43 @@
   let heroTimer = null;
   let heroPaused = false;
   let heroBuilt = false;
+  let heroControlsAttached = false;
+
+  /* Delete state */
+  let lastHoveredCard = null;
+  let pendingDeleteId = null;
+  let pendingDeleteTitle = "";
+  let pendingDeleteCard = null;
+  let deleteInFlight = false;
 
   /* ── Device detection ─────────────────────────────────────────────── */
   const isTouchOnly = window.matchMedia("(hover: none)").matches;
   const isInApp = window.MovieZoneApp === true ||
     navigator.userAgent.indexOf("MovieZoneApp") !== -1;
 
-  /* ── Persistent dead-video list ───────────────────────────────────── */
+  /* ── Persistent dead-video list (unchanged — YT embed failures) ──── */
   let deadVideoCache = {};
   try {
     deadVideoCache = JSON.parse(localStorage.getItem("mz_dead_videos") || "{}");
   } catch (e) { deadVideoCache = {}; }
+
+  /* ── Base64 ⇄ UTF-8 helpers (for GitHub Contents API) ─────────────── */
+  function utf8ToBase64(str) {
+    const bytes = new TextEncoder().encode(str);
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  function base64ToUtf8(b64) {
+    const clean = String(b64).replace(/\n/g, "");
+    const binary = atob(clean);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
 
   /* ── Cover bar visibility helpers ─────────────────────────────────── */
   function showCover(durationMs) {
@@ -1510,14 +1699,9 @@
     return true;
   }
 
-  /* Detect titles that are not English.
-     Uses non-Latin script detection plus a heuristic for titles
-     with heavy use of accented Latin letters (Spanish, French,
-     Vietnamese, etc.) which are almost always non-English. */
   function isNonEnglishTitle(title) {
     if (!title || typeof title !== "string") return false;
 
-    // Strip emoji / decorative symbols first so they don't skew the check.
     let t = title;
     try {
       t = t.replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, "");
@@ -1527,21 +1711,16 @@
     t = t.trim();
     if (!t) return false;
 
-    // Any character from a non-Latin script → non-English.
     if (/[\u0370-\u03FF\u0400-\u052F\u0530-\u058F\u0590-\u05FF\u0600-\u06FF\u0700-\u074F\u0750-\u077F\u0780-\u07BF\u0900-\u097F\u0980-\u09FF\u0A00-\u0A7F\u0A80-\u0AFF\u0B00-\u0B7F\u0B80-\u0BFF\u0C00-\u0C7F\u0C80-\u0CFF\u0D00-\u0D7F\u0E00-\u0E7F\u0E80-\u0EFF\u0F00-\u0FFF\u1000-\u109F\u10A0-\u10FF\u1100-\u11FF\u1200-\u137F\u13A0-\u13FF\u1400-\u167F\u1780-\u17FF\u1800-\u18AF\u3040-\u30FF\u3100-\u312F\u31A0-\u31BF\u3400-\u4DBF\u4E00-\u9FFF\uA000-\uA48F\uAC00-\uD7AF\uF900-\uFAFF]/u.test(t)) {
       return true;
     }
 
-    // Heavy use of accented Latin letters → likely non-English
-    // (e.g. "Amélie", "Película completa", "Bộ phim").
     const accented = (t.match(/[\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u00FF\u0100-\u017F\u1E00-\u1EFF]/g) || []).length;
     if (accented >= 2) return true;
 
     return false;
   }
 
-  /* Matches emoji + common decorative icons used as separators
-     (arrows, stars, bullets, box-drawing, dingbats…). */
   let EMOJI_RE;
   try {
     EMOJI_RE = /[\p{Extended_Pictographic}\u2190-\u21FF\u2300-\u23FF\u2460-\u24FF\u2500-\u27BF\u2B00-\u2BFF\uFE0F]/u;
@@ -1549,43 +1728,34 @@
     EMOJI_RE = /[\u2190-\u21FF\u2300-\u23FF\u2460-\u24FF\u2500-\u27BF\u2B00-\u2BFF\uFE0F]/;
   }
 
-  /* Shorten a YouTube-style title to just the movie/show name.
-     Handles emoji/icon separators, pipes, dashes, trailing brackets,
-     and generic descriptors (Official Trailer, Full Movie, HD…). */
   function makeShortTitle(raw) {
     if (!raw || typeof raw !== "string") return raw || "";
     const original = raw.replace(/\s+/g, " ").trim();
     let t = original;
 
-    // 0a. Strip any leading emoji / decorative symbols.
     t = t.replace(
       /^[\s\p{Extended_Pictographic}\u2190-\u21FF\u2300-\u23FF\u2460-\u24FF\u2500-\u27BF\u2B00-\u2BFF\uFE0F]+/u,
       ""
     ).trim();
 
-    // 0b. Truncate at the first emoji / icon that appears after the title,
-    //     e.g. "Inception 🎬 Full Movie HD" → "Inception".
     const m = t.match(EMOJI_RE);
     if (m && typeof m.index === "number" && m.index > 0) {
       const before = t.slice(0, m.index).replace(/[\s\-–—:|·•»«]+$/, "").trim();
       if (before.length >= 2) t = before;
     }
 
-    // 1. Keep only the part before the first strong text separator.
     const strongSep = /\s*(?:\||»|«|\/\/|：|｜)\s*|\s+[–—]\s*|\s+-\s*|\s+[·•∙⋅・]\s+|\s+:\s+/;
     const firstChunk = t.split(strongSep)[0];
     if (firstChunk && firstChunk.trim().length >= 1) {
       t = firstChunk.trim();
     }
 
-    // 2. Drop trailing bracketed groups: (2023), [HD], (Official Trailer)…
     for (let i = 0; i < 4; i++) {
       const next = t.replace(/\s*[\(\[]([^\)\]]*)[\)\]]\s*$/, "").trim();
       if (next === t || next.length < 2) break;
       t = next;
     }
 
-    // 3. Drop trailing descriptor words (Official Trailer, Full Movie, HD…).
     const junk = /(?:\s*[-–—:|]\s*)?(?:official(?:\s+(?:trailer|video|music\s+video))?|full\s+(?:movie|film|video)|movie\s+clip|teaser(?:\s+trailer)?|trailer|clip|video|hd|4k|1080p|720p|480p|360p|new\s+release|latest|watch\s+online|free\s+download|download|subtitles?|subbed|dubbed|english|hindi|tamil|telugu|malayalam|kannada|in\s+hindi|in\s+english)\s*$/i;
     for (let i = 0; i < 10; i++) {
       const next = t.replace(junk, "").trim();
@@ -1593,7 +1763,6 @@
       t = next;
     }
 
-    // 3b. Drop trailing filler words left behind ("… in", "… with"…).
     const filler = /\s+(?:in|with|on|at|for|and|of|the|a|an|to|by|from)\s*$/i;
     for (let i = 0; i < 6; i++) {
       const next = t.replace(filler, "").trim();
@@ -1601,13 +1770,10 @@
       t = next;
     }
 
-    // 4. Trim leftover separators / punctuation at the edges.
     t = t.replace(/^[\s\-–—:|·•»«]+/, "").replace(/[\s\-–—:|·•»«]+$/, "").trim();
 
-    // 5. If we over-cleaned, fall back to the original title.
     if (!t || t.length < 2) return original;
 
-    // 6. Safety cap for very long titles.
     if (t.length > 70) {
       const cut = t.slice(0, 70);
       const space = cut.lastIndexOf(" ");
@@ -1615,22 +1781,6 @@
     }
 
     return t;
-  }
-
-  function getYouTubeId(url) {
-    try {
-      const parsed = new URL(url);
-      const host = parsed.hostname.toLowerCase();
-      if (host === "youtu.be") {
-        return parsed.pathname.split("/").filter(Boolean)[0] || null;
-      }
-      if (host === "youtube.com" || host.endsWith(".youtube.com") || host === "youtube-nocookie.com") {
-        if (parsed.searchParams.has("v")) return parsed.searchParams.get("v");
-        const match = parsed.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]+)/);
-        return match ? match[1] : null;
-      }
-    } catch (e) { return null; }
-    return null;
   }
 
   function isFullscreenActive() {
@@ -1737,7 +1887,6 @@
     }
   }
 
-  // Called when a module (like captions) finishes loading.
   function onPlayerApiChange() {
     if (!captionsOn || !ytPlayer) return;
     try {
@@ -1826,7 +1975,6 @@
     const shield = document.createElement("div");
     shield.className = "click-shield";
     shield.addEventListener("click", function(e) {
-      // Ignore clicks inside the control bar
       let target = e.target;
       while (target && target !== shield) {
         if (target.classList && target.classList.contains("video-bottom-right-cover")) return;
@@ -1834,7 +1982,6 @@
       }
 
       if (isTouchOnly) {
-        // Touch: tap toggles control bar visibility (like YouTube mobile).
         if (coverEl.classList.contains("visible")) {
           coverEl.classList.remove("visible");
           if (coverHideTimer) { clearTimeout(coverHideTimer); coverHideTimer = null; }
@@ -1842,8 +1989,6 @@
           showCover(COVER_VISIBLE_MS_HOVER);
         }
       } else {
-        // Mouse: hover already shows the bar, so a click means pause.
-        // If for some reason it's hidden, show it first (more discoverable).
         if (!coverEl.classList.contains("visible")) {
           showCover();
         } else {
@@ -1956,7 +2101,6 @@
     try { if (ytPlayer && typeof ytPlayer.pauseVideo === "function") ytPlayer.pauseVideo(); } catch (e) {}
     playerEl.classList.remove("active");
 
-    // Exit fullscreen if we're still in it (e.g. video ended while fullscreen).
     if (isFullscreenActive()) {
       try {
         if (document.exitFullscreen) document.exitFullscreen().catch(function () {});
@@ -1994,9 +2138,6 @@
     if (!playerEl.classList.contains("active")) return;
 
     if (e.key === "Escape") {
-      // If we're in fullscreen, let the browser exit first.
-      // Don't also close the player — that would produce a jarring
-      // "fullscreen transition + player teardown" collision.
       if (isFullscreenActive()) return;
       closePlayer();
     } else if (e.key === "ArrowLeft") {
@@ -2011,7 +2152,6 @@
     }
   });
 
-  // Keep YouTube's canvas in sync with the stage size (rotation, resize)
   window.addEventListener("resize", function() {
     if (!playerEl.classList.contains("active")) return;
     resizeYtPlayerToStage();
@@ -2192,16 +2332,21 @@
       }
     });
 
+    /* Remember which card is hovered so Shift + D can target it */
+    card.addEventListener("mouseenter", function() {
+      lastHoveredCard = card;
+    });
+    card.addEventListener("mouseleave", function() {
+      if (lastHoveredCard === card) lastHoveredCard = null;
+    });
+
     return card;
   }
 
   /* ── Hero carousel ───────────────────────────────────────────────── */
-  function buildHero() {
-    if (heroBuilt) return;
-    heroBuilt = true;
-    if (!heroEl) return;
+  function renderHeroSlides() {
+    if (!heroEl) return false;
 
-    // Featured pool: English-titled, non-music, non-dead videos
     const pool = allVideos.filter(v =>
       !v.__dead &&
       isRealTitle(v.title) &&
@@ -2209,11 +2354,21 @@
       v.category !== "music"
     );
     const picks = pool.slice(0, HERO_COUNT);
-    if (!picks.length) return;
+
+    if (!picks.length) {
+      heroSlidesEl.innerHTML = "";
+      heroDotsEl.innerHTML = "";
+      heroSlides = [];
+      heroIndex = 0;
+      heroEl.hidden = true;
+      heroEl.classList.add("hidden");
+      return false;
+    }
 
     heroSlidesEl.innerHTML = "";
     heroDotsEl.innerHTML = "";
     heroSlides = [];
+    heroIndex = 0;
 
     picks.forEach(function(video, i) {
       const slide = document.createElement("div");
@@ -2227,7 +2382,6 @@
       img.decoding = "async";
       if (i === 0) img.setAttribute("fetchpriority", "high");
 
-      // Progressive fallback for thumbnails that don't exist at maxres.
       img.addEventListener("error", function() {
         const step = img.dataset.fallback || "0";
         if (step === "0") {
@@ -2283,36 +2437,58 @@
 
     heroEl.hidden = false;
     heroEl.classList.remove("hidden");
+    return true;
+  }
+
+  function buildHero() {
+    if (heroBuilt) return;
+    heroBuilt = true;
+    if (!heroEl) return;
+
+    const ok = renderHeroSlides();
+    if (!ok) return;
 
     startHeroTimer();
 
-    heroEl.addEventListener("mouseenter", function() {
-      heroPaused = true;
-      if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
-    });
-    heroEl.addEventListener("mouseleave", function() {
-      heroPaused = false;
-      startHeroTimer();
-    });
+    if (!heroControlsAttached) {
+      heroControlsAttached = true;
 
-    heroPrevBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      goToSlide(heroIndex - 1);
-      restartHeroTimer();
-    });
-    heroNextBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      goToSlide(heroIndex + 1);
-      restartHeroTimer();
-    });
-
-    document.addEventListener("visibilitychange", function() {
-      if (document.hidden) {
+      heroEl.addEventListener("mouseenter", function() {
+        heroPaused = true;
         if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
-      } else if (heroBuilt && !heroPaused) {
+      });
+      heroEl.addEventListener("mouseleave", function() {
+        heroPaused = false;
         startHeroTimer();
-      }
-    });
+      });
+
+      heroPrevBtn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        goToSlide(heroIndex - 1);
+        restartHeroTimer();
+      });
+      heroNextBtn.addEventListener("click", function(e) {
+        e.stopPropagation();
+        goToSlide(heroIndex + 1);
+        restartHeroTimer();
+      });
+
+      document.addEventListener("visibilitychange", function() {
+        if (document.hidden) {
+          if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
+        } else if (heroBuilt && !heroPaused) {
+          startHeroTimer();
+        }
+      });
+    }
+  }
+
+  function rebuildHero() {
+    if (!heroEl || !heroBuilt) return;
+    if (heroTimer) { clearInterval(heroTimer); heroTimer = null; }
+    const ok = renderHeroSlides();
+    if (!ok) return;
+    if (!heroPaused) startHeroTimer();
   }
 
   function goToSlide(i) {
@@ -2352,6 +2528,301 @@
       heroTimer = null;
     }
   }
+
+  /* ── GitHub-token-protected delete (commits to repo) ─────────────── */
+  function getStoredBranch() {
+    try { return sessionStorage.getItem(GH_BRANCH_KEY) || "main"; }
+    catch (e) { return "main"; }
+  }
+
+  function setStoredBranch(b) {
+    if (!b) return;
+    try { sessionStorage.setItem(GH_BRANCH_KEY, b); } catch (e) {}
+  }
+
+  function getStoredToken() {
+    try { return sessionStorage.getItem(GH_TOKEN_KEY) || ""; }
+    catch (e) { return ""; }
+  }
+
+  function setStoredToken(t) {
+    if (!t) return;
+    try { sessionStorage.setItem(GH_TOKEN_KEY, t); } catch (e) {}
+  }
+
+  function requestDelete(videoId, videoTitle, cardEl) {
+    if (!videoId) return;
+    pendingDeleteId = videoId;
+    pendingDeleteTitle = videoTitle || "this video";
+    pendingDeleteCard = cardEl || null;
+
+    deleteModalText.textContent =
+      'Enter your GitHub token to permanently remove "' + pendingDeleteTitle +
+      '" from the website. This edits catalog.json in the GitHub repo — ' +
+      'the change is live for everyone after GitHub Pages rebuilds (~1 min).';
+
+    deleteError.textContent = "";
+    deleteError.classList.remove("success");
+
+    const existingToken = getStoredToken();
+    deleteToken.value = existingToken;
+    deleteTokenRow.style.display = existingToken ? "none" : "";
+    deleteBranch.value = getStoredBranch();
+
+    deleteConfirm.disabled = false;
+    deleteConfirm.textContent = "Delete";
+    deleteInFlight = false;
+
+    deleteModal.classList.add("open");
+
+    setTimeout(function() { deleteToken.focus(); }, 50);
+  }
+
+  function closeDeleteModal() {
+    if (deleteInFlight) return;
+    deleteModal.classList.remove("open");
+    deleteError.textContent = "";
+    deleteError.classList.remove("success");
+    pendingDeleteId = null;
+    pendingDeleteTitle = "";
+    pendingDeleteCard = null;
+  }
+
+  function showDeleteError(msg) {
+    deleteError.textContent = msg;
+    deleteError.classList.remove("success");
+  }
+
+  function showDeleteSuccess(msg) {
+    deleteError.textContent = msg;
+    deleteError.classList.add("success");
+  }
+
+  async function commitDeletionToGitHub(videoId, token, branch) {
+    const apiBase = "https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + GH_PATH;
+
+    // 1. Fetch current catalog.json metadata + content
+    const getRes = await fetch(apiBase + "?ref=" + encodeURIComponent(branch), {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer " + token,
+        "Accept": "application/vnd.github+json"
+      },
+      cache: "no-store"
+    });
+
+    if (getRes.status === 404) {
+      throw new Error("Branch or file not found. Check the branch name (default is 'main').");
+    }
+    if (getRes.status === 401) {
+      throw new Error("GitHub token is invalid or has expired.");
+    }
+    if (getRes.status === 403) {
+      throw new Error("GitHub token lacks permission. It needs 'contents:write' on this repo.");
+    }
+    if (!getRes.ok) {
+      throw new Error("GitHub GET failed (" + getRes.status + ").");
+    }
+
+    const meta = await getRes.json();
+    if (!meta || !meta.sha || typeof meta.content !== "string") {
+      throw new Error("Unexpected GitHub response — no sha/content returned.");
+    }
+
+    // 2. Decode current content
+    let current = null;
+    try {
+      current = JSON.parse(base64ToUtf8(meta.content));
+    } catch (e) {
+      throw new Error("Could not parse catalog.json from GitHub.");
+    }
+    if (!Array.isArray(current)) {
+      throw new Error("catalog.json on GitHub is not a JSON array.");
+    }
+
+    // 3. Filter out the deleted video
+    const filtered = current.filter(function(item) {
+      return item && String(item.id) !== String(videoId);
+    });
+    if (filtered.length === current.length) {
+      throw new Error("Video not found in catalog.json on GitHub (it may already be gone).");
+    }
+
+    // 4. Encode and PUT
+    const newContent = utf8ToBase64(JSON.stringify(filtered, null, 2) + "\n");
+
+    const putRes = await fetch(apiBase, {
+      method: "PUT",
+      headers: {
+        "Authorization": "Bearer " + token,
+        "Accept": "application/vnd.github+json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: "Delete video: " + videoId,
+        content: newContent,
+        sha: meta.sha,
+        branch: branch
+      })
+    });
+
+    if (putRes.status === 409) {
+      throw new Error("Conflict — the file changed on GitHub. Reload the page and try again.");
+    }
+    if (putRes.status === 401) {
+      throw new Error("GitHub token is invalid or has expired.");
+    }
+    if (putRes.status === 403) {
+      throw new Error("GitHub token lacks 'contents:write' permission for this repo.");
+    }
+    if (!putRes.ok) {
+      let info = "";
+      try {
+        const j = await putRes.json();
+        if (j && j.message) info = " — " + j.message;
+      } catch (e) {}
+      throw new Error("GitHub PUT failed (" + putRes.status + ")" + info + ".");
+    }
+
+    return true;
+  }
+
+  async function confirmDelete() {
+    if (!pendingDeleteId || deleteInFlight) return;
+
+    deleteError.textContent = "";
+    deleteError.classList.remove("success");
+
+    // The GitHub token is the only credential — a valid one with
+    // contents:write is required.
+    const token = (deleteToken.value.trim() || getStoredToken()).trim();
+    if (!token) {
+      deleteTokenRow.style.display = "";
+      showDeleteError("GitHub token is required. Paste a Personal Access Token with 'contents:write'.");
+      deleteToken.focus();
+      return;
+    }
+
+    // 3. Branch
+    const branch = (deleteBranch.value.trim() || "main");
+    setStoredToken(token);
+    setStoredBranch(branch);
+
+    deleteInFlight = true;
+    deleteConfirm.disabled = true;
+    deleteConfirm.textContent = "Deleting…";
+    deleteCancel.disabled = true;
+
+    try {
+      await commitDeletionToGitHub(pendingDeleteId, token, branch);
+
+      // ── Success: update UI ──
+      const id = pendingDeleteId;
+      const cardEl = pendingDeleteCard;
+
+      allVideos = allVideos.filter(v => v.id !== id);
+
+      let el = cardEl;
+      if (!el || !el.parentNode) {
+        el = document.querySelector('.card[data-video-id="' + CSS.escape(id) + '"]');
+      }
+      if (el && el.parentNode) el.parentNode.removeChild(el);
+
+      titlesBuilt = false;
+      if (titleIndex && titleIndex.open) buildAllVideoTitles();
+
+      rebuildHero();
+
+      const visible = grid.querySelectorAll(".card").length;
+      const total = categoryVideos().length;
+      countEl.textContent =
+        visible + (visible === 1 ? " item" : " items") +
+        (total > visible ? " · " + total + " total" : "");
+
+      // Hide token field now that it's stored
+      deleteTokenRow.style.display = "none";
+
+      showDeleteSuccess("Deleted. GitHub Pages will reflect the change for everyone within about a minute.");
+
+      setTimeout(function() {
+        deleteInFlight = false;
+        deleteConfirm.disabled = false;
+        deleteCancel.disabled = false;
+        deleteConfirm.textContent = "Delete";
+        deleteModal.classList.remove("open");
+        pendingDeleteId = null;
+        pendingDeleteTitle = "";
+        pendingDeleteCard = null;
+      }, 1800);
+
+    } catch (err) {
+      deleteInFlight = false;
+      deleteConfirm.disabled = false;
+      deleteCancel.disabled = false;
+      deleteConfirm.textContent = "Delete";
+      showDeleteError(err && err.message ? err.message : "Delete failed.");
+    }
+  }
+
+  /* ── Shift + D → open the delete dialog for the hovered/focused card ── */
+  document.addEventListener("keydown", function(e) {
+    if (!e.shiftKey) return;
+    if (e.key !== "D" && e.key !== "d") return;
+
+    // Don't fire while the player or the modal is already open
+    if (playerEl.classList.contains("active")) return;
+    if (deleteModal.classList.contains("open")) return;
+
+    // Don't hijack typing inside inputs / textareas
+    const t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+
+    // Choose the target card:
+    //   1. Currently hovered card
+    //   2. Last card the mouse left (still in the DOM)
+    //   3. Currently keyboard-focused card
+    let card = document.querySelector(".card:hover");
+    if (!card && lastHoveredCard && lastHoveredCard.isConnected) card = lastHoveredCard;
+    if (!card) {
+      const focused = document.activeElement;
+      if (focused && focused.classList && focused.classList.contains("card")) card = focused;
+    }
+    if (!card || !card.dataset.videoId) return;
+
+    e.preventDefault();
+
+    const id = card.dataset.videoId;
+    const video = allVideos.find(v => v.id === id);
+    const titleText = (video && (video.title || video.fullTitle)) || "this video";
+    requestDelete(id, titleText, card);
+  });
+
+  deleteCancel.addEventListener("click", closeDeleteModal);
+  deleteConfirm.addEventListener("click", confirmDelete);
+
+  deleteToken.addEventListener("input", function() {
+    if (deleteError.classList.contains("success")) return;
+    deleteError.textContent = "";
+  });
+
+  [deleteToken, deleteBranch].forEach(function(inp) {
+    inp.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") { e.preventDefault(); confirmDelete(); }
+      else if (e.key === "Escape") { e.preventDefault(); closeDeleteModal(); }
+    });
+  });
+
+  deleteModal.addEventListener("click", function(e) {
+    if (e.target === deleteModal) closeDeleteModal();
+  });
+
+  document.addEventListener("keydown", function(e) {
+    if (e.key !== "Escape") return;
+    if (deleteModal.classList.contains("open")) {
+      e.preventDefault();
+      closeDeleteModal();
+    }
+  });
 
   /* ── Search ───────────────────────────────────────────────────────── */
   function applySearchFilter() {
@@ -2543,8 +3014,6 @@
       });
     }
 
-    // Captions toggle — module is loaded lazily, then track is selected
-    // from the tracklist via onPlayerApiChange().
     function applyCaptions() {
       if (!ytPlayer || typeof ytPlayer.loadModule !== "function") return;
       try {
@@ -2568,8 +3037,6 @@
       });
     }
 
-    // Fullscreen button — hidden inside the APK (immersive activity),
-    // and hidden on browsers without the Fullscreen API.
     const canFullscreen = !!(
       playerEl.requestFullscreen ||
       playerEl.webkitRequestFullscreen
@@ -2582,14 +3049,10 @@
         fsBtn.title = isFs ? "Exit fullscreen" : "Enter fullscreen";
       }
 
-      // Force YouTube to recalculate its internal video canvas.
-      // Without this the iframe stalls / stops responding to clicks
-      // for ~200-500ms after the fullscreen transition.
       resizeYtPlayerToStage();
       setTimeout(resizeYtPlayerToStage, 100);
       setTimeout(resizeYtPlayerToStage, 350);
 
-      // Re-show the bar once the transition has settled.
       setTimeout(function() {
         if (playerEl.classList.contains("active")) showCover();
       }, 350);
@@ -2615,13 +3078,10 @@
               playerEl.webkitRequestFullscreen();
             }
           } catch (err) {}
-          // No showCover() here — handleFsChange() shows it after the
-          // transition settles. Calling it now makes the bar flicker.
         });
       }
     }
 
-    // Close resolution menu on outside click
     document.addEventListener("click", function(e) {
       if (resMenu && resMenu.classList.contains("open") &&
           !resMenu.contains(e.target) && e.target !== resBtn) {
@@ -2661,8 +3121,6 @@
 
       allVideos.reverse();
 
-      // ── Put English titles first, non-English titles last ──────────
-      // The original order inside each group is preserved (stable).
       if (allVideos.length) {
         const englishFirst = [];
         const nonEnglishLast = [];
