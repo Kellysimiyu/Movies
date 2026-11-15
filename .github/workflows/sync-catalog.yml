@@ -1,0 +1,87 @@
+name: Sync catalog with deletion blacklist
+
+on:
+  push:
+    branches: [main]          # change if your default branch is not "main"
+    paths:
+      - 'catalog.json'
+      - 'deleted.json'
+  workflow_dispatch:          # lets you re-run manually from the Actions tab
+
+permissions:
+  contents: write             # required so the bot can commit back
+
+jobs:
+  clean-catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0      # need full history for git show HEAD~1
+
+      - name: Install jq
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq jq
+
+      - name: Record newly deleted IDs into deleted.json
+        run: |
+          set -e
+
+          # Only run if there is a previous commit that contains catalog.json
+          if git rev-parse HEAD~1 >/dev/null 2>&1 && \
+             git show HEAD~1:catalog.json >/dev/null 2>&1; then
+
+            OLD_IDS=$(git show HEAD~1:catalog.json | jq -r '.[].id' 2>/dev/null | sort -u || true)
+            NEW_IDS=$(jq -r '.[].id' catalog.json | sort -u)
+
+            # IDs present before but gone now
+            REMOVED=$(comm -23 <(echo "$OLD_IDS") <(echo "$NEW_IDS") || true)
+
+            if [ -n "$REMOVED" ]; then
+              EXISTING=$(cat deleted.json 2>/dev/null || echo '[]')
+              echo "$EXISTING" | jq -e 'type == "array"' >/dev/null 2>&1 || EXISTING='[]'
+
+              REMOVED_JSON=$(echo "$REMOVED" | jq -R . | jq -s .)
+
+              jq -n --argjson a "$EXISTING" --argjson b "$REMOVED_JSON" \
+                '$a + $b | unique' > deleted.json.tmp
+              mv deleted.json.tmp deleted.json
+
+              echo "Recorded new deletions: $REMOVED"
+            else
+              echo "No new deletions detected."
+            fi
+          else
+            echo "No previous catalog.json to compare — skipping detection."
+          fi
+
+      - name: Filter catalog.json against deleted.json
+        run: |
+          set -e
+
+          if [ ! -f deleted.json ]; then echo '[]' > deleted.json; fi
+
+          DELETED_IDS=$(cat deleted.json)
+          echo "$DELETED_IDS" | jq -e 'type == "array"' >/dev/null 2>&1 || DELETED_IDS='[]'
+
+          jq --argjson exclude "$DELETED_IDS" \
+             '[.[] | select(([.id] | inside($exclude)) | not)]' \
+             catalog.json > catalog.cleaned.json
+
+          mv catalog.cleaned.json catalog.json
+
+      - name: Commit changes if any
+        run: |
+          if git diff --quiet catalog.json deleted.json 2>/dev/null; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add catalog.json
+          git add deleted.json 2>/dev/null || true
+
+          git commit -m "chore: sync catalog with deletion blacklist [skip ci]"
+          git push
