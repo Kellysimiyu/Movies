@@ -2558,7 +2558,7 @@
 
     deleteModalText.textContent =
       'Enter your GitHub token to permanently remove "' + pendingDeleteTitle +
-      '" from the website. This edits catalog.json in the GitHub repo — ' +
+      '" from the website. This adds the video to deleted.json in the GitHub repo — ' +
       'the change is live for everyone after GitHub Pages rebuilds (~1 min).';
 
     deleteError.textContent = "";
@@ -2599,9 +2599,12 @@
   }
 
   async function commitDeletionToGitHub(videoId, token, branch) {
-    const apiBase = "https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO + "/contents/" + GH_PATH;
+    const apiBase = "https://api.github.com/repos/" + GH_OWNER + "/" + GH_REPO +
+                    "/contents/deleted.json";
 
-    // 1. Fetch current catalog.json metadata + content
+    let existingIds = [];
+    let sha = null;
+
     const getRes = await fetch(apiBase + "?ref=" + encodeURIComponent(branch), {
       method: "GET",
       headers: {
@@ -2612,44 +2615,42 @@
     });
 
     if (getRes.status === 404) {
-      throw new Error("Branch or file not found. Check the branch name (default is 'main').");
-    }
-    if (getRes.status === 401) {
+      existingIds = [];
+      sha = null;
+    } else if (getRes.status === 401) {
       throw new Error("GitHub token is invalid or has expired.");
-    }
-    if (getRes.status === 403) {
+    } else if (getRes.status === 403) {
       throw new Error("GitHub token lacks permission. It needs 'contents:write' on this repo.");
-    }
-    if (!getRes.ok) {
+    } else if (!getRes.ok) {
       throw new Error("GitHub GET failed (" + getRes.status + ").");
+    } else {
+      const meta = await getRes.json();
+      sha = meta.sha;
+      if (!meta.content || meta.encoding === "none") {
+        throw new Error("deleted.json content unavailable — check file size or encoding.");
+      }
+      try {
+        const arr = JSON.parse(base64ToUtf8(meta.content));
+        if (Array.isArray(arr)) existingIds = arr.map(String);
+      } catch (e) {
+        throw new Error("Could not parse deleted.json from GitHub.");
+      }
     }
 
-    const meta = await getRes.json();
-    if (!meta || !meta.sha || typeof meta.content !== "string") {
-      throw new Error("Unexpected GitHub response — no sha/content returned.");
+    const idStr = String(videoId);
+    if (existingIds.includes(idStr)) {
+      throw new Error("Video is already in the deletion blacklist.");
     }
+    existingIds.push(idStr);
 
-    // 2. Decode current content
-    let current = null;
-    try {
-      current = JSON.parse(base64ToUtf8(meta.content));
-    } catch (e) {
-      throw new Error("Could not parse catalog.json from GitHub.");
-    }
-    if (!Array.isArray(current)) {
-      throw new Error("catalog.json on GitHub is not a JSON array.");
-    }
+    const newContent = utf8ToBase64(JSON.stringify(existingIds, null, 2) + "\n");
 
-    // 3. Filter out the deleted video
-    const filtered = current.filter(function(item) {
-      return item && String(item.id) !== String(videoId);
-    });
-    if (filtered.length === current.length) {
-      throw new Error("Video not found in catalog.json on GitHub (it may already be gone).");
-    }
-
-    // 4. Encode and PUT
-    const newContent = utf8ToBase64(JSON.stringify(filtered, null, 2) + "\n");
+    const putBody = {
+      message: "Mark video as deleted: " + videoId,
+      content: newContent,
+      branch: branch
+    };
+    if (sha) putBody.sha = sha;
 
     const putRes = await fetch(apiBase, {
       method: "PUT",
@@ -2658,16 +2659,11 @@
         "Accept": "application/vnd.github+json",
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        message: "Delete video: " + videoId,
-        content: newContent,
-        sha: meta.sha,
-        branch: branch
-      })
+      body: JSON.stringify(putBody)
     });
 
     if (putRes.status === 409) {
-      throw new Error("Conflict — the file changed on GitHub. Reload the page and try again.");
+      throw new Error("Conflict — deleted.json changed on GitHub. Reload and try again.");
     }
     if (putRes.status === 401) {
       throw new Error("GitHub token is invalid or has expired.");
