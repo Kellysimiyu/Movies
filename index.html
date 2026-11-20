@@ -1438,6 +1438,7 @@
         placeholder="Search movies &amp; videos…"
         aria-label="Search movies and videos"
         autocomplete="off"
+        enterkeyhint="search"
       >
     </div>
 
@@ -1589,12 +1590,12 @@
 
     <div id="deleteTokenRow">
       <label class="delete-label" for="deleteToken">GitHub token <small>contents:write</small></label>
-      <input type="password" id="deleteToken" placeholder="ghp_…" autocomplete="off">
+      <input type="password" id="deleteToken" placeholder="ghp_…" autocomplete="off" enterkeyhint="go">
       <p class="delete-hint">Asked once per session. Kept in sessionStorage only (clears when you close the tab).</p>
     </div>
 
     <label class="delete-label" for="deleteBranch">Branch</label>
-    <input type="text" id="deleteBranch" placeholder="main" autocomplete="off">
+    <input type="text" id="deleteBranch" placeholder="main" autocomplete="off" enterkeyhint="go">
 
     <div class="delete-modal-error" id="deleteError"></div>
     <div class="delete-modal-actions">
@@ -2922,8 +2923,15 @@
 
   [deleteToken, deleteBranch].forEach(function(inp) {
     inp.addEventListener("keydown", function(e) {
-      if (e.key === "Enter") { e.preventDefault(); confirmDelete(); }
-      else if (e.key === "Escape") { e.preventDefault(); closeDeleteModal(); }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        inp.blur();            /* collapse the on-screen keyboard */
+        confirmDelete();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        inp.blur();            /* collapse the on-screen keyboard */
+        closeDeleteModal();
+      }
     });
   });
 
@@ -2964,6 +2972,14 @@
   searchInput.addEventListener("input", e => {
     searchQuery = e.target.value;
     applySearchFilter();
+  });
+
+  /* Enter = "search" → collapse the on-screen keyboard */
+  searchInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.keyCode === 13) {
+      e.preventDefault();
+      searchInput.blur();
+    }
   });
 
   /* ── Category + rendering ─────────────────────────────────────────── */
@@ -3463,6 +3479,34 @@
     };
   }
 
+  /* Put the newest catalogue entries first.
+     - If entries carry a date field, sort by it (newest → oldest).
+     - Otherwise assume catalog.json appends new videos at the end,
+       so reverse the array. */
+  function sortCatalogNewestFirst(list) {
+    const DATE_KEYS = ["date", "addedAt", "publishedAt", "createdAt", "timestamp", "uploadDate"];
+
+    function rawDate(v) {
+      if (!v) return null;
+      for (let i = 0; i < DATE_KEYS.length; i++) {
+        if (v[DATE_KEYS[i]] != null) return v[DATE_KEYS[i]];
+      }
+      return null;
+    }
+
+    const hasDates = list.some(function (v) { return rawDate(v) != null; });
+
+    if (hasDates) {
+      return list.slice().sort(function (a, b) {
+        const ta = Date.parse(rawDate(a)) || 0;
+        const tb = Date.parse(rawDate(b)) || 0;
+        return tb - ta;
+      });
+    }
+
+    return list.slice().reverse();
+  }
+
   function loadCatalog() {
     sectionSub.textContent = "Loading catalogue…";
 
@@ -3474,7 +3518,9 @@
         .then(function (r) { return r.ok ? r.json() : []; })
         .catch(function () { return []; })
     ]).then(function (results) {
-      const catalog = Array.isArray(results[0]) ? results[0] : [];
+      const catalog = sortCatalogNewestFirst(
+        Array.isArray(results[0]) ? results[0] : []
+      );
       const deleted = Array.isArray(results[1]) ? results[1] : [];
       const deletedSet = new Set(deleted.map(String));
 
